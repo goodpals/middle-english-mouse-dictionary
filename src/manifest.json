@@ -1,0 +1,23 @@
+{
+  "manifest_version": 3,
+  "name": "Middle English Mouse Dictionary",
+  "version": "1.0",
+  "description": "A mouse hover Middle English dictionary",
+  "offline_enabled": true,
+  "permissions": [
+    "activeTab",
+    "clipboardWrite"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": {
+    "default_popup": "popup.html"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"]
+    }
+  ]
+}

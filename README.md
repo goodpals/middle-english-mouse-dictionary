@@ -8,3 +8,19 @@ DICTIONARIES:
 
 we prolly shouldn't use this but it does exist: https://github.com/mdm-code/cmed
 
+Manifest.json options we could integrate later:
+
+```
+ "options_ui": {
+    "page": "options.html",
+    "open_in_tab": false
+  },
+
+"icons": {
+  "16": "icon16.png",
+  "48": "icon48.png",
+  "128": "icon128.png"
+},
+  
+"web_accessible_resources": ["css/popup.css"]
+```
