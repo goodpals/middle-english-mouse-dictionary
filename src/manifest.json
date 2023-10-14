@@ -6,18 +6,21 @@
   "offline_enabled": true,
   "permissions": [
     "activeTab",
-    "clipboardWrite"
+    "clipboardWrite",
+    "storage",
+    "tabs",
+    "scripting"
   ],
+  "action": {
+  },
   "background": {
     "service_worker": "background.js"
-  },
-  "action": {
-    "secondary_popup": "infoPopup.html"
   },
   "content_scripts": [
     {
       "matches": ["<all_urls>"],
-      "js": ["content.js"]
+      "js": ["content.js"],
+      "css": ["infoPopup.css"]
     }
   ]
 }

@@ -3,7 +3,7 @@
   color: black;
   border: 1px solid #ccc;
   padding: 10px;
-  font-family: 'Times New Roman', Times, serif;
+  font-family: sans-serif;
   box-shadow: 2px 2px 5px rgba(0,0,0,0.5);
   font-size: 14px;
 }
