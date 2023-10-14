@@ -1,55 +1,87 @@
-/// This is the monitor for user lookup requests: it looks out for the user double-clicking a word and checks the dictionary for that word, making an info popup in the DOM.
+/// The content.js file is responsible for injecting or modifying the content of web pages that you visit
 
-// document.addEventListener('dblclick', function(event) {
-//   const selectedText = window.getSelection().toString();
-//   if (selectedText != null) {
-//     // TODO: handle the selected word by parsing it through a dictionary
-//   }
-//
-//   console.log(selectedText);
-// });
+// !function name(){} (); auto-runs the code as soon as it is loaded in to the DOM.
+!function injectStylesheet() {
 
+  // This is cursed but I can't find a non-framework, non bullshit way to parse the CSS file into it that doesn't involve hosting or gymnastics.
+  // Ideally we just "var style... style.textcontent = readFromCSS(./infoPopup.css;" but it's not that simple lmao
+  let style = document.createElement('style');
+  style.textContent = `
+    .infoPopup {
+      background-color: #dddddd;
+      color: black;
+      border: 1px solid #ccc;
+      padding: 10px;
+      font-family: 'Times New Roman', Times, serif;
+      box-shadow: 2px 2px 5px rgba(0,0,0,0.5);
+      font-size: 14px;
+    }  
+  `;
+  document.head.appendChild(style);
+}();
+
+
+/// This is the monitor for user lookup requests (i.e. double-clicking a word): it looks out for the user doing so and checks the dictionary for that word, making an info popup in the DOM. It then closes on a single click anywhere in the DOM.
 document.addEventListener('dblclick', function(event) {
+  
   const selectedText = window.getSelection().toString();
-  // console.log(selectedText + " : " + selectedText.length);
-
   if (selectedText == null || selectedText.length == 1 || selectedText.length == 0) {
     /// the user is clicking on whitespace, or maybe punctuation. Do not show.
     return;
   }
-  
-  // Create a popup element
-  var popup = document.createElement('div');
+  let selectedWordInfo = searchDictionary(selectedText);
+  if (selectedWordInfo == null) {
+    return;
+  }
+
+  const info  = "ME word: " + selectedWordInfo.word + "\n"
+            + "Type: " + selectedWordInfo.type + "\n"
+            + "Origin: " + selectedWordInfo.origin + "\n";
+
+  // Style, position, and then show a word info popup
+  let popup = document.createElement('div');
   popup.className = 'infoPopup';
-  popup.innerText = 'Your text here';
+  popup.innerText = info;
 
-  // Set the position of the popup
   popup.style.position = 'absolute';
-  popup.style.left = (event.clientX + window.scrollX -60) + 'px';
-  popup.style.top = (event.clientY + window.scrollY -60) + 'px';
+  popup.style.left = (event.clientX + window.scrollX - 20) + 'px';
+  popup.style.top = (event.clientY + window.scrollY + 10) + 'px';
 
-  // Add the popup to the document
   document.body.appendChild(popup);
 
-  // Remove the popup after a certain amount of time (e.g., 2 seconds)
-  setTimeout(function() {
+  document.addEventListener('click', function(event) {
+    document.removeEventListener('click', this);
     popup.remove();
-  }, 3000);
+  });
+
+  // setTimeout(function() { popup.remove(); }, 3000); /// alt option but don't like it
 });
 
+function searchDictionary(selectedWord) {
+  if (selectedWord in dictionary) {
+    return dictionary[selectedWord];
+  } else {
+    return null;
+  }
+}
 
-// !function name(){} (); auto-runs the code as soon as it is loaded in to the DOM.
-!function appendStyle(){
-  var style = document.createElement('style');
-  style.textContent = `
-    .infoPopup {
-      background-color: #ff6d6d;
-      border: 1px solid #ccc;
-      padding: 5px;
-      font-family: 'Times New Roman', Times, serif;
-      box-shadow: 2px 2px 5px rgba(0,0,0,0.5);
-      font-size: 14px;
-    }
-  `;
-  document.head.appendChild(style);
-}();
+const dictionary = {
+  "season": {
+    "word": "Sesoun", 
+    "type": "n.",
+    "meaning": "season, time", 
+    "origin": "OFr. se(i)son.",
+  },
+  "down": {
+    "word": "Adoun, Adown", 
+    "type": "adv.",
+    "meaning": "down", 
+    "origin": "OE. of-dūne, adūne.",
+  },
+  "the": {
+    "word": "þe", 
+    "type": "determiner",
+    "meaning": "bro þe is the", 
+    "origin": "TH. theeee, thhhbthbthbtb",
+  },
+};
