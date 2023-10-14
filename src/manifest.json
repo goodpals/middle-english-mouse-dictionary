@@ -12,7 +12,8 @@
     "service_worker": "background.js"
   },
   "action": {
-    "default_popup": "popupMenu.html"
+    "default_popup": "popupMenu.html",
+    "secondary_popup": "infoPopup.html"
   },
   "content_scripts": [
     {
