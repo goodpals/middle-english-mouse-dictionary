@@ -11,11 +11,12 @@ document.addEventListener('dblclick', async function(event)
     return;
   }
 
+  /// the user is clicking on whitespace, or maybe punctuation? Do not show.
   const selectedText = window.getSelection().toString();
   if (selectedText == null || selectedText.length == 1 || selectedText.length == 0) {
-    /// the user is clicking on whitespace, or maybe punctuation. Do not show.
     return;
   }
+  
   const selectedWordInfo = searchDictionary(selectedText);
   if (selectedWordInfo == null) {
     return;
@@ -55,7 +56,7 @@ function createPopup(event, info) {
     document.removeEventListener('click', this);
     popup.remove();
   });
-  
+
   // setTimeout(function() { popup.remove(); }, 3000); /// alt option but don't like it
 }
 
@@ -84,11 +85,15 @@ const dictionary = {
 
 
 async function debugState(onOffState) {
-  console.log('App state: ' + onOffState.state);
+  console.log('App on/off state: ' + onOffState.state);
   let inverseState = onOffState.state == 'on' ? 'off' : 'on';
-  console.log('inverse state: ' + inverseState);
+  console.log('inverse value of state: ' + inverseState);
   await browser.storage.local.set({ state: inverseState });
-  const result = await browser.storage.local.get('state'); // Added this line to get the updated state
-  console.log('App state after setting: ' + result.state); // Changed this line to log the updated state
+  const result = await browser.storage.local.get('state');
+  console.log('App on/off state after setting to inverse value: ' + result.state);
+
+  const check = await browser.storage.local.get('sidebar');
+  console.log("Current sidebar state: " + check.sidebar);
+  
   console.log('_____');
 }
