@@ -1,26 +1,22 @@
-/// The content.js file is responsible for injecting or modifying the content of web pages that you visit
+/* The content.js file is responsible for injecting or modifying the content of web pages that you visit */
 
 /// This is the monitor for user lookup requests (i.e. double-clicking a word): it looks out for the user doing so and checks the dictionary for that word, making an info popup in the DOM. It then closes on a single click anywhere in the DOM.
-document.addEventListener('dblclick', function(event) {
-
+document.addEventListener('dblclick', async function(event) 
+{
   /// Check whether the extension is "soft disabled" i.e. when you leftclick the extension toolbar button it 
   /// doesn't get disabled, but it is "shut down" so that users can decide when they want to use it or not.
-  chrome.storage.local.get('state', (result) => {
-    /// PROBLEM: see background.js for why this isn't working right. 
-    /// PROBLEM: even if state is 'off', it doesn't return.
-    console.log('App state: ' + result.state);
-    if (result.state != 'on') {
-      return;
-    }
-  });
+  const appOnOffState = await browser.storage.local.get('state');
+  // debugState(appOnOffState);
+  if (appOnOffState.state != 'on') {
+    return;
+  }
 
   const selectedText = window.getSelection().toString();
   if (selectedText == null || selectedText.length == 1 || selectedText.length == 0) {
     /// the user is clicking on whitespace, or maybe punctuation. Do not show.
     return;
   }
-
-  let selectedWordInfo = searchDictionary(selectedText);
+  const selectedWordInfo = searchDictionary(selectedText);
   if (selectedWordInfo == null) {
     return;
   }
@@ -30,6 +26,21 @@ document.addEventListener('dblclick', function(event) {
             + "Type: " + selectedWordInfo.type + "\n"
             + "Origin: " + selectedWordInfo.origin + "\n";
 
+  createPopup(event, info);
+  
+});
+
+
+function searchDictionary(selectedWord) {
+  if (selectedWord in dictionary) {
+    return dictionary[selectedWord];
+  } else {
+    return null;
+  }
+}
+
+
+function createPopup(event, info) {
   let popup = document.createElement('div');
   popup.className = 'infoPopup';
   popup.innerText = info;
@@ -44,17 +55,8 @@ document.addEventListener('dblclick', function(event) {
     document.removeEventListener('click', this);
     popup.remove();
   });
-
+  
   // setTimeout(function() { popup.remove(); }, 3000); /// alt option but don't like it
-});
-
-
-function searchDictionary(selectedWord) {
-  if (selectedWord in dictionary) {
-    return dictionary[selectedWord];
-  } else {
-    return null;
-  }
 }
 
 
@@ -79,3 +81,14 @@ const dictionary = {
     "origin": "TH. theeee, thhhbthbthbtb",
   },
 };
+
+
+async function debugState(onOffState) {
+  console.log('App state: ' + onOffState.state);
+  let inverseState = onOffState.state == 'on' ? 'off' : 'on';
+  console.log('inverse state: ' + inverseState);
+  await browser.storage.local.set({ state: inverseState });
+  const result = await browser.storage.local.get('state'); // Added this line to get the updated state
+  console.log('App state after setting: ' + result.state); // Changed this line to log the updated state
+  console.log('_____');
+}
