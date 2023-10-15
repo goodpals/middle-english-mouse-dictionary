@@ -1,12 +1,11 @@
 /* the background/service worker is to handle events, manage data, and perform actions that don’t require direct user interaction. */
-/// console.logs don't seem to work here, however it is necessary to run these operations from the background task
 
 ! async function setStateFirstTime(){  
   await browser.storage.local.set({ state: 'on' });
-  await browser.storage.local.set({ sidebar : 'closed' });
+  await browser.storage.local.set({ sidebar : 'off' });
 }();
 
-/// Construct menu options for an in-browser right-click menu and build their content based off the initial state set above.
+/// Construct options for an in-browser right-click menu and build their text content based off the initial state set above.
 browser.runtime.onInstalled.addListener( async () => {
 
   const currentState = await browser.storage.local.get('state');
@@ -19,7 +18,7 @@ browser.runtime.onInstalled.addListener( async () => {
   const currentSidebar = await browser.storage.local.get('sidebar');
   browser.contextMenus.create({
     id: "configMenuToggler",
-    title: (currentSidebar.sidebar == 'open' ? 'close sidebar' : 'open sidebar'),
+    title: (currentSidebar.sidebar == 'on' ? 'close sidebar' : 'open sidebar'),
     contexts: ["all"],
   });
 
@@ -28,14 +27,13 @@ browser.runtime.onInstalled.addListener( async () => {
     title: "Do a selected text thing(?)",
     contexts: ["selection"],
   });
-
 });
 
 
 /*  This listener: 
     1. Changes the state held in browser storage when one of the above menu items are clicked
     2. Updates the menu items' text based on that state. 
-    3. (TBD) makes relevant custom functionality happen                                     
+    3. Makes relevant custom functionality happen                                     
 */
 browser.contextMenus.onClicked.addListener(async (info, tab) => {
   if (info.menuItemId === "functionalityToggler") 
@@ -53,9 +51,30 @@ browser.contextMenus.onClicked.addListener(async (info, tab) => {
     const currentState = await browser.storage.local.get('sidebar');
     const newState = currentState.sidebar == 'open' ? 'closed' : 'open';
     await browser.storage.local.set({sidebar: newState});
+    
+    /// TODO: tried following docs to make poppable sidebar: cannot figure out. Reverted to this for now.
+    /// SEE:  https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/User_actions
+    // if (newState == 'open') {
+    //   browser.sidebarAction.open();
+    // } else ......
 
     browser.contextMenus.update("configMenuToggler", {
       title: (newState == 'open' ? 'close sidebar' : 'open sidebar'),
     });
   }
 });
+
+/// TODO: figure out why can't send info to sidebar
+/// SEE:  dblclick event listener in content.js for update function call
+// browser.runtime.onMessage.addListener((message) => {
+//   if (message.action === "updateSidebar") {
+//     const dynamicContent = document.getElementById("dynamicContent");
+//     dynamicContent.innerHTML += `<p>${message.data}</p>`;
+//   }
+// });
+// //
+// chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+//   if (message.type === 'updateSidebar') {
+//     chrome.action.setPanel({ panel: 'sidebar.html' });
+//   }
+// });

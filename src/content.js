@@ -1,5 +1,6 @@
 /* The content.js file is responsible for injecting or modifying the content of web pages that you visit */
 
+
 /// This is the monitor for user lookup requests (i.e. double-clicking a word): it looks out for the user doing so and checks the dictionary for that word, making an info popup in the DOM. It then closes on a single click anywhere in the DOM.
 document.addEventListener('dblclick', async function(event) 
 {
@@ -11,7 +12,7 @@ document.addEventListener('dblclick', async function(event)
     return;
   }
 
-  /// the user is clicking on whitespace, or maybe punctuation? Do not show.
+  /// the user is clicking on whitespace, or maybe punctuation? Do not show. Fuck the word 'a' in particular.
   const selectedText = window.getSelection().toString();
   if (selectedText == null || selectedText.length == 1 || selectedText.length == 0) {
     return;
@@ -26,9 +27,11 @@ document.addEventListener('dblclick', async function(event)
   const info  = "ME word: " + selectedWordInfo.word + "\n"
             + "Type: " + selectedWordInfo.type + "\n"
             + "Origin: " + selectedWordInfo.origin + "\n";
-
+          
   createPopup(event, info);
-  
+
+  /// TODO: figure out why can't send info to sidebar word list
+  // browser.runtime.sendMessage({action: "updateSidebar", data: info});
 });
 
 

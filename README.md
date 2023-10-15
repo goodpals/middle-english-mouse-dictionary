@@ -8,8 +8,8 @@ DICTIONARIES:
 
 we prolly shouldn't use this but it does exist: https://github.com/mdm-code/cmed
 
-Manifest.json options we could integrate later:
-
+Manifest.json options we could integrate later:  
+imo the icon should be a lil' medieval manuscript illumination style mouse icon seeing as this is a medieval mouse dictionary  
 ```
  "options_ui": {
     "page": "options.html",

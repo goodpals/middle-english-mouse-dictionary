@@ -13,13 +13,18 @@
   ],
   "background": {
     "scripts": ["background.js"],
-    "type": "module"
+    "type": "module",
+    "persistent": false
   },
   "content_scripts": [
     {
       "matches": ["<all_urls>"],
       "js": ["content.js", "state.js"],
-      "css": ["infoPopup.css"]
+      "css": ["infoPopup.css", "sidebar.css"]
     }
-  ]
+  ],
+  "sidebar_action": {
+      "default_title": "Middle English Mouse Dictionary",
+      "default_panel": "sidebar.html"
+  }
 }
