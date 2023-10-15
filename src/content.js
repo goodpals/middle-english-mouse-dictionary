@@ -16,7 +16,7 @@ document.addEventListener('dblclick', async function(event)
   if (selectedText == null || selectedText.length == 1 || selectedText.length == 0) {
     return;
   }
-  
+
   const selectedWordInfo = searchDictionary(selectedText);
   if (selectedWordInfo == null) {
     return;
@@ -47,8 +47,8 @@ function createPopup(event, info) {
   popup.innerText = info;
 
   popup.style.position = 'absolute';
-  popup.style.left = (event.clientX + window.scrollX - 20) + 'px';
-  popup.style.top = (event.clientY + window.scrollY + 10) + 'px';
+  popup.style.left = (event.clientX + window.scrollX - 100) + 'px';
+  popup.style.top = (event.clientY + window.scrollY + 15) + 'px';
 
   document.body.appendChild(popup);
 
@@ -76,6 +76,24 @@ const dictionary = {
     "origin": "OE. of-dūne, adūne.",
   },
   "the": {
+    "word": "þe", 
+    "type": "determiner",
+    "meaning": "bro þe is the", 
+    "origin": "TH. theeee, thhhbthbthbtb",
+  },
+  "items": {
+    "word": "þe", 
+    "type": "determiner",
+    "meaning": "bro þe is the", 
+    "origin": "TH. theeee, thhhbthbthbtb",
+  },
+  "seats": {
+    "word": "þe", 
+    "type": "determiner",
+    "meaning": "bro þe is the", 
+    "origin": "TH. theeee, thhhbthbthbtb",
+  },
+  "has": {
     "word": "þe", 
     "type": "determiner",
     "meaning": "bro þe is the", 
