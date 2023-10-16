@@ -24,7 +24,7 @@
     }
   ],
   "sidebar_action": {
-      "default_title": "Middle English Mouse Dictionary",
+      "default_title": "Middle English",
       "default_panel": "sidebar.html"
   }
 }
