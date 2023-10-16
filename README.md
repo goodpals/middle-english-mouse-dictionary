@@ -15,6 +15,8 @@ This software is fully open-source and will continue as such ad infinitum. This 
   
   
 ## Acknowledgements
-- An error-corrected digitzation of J.R.R. Tolkien's "[A Middle English Vocabulary](https://github.com/digitaltolkien/a-middle-english-vocabulary)" dictionary, provided by [James K. Tauber](https://github.com/jtauber) of the [Digital Tolkien Project](https://digitaltolkien.com). 
-- The font in the logo is "[Old English Gothic Pixel Font](https://www.fontspace.com/old-english-gothic-pixel-font-f83405)", designed by [ColorSwitchFan25](https://www.fontspace.com/colorswitchfan25) and used under the SIL Open Font License (OFL)
+- Dictionary: an error-corrected digitzation of J.R.R. Tolkien's "[A Middle English Vocabulary](https://github.com/digitaltolkien/a-middle-english-vocabulary)" dictionary, provided by [James K. Tauber](https://github.com/jtauber) of the [Digital Tolkien Project](https://digitaltolkien.com). 
+- Dictionary: a digitization of A. L. Mayhew and Walter W. Skeat's "[A Concise Dictionary of Middle English
+       From A.D. 1150 To 1580](https://github.com/GITenberg/A-Concise-Dictionary-of-Middle-EnglishFrom-A.D.-1150-to-1580_10625/tree/master)", hosted by [GiTenberg](https://www.gitenberg.org).
+- Logo: the font in the logo is "[Old English Gothic Pixel Font](https://www.fontspace.com/old-english-gothic-pixel-font-f83405)", designed by [ColorSwitchFan25](https://www.fontspace.com/colorswitchfan25) and used under the SIL Open Font License (OFL)
 
