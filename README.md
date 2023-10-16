@@ -11,7 +11,7 @@ If the word you doubleclicked is in the dictionary, a small popup will appear ne
   
   
 ## Ethos
-This software is fully open-source and will continue as such ad infinitum. This tool was designed due to a frustration with a conspicuous lack of non-proprietary, accessible, and well-designed tools oriented towards users enthusiast and professional alike. We wish to encourage and make easier the enjoyment and study of historical texts on their own terms.  
+This software is fully open-source and will continue as such in perpetuum. This tool was designed due to a frustration with a conspicuous lack of non-proprietary, accessible, and well-designed tools oriented towards users enthusiast and professional alike. We wish to encourage and make easier the enjoyment and study of historical texts on their own terms.  
   
   
 ## Acknowledgements
