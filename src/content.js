@@ -1,14 +1,16 @@
 /* The content.js file is responsible for injecting or modifying the content of web pages that you visit */
 
 
-/// This is the monitor for user lookup requests (i.e. double-clicking a word): it looks out for the user doing so and checks the dictionary for that word, making an info popup in the DOM. It then closes on a single click anywhere in the DOM.
+/* 
+  This is the monitor for user lookup requests (i.e. double-clicking a word): it looks out for the user doing so and checks the dictionary for that word, making an info popup in the DOM. It then closes on a single click anywhere in the DOM.
+*/
 document.addEventListener('dblclick', async function(event) 
 {
   /// Check whether the extension is "soft disabled" i.e. when you leftclick the extension toolbar button it 
   /// doesn't get disabled, but it is "shut down" so that users can decide when they want to use it or not.
-  const appOnOffState = await browser.storage.local.get('state');
+  const currentState = await browser.storage.local.get('onOffState');
   // debugState(appOnOffState);
-  if (appOnOffState.state != 'on') {
+  if (currentState.onOffState != 'on') {
     return;
   }
 
@@ -20,7 +22,7 @@ document.addEventListener('dblclick', async function(event)
 
   const selectedWordInfo = searchDictionary(selectedText);
   if (selectedWordInfo == null) {
-    return;
+    return; /// User word is not in the dictionary!
   }
 
   // All checks passed: style, position, and then show a word info popup
@@ -29,10 +31,25 @@ document.addEventListener('dblclick', async function(event)
             + "Origin: " + selectedWordInfo.origin + "\n";
           
   createPopup(event, info);
-
-  /// TODO: figure out why can't send info to sidebar word list
-  // browser.runtime.sendMessage({action: "updateSidebar", data: info});
+  addToDictionary(selectedWordInfo);
 });
+
+
+/* 
+  Helper functions begin
+*/
+async function addToDictionary(selectedWordInfo) {
+  const currentState = await browser.storage.local.get('dictionaryContent');
+  let content = Array.from(currentState.dictionaryContent);
+
+  if (content.some(entry => entry.word === selectedWordInfo.word)) {
+    return; /// selected word is already in dict
+  }
+
+  content.push(selectedWordInfo);
+  await browser.storage.local.set({dictionaryContent: content});
+  console.log(content)
+}
 
 
 function searchDictionary(selectedWord) {
@@ -46,7 +63,7 @@ function searchDictionary(selectedWord) {
 
 function createPopup(event, info) {
   let popup = document.createElement('div');
-  popup.className = 'infoPopup';
+  popup.className = 'singleWordInfoPopup';
   popup.innerText = info;
 
   popup.style.position = 'absolute';
@@ -85,33 +102,33 @@ const dictionary = {
     "origin": "TH. theeee, thhhbthbthbtb",
   },
   "items": {
-    "word": "þe", 
-    "type": "determiner",
-    "meaning": "bro þe is the", 
-    "origin": "TH. theeee, thhhbthbthbtb",
+    "word": "items", 
+    "type": "itemmussuins",
+    "meaning": "itemaniacs", 
+    "origin": "itemland",
   },
   "seats": {
-    "word": "þe", 
-    "type": "determiner",
-    "meaning": "bro þe is the", 
-    "origin": "TH. theeee, thhhbthbthbtb",
+    "word": "seats", 
+    "type": "seattt",
+    "meaning": "sit doun pls", 
+    "origin": "SEATLAMND",
   },
   "has": {
-    "word": "þe", 
-    "type": "determiner",
-    "meaning": "bro þe is the", 
-    "origin": "TH. theeee, thhhbthbthbtb",
+    "word": "has", 
+    "type": "hasss",
+    "meaning": "bro has is has", 
+    "origin": "THEN HAVES AN D TEH HAVE KNOWRTS b",
   },
 };
 
 
-async function debugState(onOffState) {
-  console.log('App on/off state: ' + onOffState.state);
-  let inverseState = onOffState.state == 'on' ? 'off' : 'on';
+async function debugState(currentState) {
+  console.log('App on/off state: ' + currentState.onOffState);
+  let inverseState = currentState.onOffState == 'on' ? 'off' : 'on';
   console.log('inverse value of state: ' + inverseState);
-  await browser.storage.local.set({ state: inverseState });
-  const result = await browser.storage.local.get('state');
-  console.log('App on/off state after setting to inverse value: ' + result.state);
+  await browser.storage.local.set({ onOffState: inverseState });
+  const result = await browser.storage.local.get('onOffState');
+  console.log('App on/off state after setting to inverse value: ' + result.onOffState);
 
   const check = await browser.storage.local.get('sidebar');
   console.log("Current sidebar state: " + check.sidebar);

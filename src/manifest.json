@@ -20,11 +20,7 @@
     {
       "matches": ["<all_urls>"],
       "js": ["content.js", "state.js"],
-      "css": ["infoPopup.css", "sidebar.css"]
+      "css": ["style.css"]
     }
-  ],
-  "sidebar_action": {
-      "default_title": "Middle English",
-      "default_panel": "sidebar.html"
-  }
+  ]
 }
