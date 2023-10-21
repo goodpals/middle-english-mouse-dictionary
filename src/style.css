@@ -7,3 +7,19 @@
   box-shadow: 2px 2px 5px rgba(0,0,0,0.5);
   font-size: 14px;
 }
+
+.dictionaryPopup {
+  background-color: #dddddd;
+  color: black;
+  border: 1px solid #ccc;
+  padding: 15px; /* top | right | bottom | left */
+  font-family: sans-serif;
+  box-shadow: 2px 2px 5px rgba(0,0,0,0.5);
+  font-size: 14px;
+  position: fixed;
+  right: 0;
+  top: 0;
+  height: 99%;
+  width: 15%;
+  overflow-y: auto;
+}
