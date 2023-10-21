@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:args/args.dart';
 import 'package:nice_json/nice_json.dart';
 
+import '../model/entry.dart';
 import '../utils/colours.dart';
 
 final _parser = ArgParser()
@@ -33,21 +34,40 @@ void main(List<String> argss) {
 
   final metadata = entries.map(parseEntry).toList();
 
-  // word | part of speech mapped to entry
-  final lookups = metadata.indexed
-      .map((e) =>
-          [for (String word in e.$2.$1) ('$word | ${e.$2.$2}', '${e.$1}')])
-      .expand((e) => e);
+  final entryObjs = [
+    for (final (i, e) in metadata.indexed)
+      DictionaryEntry(
+        id: '$i',
+        variants: e.$1,
+        partOfSpeech: e.$2,
+        entry: entries[i],
+      ),
+  ];
 
-  final lookupMap = {
-    for (final e in lookups) e.$1: e.$2,
-  };
-  final lookupJson = niceJson(lookupMap);
+  final wordsAndIds = entryObjs.expand((e) => e.variants.map((v) => (v, e.id)));
+  Map<String, List<String>> lookups = {};
+  for (final e in wordsAndIds) {
+    lookups[e.$1] = [
+      ...?lookups[e.$1],
+      if (!(lookups[e.$1]?.contains(e.$2) ?? false)) e.$2,
+    ];
+  }
+
+  // // word | part of speech mapped to entry
+  // final lookups = metadata.indexed
+  //     .map((e) =>
+  //         [for (String word in e.$2.$1) ('$word | ${e.$2.$2}', '${e.$1}')])
+  //     .expand((e) => e);
+
+  // final lookupMap = {
+  //   for (final e in lookups) e.$1: e.$2,
+  // };
+  final lookupJson = niceJson(lookups);
   File('$outDir/lookup.json').writeAsStringSync(lookupJson);
-  print(yellow('Wrote ${lookupMap.length} entries to $outDir/lookup.json'));
+  print(yellow('Wrote ${lookups.length} entries to $outDir/lookup.json'));
 
   final entriesMap = {
-    for (final e in entries.indexed) '${e.$1}': e.$2,
+    for (final e in entryObjs) e.id: e.toJson(),
   };
   final entriesJson = niceJson(entriesMap);
   File('$outDir/dict.json').writeAsStringSync(entriesJson);
@@ -75,8 +95,10 @@ final _partOfSpeechRegex = RegExp(r'_(([^_]+\.))_');
 
 List<String> tokeniseEntry(String entry) => entry.split(_tokeniseRegex);
 
-List<String> findAndExpandWords(String entry) =>
-    findWords(entry).map(expandVariants).expand((e) => e).toList();
+List<String> findAndExpandWords(String entry) => findWords(entry.toLowerCase())
+    .map(expandVariants)
+    .expand((e) => e)
+    .toList();
 
 List<String> findWords(String entry) =>
     _wordsRegex.allMatches(entry).map((e) => e.group(1)!).toList();
