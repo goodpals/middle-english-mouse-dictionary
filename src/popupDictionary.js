@@ -1,7 +1,7 @@
 /* 
   USER DICTIONARY POPUP LISTENER: This listens for a message sent from the contextMenu listener and toggles a popup held in global named "popupState". Because HTML content injection cannot be done from the background.js script, a message must be sent from the contextMenu action listener in background.js, using the browser.tabs.sendMessage functionality.
 */
-let popupState = null;
+let popupState = null; /// Tried implementing this algorithm keeping this in the local storage; didn't work.
 
 browser.runtime.onMessage.addListener(async function(request, sender, sendResponse) {
   // await browser.storage.local.set({dictionaryViewState: 'on'});
