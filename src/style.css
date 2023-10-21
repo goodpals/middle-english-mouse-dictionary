@@ -2,13 +2,20 @@
   background-color: #dddddd;
   color: black;
   border: 1px solid #ccc;
-  padding: 10px;
+  padding: 15px;
   font-family: sans-serif;
   box-shadow: 2px 2px 5px rgba(0,0,0,0.5);
   font-size: 14px;
+  max-width: 220px;
+  max-height: 220px;
+  overflow-y: auto;
+  /*
+    TODO: when near the browser window edge this can create an element that partially spills outside of the DOM
+    See: content.js --> createPopup()
+  */
 }
 
-.dictionaryPopup {
+.wordListSidebar {
   background-color: #dddddd;
   color: black;
   border: 1px solid #ccc;
@@ -20,6 +27,6 @@
   right: 0;
   top: 0;
   height: 99%;
-  width: 15%;
+  width: 22%;
   overflow-y: auto;
 }

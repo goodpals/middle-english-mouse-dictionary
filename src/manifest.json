@@ -19,7 +19,7 @@
   "content_scripts": [
     {
       "matches": ["<all_urls>"],
-      "js": ["content.js", "popupDictionary.js", "dummyDictionary.js"],
+      "js": ["lookup.js", "dictionary.js", "content.js", "userWordListSidebar.js"],
       "css": ["style.css"]
     }
   ]

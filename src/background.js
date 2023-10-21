@@ -6,8 +6,8 @@
 ! async function setStateFirstTime(){  
   await browser.storage.local.set({ 
     onOffState: 'on', 
-    userDictionary: [], 
-    // dictionaryViewState: 'off' 
+    userWordList: [], 
+    // wordListViewState: 'off' 
   });
 }();
 
@@ -22,8 +22,8 @@ browser.runtime.onInstalled.addListener( async () => {
     contexts: ["all"],
   });
   browser.contextMenus.create({
-    id: "dictionaryShowToggler",
-    // title: (extensionState.dictionaryViewState == 'on' ? 'hide dictionary' : 'show dictionary'),
+    id: "wordListSidebarToggler",
+    // title: (extensionState.wordListViewState == 'on' ? 'hide dictionary' : 'show dictionary'),
     title: "show dictionary",
     contexts: ["all"],
   });
@@ -51,13 +51,13 @@ browser.contextMenus.onClicked.addListener(async (info, tab) => {
       title: (newState == 'on' ? 'turn off' : 'turn on'),
     });
   } 
-  else if (info.menuItemId === "dictionaryShowToggler") 
+  else if (info.menuItemId === "wordListSidebarToggler") 
   {
     /// TODO: sort out tab behaviour e.g. what if they click the "open dictionary" contextMenu button when it's already open?
-    // const newState = currentState.dictionaryViewState == 'on' ? 'off' : 'on';
-    // await browser.storage.local.set({dictionaryViewState: newState});
+    // const newState = currentState.wordListViewState == 'on' ? 'off' : 'on';
+    // await browser.storage.local.set({wordListViewState: newState});
 
-    browser.tabs.sendMessage(tab.id, {action: "showTheDictionary"}); /// see: popupDictionary.js
+    browser.tabs.sendMessage(tab.id, {action: "showWordList"}); /// see: userWordListSidebar.js
   }
 });
 
