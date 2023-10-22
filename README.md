@@ -30,3 +30,4 @@ We have coded this extension to be as simple as possible, avoiding using unneces
        From A.D. 1150 To 1580](https://github.com/GITenberg/A-Concise-Dictionary-of-Middle-EnglishFrom-A.D.-1150-to-1580_10625/tree/master)", hosted by [GiTenberg](https://www.gitenberg.org).
 - Logo: the font in the logo is "[Old English Gothic Pixel Font](https://www.fontspace.com/old-english-gothic-pixel-font-f83405)", designed by [ColorSwitchFan25](https://www.fontspace.com/colorswitchfan25) and used under the SIL Open Font License (OFL)
 
+<center><img src="./img/mouse.png" style="width: 250px; padding-top:60px" alt="Mousey Friend"></center>
