@@ -9,9 +9,6 @@ When you double-click/tap a word in a webpage, your browser highlights that word
   
 If the word you doubleclicked is in the dictionary, a small popup will appear next to your mouse with information about the word.  
 
-<img src="./img/mouse.png" style="width: 180px; padding-top:60px" alt="Mousey Friend">
-
-
 ## Places you can test this
 
 - The largest unannotated text resource, and one for which this extension is most suited, is the University of Michigan's [Corpus of Middle English Prose and Verse](https://quod.lib.umich.edu/c/cme/).
@@ -33,3 +30,4 @@ We have coded this extension to be as simple as possible, avoiding using unneces
        From A.D. 1150 To 1580](https://github.com/GITenberg/A-Concise-Dictionary-of-Middle-EnglishFrom-A.D.-1150-to-1580_10625/tree/master)", hosted by [GiTenberg](https://www.gitenberg.org).
 - Logo: the font in the logo is "[Old English Gothic Pixel Font](https://www.fontspace.com/old-english-gothic-pixel-font-f83405)", designed by [ColorSwitchFan25](https://www.fontspace.com/colorswitchfan25) and used under the SIL Open Font License (OFL)
 
+<img src="./img/mouse.png" style="width: 140px; padding-top:70px" alt="Mousey Friend">
