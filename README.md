@@ -8,7 +8,7 @@ The Middle English Mouse Dictionary is a browser extension (Firefox, Chrome) tha
 When you double-click/tap a word in a webpage, your browser highlights that word and temporarily saves it in your browser's local data storage. When this happens our script extracts that word and checks a dictionary file that comes with this extension.  
   
 If the word you doubleclicked is in the dictionary, a small popup will appear next to your mouse with information about the word.  
-  
+
 ## Places you can test this
 
 - The largest unannotated text resource, and one for which this extension is most suited, is the University of Michigan's [Corpus of Middle English Prose and Verse](https://quod.lib.umich.edu/c/cme/).
@@ -30,4 +30,4 @@ We have coded this extension to be as simple as possible, avoiding using unneces
        From A.D. 1150 To 1580](https://github.com/GITenberg/A-Concise-Dictionary-of-Middle-EnglishFrom-A.D.-1150-to-1580_10625/tree/master)", hosted by [GiTenberg](https://www.gitenberg.org).
 - Logo: the font in the logo is "[Old English Gothic Pixel Font](https://www.fontspace.com/old-english-gothic-pixel-font-f83405)", designed by [ColorSwitchFan25](https://www.fontspace.com/colorswitchfan25) and used under the SIL Open Font License (OFL)
 
-<center><img src="./img/mouse.png" style="width: 250px; padding-top:60px" alt="Mousey Friend"></center>
+<img src="./img/mouse.png" style="width: 140px; padding-top:70px" alt="Mousey Friend">
