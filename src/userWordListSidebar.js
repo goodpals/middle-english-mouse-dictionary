@@ -1,7 +1,7 @@
 /* 
   USER DICTIONARY POPUP LISTENER: This listens for a message sent from the contextMenu listener and toggles a popup held in global named "popupState". Because HTML content injection cannot be done from the background.js script, a message must be sent from the contextMenu action listener in background.js, using the browser.tabs.sendMessage functionality.
 */
-let popupState = null; /// Tried implementing this algorithm keeping this in the local storage; didn't work.
+let popupState; /// Tried implementing this algorithm keeping this in the local storage; didn't work.
 
 browser.runtime.onMessage.addListener(async function(request, sender, sendResponse) {
   // await browser.storage.local.set({wordListViewState: 'on'});
@@ -25,7 +25,8 @@ async function createSidebar() {
   popup.className = 'wordListSidebar';
 
   const currentState = await browser.storage.local.get('userWordList');
-  let dict = Array.from(currentState.userWordList);
+  const content = currentState.userWordList;
+  const dict = Array.from(content);
   
   let entriesToShow = "<p><b>double-click this sidebar to close it</b></p><br>";
   entriesToShow += getWordInfoPrintout(dict); /// this is defined in content.js
@@ -34,3 +35,4 @@ async function createSidebar() {
   document.body.appendChild(popup);
   return popup;
 }
+

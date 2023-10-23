@@ -57,7 +57,7 @@ browser.contextMenus.onClicked.addListener(async (info, tab) => {
     // const newState = currentState.wordListViewState == 'on' ? 'off' : 'on';
     // await browser.storage.local.set({wordListViewState: newState});
 
-    browser.tabs.sendMessage(tab.id, {action: "showWordList"}); /// see: userWordListSidebar.js
+    await browser.tabs.sendMessage(tab.id, {action: "showWordList"}); /// see: userWordListSidebar.js
   }
 });
 

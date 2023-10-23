@@ -6,8 +6,7 @@
 */
 document.addEventListener('dblclick', async function(event) 
 {
-  /// Check whether the extension is "soft disabled" i.e. when you leftclick the extension toolbar button it 
-  /// doesn't get disabled, but it is "shut down" so that users can decide when they want to use it or not.
+  /// Check whether the extension is "soft disabled" i.e. when you leftclick the extension toolbar button it doesn't get disabled, but it is "shut down" so that users can decide when they want to use it or not.
   const currentState = await browser.storage.local.get();
   // debugState(appOnOffState);
   if (currentState.onOffState != 'on') {
@@ -22,33 +21,52 @@ document.addEventListener('dblclick', async function(event)
 
   /// Extract word info for every plausible word the selectedText might be, and add selectedText as a 'word' key:val to each
   const selectedWordInfo = searchDictionary(selectedText); 
-  if (selectedWordInfo == null) {
+  if (selectedWordInfo == null || selectedWordInfo == undefined) {
     return; /// User word is not in the dictionary!
   }
   
   // All checks passed: style, position, and then show a word info popup
   const printout = getWordInfoPrintout(selectedWordInfo);
   createPopup(event, printout);
-
-  addToUserWordList(selectedWordInfo, currentState);
+  
+  await addToUserWordList(selectedWordInfo, currentState);
 });
 
 
 /* 
   Helper functions begin
 */
-async function addToUserWordList(selectedWordInfo, currentState) {
-  let content = Array.from(currentState.userWordList);
+/// TODO: this function has a problem. 
+/// See: https://youtu.be/eAj1Og4atM0
+/// See: my rage at Javascript and also myself
+async function addToUserWordList(thisWordInfo, state) {
+  const content = state.userWordList;
+  let userWords = Array.from(content);
 
-  if (content.some(entry => entry.word === selectedWordInfo.some(entry => entry.word))) {
+  console.log(userWords)
+  console.log("____")
+
+  const hasCommonWord = userWords.some(userWordsEntry => {
+    return thisWordInfo.some(selectedEntry => {
+      return userWordsEntry.word === selectedEntry.word;
+    });
+  });
+  if (hasCommonWord == true) {
+    console.log('has Common word, not adding to list')
     return; /// selected word is already in dict
   }
-  for (entry of selectedWordInfo) {
-    content.push(entry);
+  console.log('no Common word, adding to list')
+
+  for (entry of thisWordInfo) {
+    userWords.push(entry);
   }
-  await browser.storage.local.set({userWordList: content});
+  await browser.storage.local.set({userWordList: userWords});
   /// Now, when the user opens the UWL side panel from their right-click contextMenu, the updated list will display.
 }
+
+
+
+
 
 
 function searchDictionary(selectedWord) {
@@ -66,7 +84,7 @@ function searchDictionary(selectedWord) {
         word: selectedWord,
         ...dictionary[index] /* this is sugar; it just adds the rest of the indexed object to entry */
       };
-      wordInfoList.push(entry)
+      wordInfoList.push(entry);
     }
     return wordInfoList;
   } else {
@@ -75,18 +93,21 @@ function searchDictionary(selectedWord) {
 }
 
 
-function getWordInfoPrintout(wordInfo) {
-  
+function getWordInfoPrintout(info) {
+  // console.log(info)
   let text = "";
-  if (wordInfo.length > 1) {
+  if (info.length > 1) {
     text += "<h4>Possible Matches:</h4>";
   }
-
-  for (entry of wordInfo) {
-    text += "<p><b>" + entry.word + "</b> : ";
-    if (entry.partOfSpeech != null){
-      text += entry.partOfSpeech + "</p>";
+  for (entry of info) {
+    if (entry.word != null){
+      text += "<p><b>" + entry.word + "</b>";
+      if (entry.partOfSpeech != null){
+        text += ": " + entry.partOfSpeech;
+      }
+      text += "</p>";
     }
+
     if (entry.variants != null){
       text += "<p>Variants: " + entry.variants.join(", ") + "</p>";
     }
@@ -94,7 +115,7 @@ function getWordInfoPrintout(wordInfo) {
       let htmlizedEntry = htmlize(entry.entry);
       text += "<p>" + htmlizedEntry + "</p>";
     }
-    text += "_____<br>";
+    text += "<p>_____</p>";
   }
 
   return text;
@@ -105,9 +126,10 @@ function htmlize(entry) {
   const boldRegex = /#([^#]+)#/g;
   const italicRegex = /_([^_]+)_/g;
 
-  return entry
-    .replace(boldRegex, (match, p1) => `<b>${p1}</b>`)
-    .replace(italicRegex, (match, p1) => `<i>${p1}</i>`);
+  const replacedHashtags = entry.replace(boldRegex, (match, p1) => `<b>${p1}</b>`);
+  const replacedUnderscores = replacedHashtags.replace(italicRegex, (match, p1) => `<i>${p1}</i>`);
+
+  return replacedUnderscores;
 }
 
 
