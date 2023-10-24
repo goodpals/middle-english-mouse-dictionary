@@ -77,9 +77,13 @@ function searchDictionary(selectedWord) {
     const wordIndex = dictionaryLookupTable[selectedWord];
     // console.log(wordIndex)
     
+    /* TODO: 
+    actually you probably want a user word list entry object which is
+      String id, String variant, String word
+    where variant is the matched variant and word is the word they actually tapped (which might not be the same cos of fuzzy), the id in dict.json */
+    
     let wordInfoList = [];
     for (index of wordIndex) {
-      /// TODO: can be const?
       let entry = { 
         word: selectedWord,
         ...dictionary[index] /* this is sugar; it just adds the rest of the indexed object to entry */
