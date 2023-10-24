@@ -1,28 +1,29 @@
 /* The content.js file is responsible for injecting or modifying the content of web pages that you visit */
 
-
 /* 
   WORD LOOKUP LISTENER: this listens for the user double-clicking a word in the DOM and checks the dictionary for that word, making an info popup & adding it to the user's dictionary. The popup then closes on a single click anywhere in the DOM.
 */
 document.addEventListener('dblclick', async function(event) 
 {
-  /// Check whether the extension is "soft disabled" i.e. when you leftclick the extension toolbar button it doesn't get disabled, but it is "shut down" so that users can decide when they want to use it or not.
   const currentState = await browser.storage.local.get();
-  // debugState(appOnOffState);
   if (currentState.onOffState != 'on') {
     return;
   }
 
-  /// the user is clicking on whitespace, or maybe punctuation? Do not show. Fuck the word 'a' in particular.
-  const selectedText = window.getSelection().toString().toLowerCase(); /// TODO: to lowercase && checks
+  const selectedText = window.getSelection().toString().toLowerCase();
   if (selectedText == null || selectedText.length == 1 || selectedText.length == 0) {
+    /// the user is clicking on whitespace, or maybe punctuation? Do not show. Fuck the word 'a' in particular.
     return;
   }
 
-  /// Extract word info for every plausible word the selectedText might be, and add selectedText as a 'word' key:val to each
+  if (currentState.dictionaryChoice == 'MED') {
+    browser.runtime.sendMessage({word: selectedText});
+    return; // must return else popup will still appear
+  }
+
   const selectedWordInfo = searchDictionary(selectedText); 
   if (selectedWordInfo == null || selectedWordInfo == undefined) {
-    return; /// User word is not in the dictionary!
+    return; // User word is not in the dictionary
   }
   
   // All checks passed: style, position, and then show a word info popup
@@ -33,90 +34,96 @@ document.addEventListener('dblclick', async function(event)
 });
 
 
+
+class userWordListEntry {
+  constructor(lookupIndex, matchedVariant, usersSelectedWord) {
+    this.lookupIndex = lookupIndex; // a single key to an object in dict.json
+    this.matchedVariant = matchedVariant; // the specific matched variant in lookup.json
+    this.usersSelectedWord = usersSelectedWord; // the word the user actually tapped (which might not be the same due to fuzzy matching)
+  }
+}
+
+
 /* 
   Helper functions begin
 */
-/// TODO: this function has a problem. 
-/// See: https://youtu.be/eAj1Og4atM0
-/// See: my rage at Javascript and also myself
+
+/// TODO: ALEX: this bug doesn't happen every time. 
+/// First, open this link: https://quod.lib.umich.edu/c/cme/Gawain?rgn=main;view=fulltext
+/// Then, click a few words, and see the popups should work fine. Note in the console that userWords' FIRST console.log outputs information it should only have by the time the 2nd console log around line 70 is called.
+/// Now for the dictionary building problem. This is inconsistent. Look at the 3rd line of "Passus I". Doubleclick "þer" and then do "wroȝt" right next to it. Then right-click anywhere and select "show dictionary". It'll be empty. 
 async function addToUserWordList(thisWordInfo, state) {
   const content = state.userWordList;
   let userWords = Array.from(content);
-
-  console.log(userWords)
-  console.log("____")
-
-  const hasCommonWord = userWords.some(userWordsEntry => {
+  
+  console.log(userWords) /// this log should not contain any information about the word that has just been clicked.
+  
+  const hasCommonIndex = userWords.some(userWordsEntry => {
     return thisWordInfo.some(selectedEntry => {
-      return userWordsEntry.word === selectedEntry.word;
+      return userWordsEntry.lookupIndex === selectedEntry.lookupIndex;
     });
   });
-  if (hasCommonWord == true) {
-    console.log('has Common word, not adding to list')
+  if (hasCommonIndex == true) {
+    console.log(hasCommonIndex + ': true : has Common word, not adding to list')
     return; /// selected word is already in dict
   }
-  console.log('no Common word, adding to list')
-
+  console.log(hasCommonIndex + ': false : no Common word, adding to list')
+  
   for (entry of thisWordInfo) {
     userWords.push(entry);
   }
+  console.log(userWords);
+  console.log("____")
   await browser.storage.local.set({userWordList: userWords});
   /// Now, when the user opens the UWL side panel from their right-click contextMenu, the updated list will display.
 }
 
 
-
-
-
-
 function searchDictionary(selectedWord) {
-  /* Say the user double-clicks the word "þen" in their browser. þen appears in the lookup table as the key to the key:value pair  "þen": ["4185", "4186", "4209"]. Each number is an entry index, and so there are multiple entries that might be the correct "þen" that our user wants to know about. We need to build a list of objects containing each entry. In the dictionary itself, 4185 for example is:   
-    "4185": { "variants": ["þen", "þene", "þenn", "þenne"], "partOfSpeech": null, "entry": "#Þen(e)#, V 131, 191, 227, &c.; #Þenn(e)#, V 78, 92, 268, 321, &c.; _orthan_, or else, X 51. [OE. _þonne_, _þanne_, _þænne_.]" }, 
-  */
+  /// Check if the passed-in word matches a key in lookup.json. 
+  /// The value to this lookup will be an index for an entry in dict.json.
   if (selectedWord in dictionaryLookupTable) {
-    const wordIndex = dictionaryLookupTable[selectedWord];
+    const wordIndexes = dictionaryLookupTable[selectedWord];
     // console.log(wordIndex)
-    
-    /* TODO: 
-    actually you probably want a user word list entry object which is
-      String id, String variant, String word
-    where variant is the matched variant and word is the word they actually tapped (which might not be the same cos of fuzzy), the id in dict.json */
-    
-    let wordInfoList = [];
-    for (index of wordIndex) {
-      let entry = { 
-        word: selectedWord,
-        ...dictionary[index] /* this is sugar; it just adds the rest of the indexed object to entry */
-      };
-      wordInfoList.push(entry);
+
+    let extractedEntries = []; 
+    for (index of wordIndexes) {
+      /// TODO: change "matchedVariant" to whatever selectedWord is fuzzymatched to once fuzzymatching is implemented
+      const entry = new userWordListEntry(index, selectedWord, selectedWord); 
+      extractedEntries.push(entry);
     }
-    return wordInfoList;
+
+    return extractedEntries;
   } else {
     return null;
   }
 }
 
 
+/// This function receives a list of userWordListEntry class objects and uses their index value to get info from the dictionary, and returns it as formatted text. 
 function getWordInfoPrintout(info) {
   // console.log(info)
   let text = "";
   if (info.length > 1) {
     text += "<h4>Possible Matches:</h4>";
   }
-  for (entry of info) {
-    if (entry.word != null){
-      text += "<p><b>" + entry.word + "</b>";
-      if (entry.partOfSpeech != null){
-        text += ": " + entry.partOfSpeech;
-      }
-      text += "</p>";
-    }
 
-    if (entry.variants != null){
-      text += "<p>Variants: " + entry.variants.join(", ") + "</p>";
+  for (entry of info) {
+    const dictEntry = dictionary[entry.lookupIndex]; /// 
+    
+    text += "<p><b>" + entry.usersSelectedWord + "</b>";
+    
+    if (dictEntry.partOfSpeech != null) {
+      text += ": " + dictEntry.partOfSpeech;
     }
-    if (entry.entry != null){
-      let htmlizedEntry = htmlize(entry.entry);
+    text += "</p>";
+
+    if (dictEntry.variants != null) {
+      text += "<p>Variants: " + dictEntry.variants.join(", ") + "</p>";
+    }
+    if (dictEntry.entry != null) {
+      const entryText = dictEntry.entry;
+      const htmlizedEntry = htmlize(entryText);
       text += "<p>" + htmlizedEntry + "</p>";
     }
     text += "<p>_____</p>";
@@ -152,19 +159,4 @@ function createPopup(event, info) {
     document.removeEventListener('click', this);
     popup.remove();
   });
-}
-
-
-async function debugState(currentState) {
-  console.log('App on/off state: ' + currentState.onOffState);
-  let inverseState = currentState.onOffState == 'on' ? 'off' : 'on';
-  console.log('inverse value of state: ' + inverseState);
-  await browser.storage.local.set({ onOffState: inverseState });
-  const result = await browser.storage.local.get('onOffState');
-  console.log('App on/off state after setting to inverse value: ' + result.onOffState);
-
-  const check = await browser.storage.local.get('sidebar');
-  console.log("Current sidebar state: " + check.sidebar);
-  
-  console.log('_____');
 }

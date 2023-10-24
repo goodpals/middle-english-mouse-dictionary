@@ -17,6 +17,7 @@ browser.runtime.onMessage.addListener(async function(request, sender, sendRespon
       }
     });
   }
+
 });
 
 
