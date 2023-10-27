@@ -1,0 +1,17 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Launch WebExtension",
+            "type": "firefox",
+            "request": "launch",
+            "reAttach": true,
+            "addonPath": "${workspaceFolder}/src",
+            "url": "https://rpo.library.utoronto.ca/content/sir-gawain-and-green-knight",
+            "reloadOnChange": {
+                "watch": [ "${workspaceFolder}/**/*.js" ],
+                "ignore": [ "${workspaceFolder}/node_modules/**" ]
+            }          
+        }
+    ]
+}
