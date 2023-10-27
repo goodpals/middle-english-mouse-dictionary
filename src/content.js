@@ -3,6 +3,19 @@
 /* 
   WORD LOOKUP LISTENER: this listens for the user double-clicking a word in the DOM and checks the dictionary for that word, making an info popup & adding it to the user's dictionary. The popup then closes on a single click anywhere in the DOM.
 */
+
+// ich fele sorȝe and seknesse boþe, hartely maladye, and heuynesse of happe.
+var dictionary = {};
+var dictionaryLookupTable = {};
+
+async function loadDict() {
+  dictionary = (await browser.storage.local.get("dictionary")).dictionary;
+  console.log('MEMD (content): Dictionary loaded, length: ' + Object.keys(dictionary).length);
+  dictionaryLookupTable = (await browser.storage.local.get("lookup")).lookup;
+  console.log('MEMD (content): Lookup table loaded, length: ' + Object.keys(dictionaryLookupTable).length);
+}
+loadDict();
+
 document.addEventListener('dblclick', async function(event) 
 {
   const currentState = await browser.storage.local.get();
@@ -82,6 +95,7 @@ async function addToUserWordList(thisWordInfo, state) {
 function searchDictionary(selectedWord) {
   /// Check if the passed-in word matches a key in lookup.json. 
   /// The value to this lookup will be an index for an entry in dict.json.
+  console.log('searching dictionary for ' + selectedWord + ', found: ' + (selectedWord in dictionaryLookupTable));
   if (selectedWord in dictionaryLookupTable) {
     const wordIndexes = dictionaryLookupTable[selectedWord];
     // console.log(wordIndex)

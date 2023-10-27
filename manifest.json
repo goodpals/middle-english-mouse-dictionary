@@ -12,15 +12,18 @@
     "contextMenus"
   ],
   "background": {
-    "scripts": ["background.js"],
+    "scripts": ["src/background.js"],
     "type": "module",
-    "persistent": false
+    "persistent": true
   },
   "content_scripts": [
     {
       "matches": ["<all_urls>"],
-      "js": ["lookup.js", "dictionary.js", "content.js", "userWordListSidebar.js"],
-      "css": ["style.css"]
+      "js": ["src/content.js", "src/userWordListSidebar.js"],
+      "css": ["src/style.css"]
     }
+  ],
+  "web_accessible_resources": [
+    "data/*.json"
   ]
 }

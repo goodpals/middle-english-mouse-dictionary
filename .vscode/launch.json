@@ -6,7 +6,7 @@
             "type": "firefox",
             "request": "launch",
             "reAttach": true,
-            "addonPath": "${workspaceFolder}/src",
+            "addonPath": "${workspaceFolder}",
             "url": "https://rpo.library.utoronto.ca/content/sir-gawain-and-green-knight",
             "reloadOnChange": {
                 "watch": [ "${workspaceFolder}/**/*.js" ],

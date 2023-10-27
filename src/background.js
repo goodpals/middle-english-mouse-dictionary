@@ -1,17 +1,5 @@
 /* the background/service worker is to handle events, manage data, and perform actions that don’t require direct user interaction. */
 
-
-// const dictionary = await getResource('dict.json');
-// const dictionaryLookupTable = await getResource('lookup.json');
-
-// async function getResource(path) {
-//   let URL = browser.runtime.getURL(path);
-//   const response = await fetch(URL);
-//   const result = await response.json();
-//   return result;
-// }
-
-
 /// STORAGE.LOCAL: https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/storage/local
 /// CONTEXT MENUS: https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/menus
 
@@ -80,6 +68,7 @@ browser.contextMenus.onClicked.addListener(async (info, tab) => {
   } 
   else if (info.menuItemId === "wordListSidebarToggler") 
   {
+    console.log('sidebar toggle')
     /// TODO: sort out tab behaviour e.g. what if they click the "open dictionary" contextMenu button when it's already open?
     // const newState = currentState.wordListViewState == 'on' ? 'off' : 'on';
     // await browser.storage.local.set({wordListViewState: newState});
@@ -100,3 +89,17 @@ browser.runtime.onMessage.addListener(async function(message) {
     active: true,
   });
 });
+
+async function getResource(path) {
+  let URL = browser.runtime.getURL(path);
+  const response = await fetch(URL);
+  const result = await response.json();
+  return result;
+}
+
+const dictionary = await getResource('data/dict.json');
+console.log('MEMD: Dictionary loaded, length: ' + Object.keys(dictionary).length);
+const lookup = await getResource('data/lookup.json');
+console.log('MEMD: Lookup table loaded, length: ' + Object.keys(lookup).length);
+
+browser.storage.local.set({dictionary, lookup});
