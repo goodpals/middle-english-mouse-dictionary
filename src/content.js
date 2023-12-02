@@ -16,6 +16,8 @@ async function loadDict() {
 }
 loadDict();
 
+
+
 document.addEventListener('dblclick', async function(event) 
 {
   const currentState = await browser.storage.local.get();
@@ -60,11 +62,6 @@ class userWordListEntry {
 /* 
   Helper functions begin
 */
-
-/// TODO: ALEX: this bug doesn't happen every time. 
-/// First, open this link: https://quod.lib.umich.edu/c/cme/Gawain?rgn=main;view=fulltext
-/// Then, click a few words, and see the popups should work fine. Note in the console that userWords' FIRST console.log outputs information it should only have by the time the 2nd console log around line 70 is called.
-/// Now for the dictionary building problem. This is inconsistent. Look at the 3rd line of "Passus I". Doubleclick "þer" and then do "wroȝt" right next to it. Then right-click anywhere and select "show dictionary". It'll be empty. 
 async function addToUserWordList(thisWordInfo, state) {
   const content = state.userWordList;
   let userWords = Array.from(content);
@@ -174,3 +171,28 @@ function createPopup(event, info) {
     popup.remove();
   });
 }
+
+
+// control key functionality prototype (if wanted)
+/*
+  let isControlPressed = false;
+
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Control') {
+      isControlPressed = true;
+    }
+  });
+
+  document.addEventListener('keyup', (event) => {
+    if (event.key === 'Control') {
+      isControlPressed = false;
+    }
+  });
+
+  document.addEventListener('dblclick', (event) => {
+    if (isControlPressed) {
+      // Handle control + double-click event here
+      console.log('Control + double-click detected');
+    }
+  });
+*/
