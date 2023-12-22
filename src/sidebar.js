@@ -36,4 +36,3 @@ async function createSidebar() {
   document.body.appendChild(popup);
   return popup;
 }
-
