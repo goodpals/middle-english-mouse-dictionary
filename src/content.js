@@ -91,13 +91,19 @@ document.addEventListener("selectionchange", async function(event) {
   } else {
     const keys = Object.keys(activeWords);
     const printout = getWordInfoPrintout(activeWords[keys[keys.length-1]]);
-    // @ CAL : this is how you get the position, you need to pass it to the popup instead of clientx clienty
-    if (selection.rangeCount > 0) {
+
+    // if (selection.rangeCount > 0) {
       const range = selection.getRangeAt(0);
-      const rect = range.getBoundingClientRect();
+      console.log("______")
+      console.log(range)
+      const rect = range.getBoundingClientRect(); 
+      console.log(rect.x)
+      console.log(rect.y)
+      console.log("______")
+      /// TODO: pass this into createOrUpdatePopup --> with this you can get the position needed for the popup
       console.log('Selection position:', rect.left, rect.top);
-    }
-    createOrUpdatePopup(event, printout);
+    // }
+    createOrUpdatePopup(event, printout, rect);
   }
 });
 
@@ -236,11 +242,11 @@ function htmlize(entry) {
  * @param {MouseEvent} event 
  * @param {string} content 
  */
-async function createOrUpdatePopup(event, content) {
+async function createOrUpdatePopup(event, content, leftPos, rightPos) {
   let popup = findPopup();
-  console.log(event.clientX);
+  // console.log(event.clientX);
   if (popup == null) {
-    createPopup(event, content);
+    createPopup(event, content, leftPos, rightPos);
   } else {
     popup.innerHTML = content;
   }
@@ -257,20 +263,19 @@ function findPopup() {
  * @param {MouseEvent} event 
  * @param {string} content 
  */
-async function createPopup(event, content) {
+async function createPopup(event, content, rect) {
   let popup = document.createElement('div');
   popup.id = popupId;
   popup.className = 'singleWordInfoPopup';
   popup.innerHTML = content;
 
   popup.style.position = 'absolute';
-  popup.style.left = (event.clientX + window.scrollX - 100) + 'px';
-  popup.style.top = (event.clientY + window.scrollY + 15) + 'px';
+  popup.style.left = (rect.x  + window.scrollX - 100) + 'px';
+  popup.style.top = (rect.y + window.scrollY + 50) + 'px';
 
   const windowWidth = window.outerWidth;
 
-  // dimensions must be calculated after rendering a DOM instance because this whole system was designed by someone with some kind of serious self-destructive behavioural disorder
-  document.body.appendChild(popup); 
+  document.body.appendChild(popup); // dimensions must be calculated after rendering a DOM instance because this whole system was designed by someone with some kind of serious self-destructive behavioural disorder
 
   let popup_leftEdge = 0;
   let popup_rightEdge = 0;
@@ -283,11 +288,11 @@ async function createPopup(event, content) {
 
   if (popup_rightEdge > windowWidth) {
     const difference = popup_rightEdge - windowWidth;
-    const tonyBlair = popup_leftEdge - difference - 100; // -100 is a hacke
-    const keirStarmer = popup_rightEdge - difference - 100;
+    const karlMarx = popup_leftEdge - difference - 100; // -100 is a hacke
+    const aynRand = popup_rightEdge - difference - 100;
 
-    popup.style.left = tonyBlair + 'px'; // style.left takes a STRINGE
-    popup.style.right = keirStarmer + 'px';
+    popup.style.left = karlMarx + 'px'; // style.left takes a STRINGE
+    popup.style.right = aynRand + 'px';
   }
 
   document.addEventListener('click', function(event) {
