@@ -16,7 +16,41 @@ async function loadDict() {
 }
 loadDict();
 
+/** @type {Object<string,Array<UserWordListEntry[]>>} */
+var activeWords = {};
 
+function clearActiveWords() {
+  activeWords = {};
+}
+
+/**
+ * Processes a new selection. 
+ * Removes words that are no longer selected, and adds words that are newly selected.
+ * This is agnostic of selection method.
+ * @param {string} selection a sentence, potentially a single word
+ */
+function processSelection(selection){
+  /** @type {Set<string>} */
+  const cur = new Set(Object.keys(activeWords))
+  const sel = new Set(selection.split(" "))
+  const newWords = new Set([...sel].filter(x => !cur.has(x)));
+  const oldWords = new Set([...cur].filter(x => !sel.has(x)));
+  for (const word of oldWords) {
+    delete activeWords[word];
+  }
+  for (const word of newWords) {
+    const found = searchDictionary(word);
+    if (found != null) {
+      activeWords[word] = found;
+    }
+  }
+  console.log("Active words: " + Object.keys(activeWords).join(', '));
+} 
+
+document.addEventListener("selectionchange", (event) => {
+  console.log("Selection: "+ document.getSelection());
+  processSelection(document.getSelection().toString().toLowerCase())
+});
 
 document.addEventListener('dblclick', async function(event) 
 {
@@ -36,6 +70,7 @@ document.addEventListener('dblclick', async function(event)
     return; // must return else popup will still appear
   }
 
+  // processSelection(selectedText);
   const selectedWordInfo = searchDictionary(selectedText); 
   if (selectedWordInfo == null || selectedWordInfo == undefined) {
     return; // User word is not in the dictionary
@@ -48,13 +83,19 @@ document.addEventListener('dblclick', async function(event)
   await addToUserWordList(selectedWordInfo, currentState);
 });
 
-
-
-class userWordListEntry {
+/**
+ * @class
+ */
+class UserWordListEntry {
+  /**
+   * @param {number} lookupIndex a single key to an object in dict.json
+   * @param {string} matchedVariant the specific matched variant in lookup.json
+   * @param {string} usersSelectedWord the word the user actually tapped (which might not be the same due to fuzzy matching)
+   */
   constructor(lookupIndex, matchedVariant, usersSelectedWord) {
-    this.lookupIndex = lookupIndex; // a single key to an object in dict.json
-    this.matchedVariant = matchedVariant; // the specific matched variant in lookup.json
-    this.usersSelectedWord = usersSelectedWord; // the word the user actually tapped (which might not be the same due to fuzzy matching)
+    this.lookupIndex = lookupIndex;
+    this.matchedVariant = matchedVariant;
+    this.usersSelectedWord = usersSelectedWord;
   }
 }
 
@@ -88,7 +129,9 @@ async function addToUserWordList(thisWordInfo, state) {
   /// Now, when the user opens the UWL side panel from their right-click contextMenu, the updated list will display.
 }
 
-
+/** 
+ * @param {string} selectedWord
+*/
 function searchDictionary(selectedWord) {
   /// Check if the passed-in word matches a key in lookup.json. 
   /// The value to this lookup will be an index for an entry in dict.json.
@@ -100,7 +143,7 @@ function searchDictionary(selectedWord) {
     let extractedEntries = []; 
     for (index of wordIndexes) {
       /// TODO: change "matchedVariant" to whatever selectedWord is fuzzymatched to once fuzzymatching is implemented
-      const entry = new userWordListEntry(index, selectedWord, selectedWord); 
+      const entry = new UserWordListEntry(index, selectedWord, selectedWord); 
       extractedEntries.push(entry);
     }
 
