@@ -54,7 +54,7 @@
  * 3. Updates the menu items' text based on that state. 
  * 4. Makes relevant custom functionality happen           
  */
-! async function buildContextMenuListener() {
+! async function addContextMenuListener() {
   browser.contextMenus.onClicked.addListener(async (info, tab) => {
 
     const currentState = await browser.storage.local.get();
@@ -88,16 +88,16 @@
 
 
 /// If the user has used dictionarySelector to search MED website entries, this will construct a URL upon receipt of a message from content.js and open the query in a new tab
-browser.runtime.onMessage.addListener(async function(message) {
-  /// TODO?: if search_field is "hnf" that just checks headwords with alt spellings on MED; if it's "anywhere", it searches whole entries. This is a crapshoot option but might be worth giving the choice.
-  const MED_URL = 'https://quod.lib.umich.edu/m/middle-english-dictionary/dictionary?utf8=✓&search_field=anywhere&q=';  
-  const completeURL = MED_URL + message.word;
+// browser.runtime.onMessage.addListener(async function(message) {
+//   /// TODO?: if search_field is "hnf" that just checks headwords with alt spellings on MED; if it's "anywhere", it searches whole entries. This is a crapshoot option but might be worth giving the choice.
+//   const MED_URL = 'https://quod.lib.umich.edu/m/middle-english-dictionary/dictionary?utf8=✓&search_field=anywhere&q=';  
+//   const completeURL = MED_URL + message.word;
 
-  let createTab = browser.tabs.create({
-    url: completeURL,
-    active: false,
-  });
-});
+//   let createTab = browser.tabs.create({
+//     url: completeURL,
+//     active: false,
+//   });
+// });
 
 
 
