@@ -19,90 +19,6 @@ var dictionaryLookupTable = {};
   // console.log('MEMD (content): Lookup table loaded, length: ' + Object.keys(dictionaryLookupTable).length);
 }();
 
-
-
-/** @type {Object<string,Array<UserWordListEntry[]>>} */
-var activeWords = {};
-
-function clearActiveWords() {
-  activeWords = {};
-}
-
-
-/**
- * Processes a new selection. 
- * Removes words that are no longer selected, and adds words that are newly selected.
- * This is agnostic of selection method.
- * @param {string} selection a sentence, potentially a single word
- */
-function processSelection(selection){
-  /** @type {Set<string>} */
-  const cur = new Set(Object.keys(activeWords))
-  const sel = new Set(selection.split(" "))
-  // console.log([...cur].join(' '));
-  // console.log([...sel].join(' '));
-  const newWords = new Set([...sel].filter(x => !cur.has(x)));
-  const oldWords = new Set([...cur].filter(x => !sel.has(x)));
-  for (const word of oldWords) {
-    delete activeWords[word];
-  }
-  for (const word of newWords) {
-    const found = searchDictionary(word);
-    if (found != null) {
-      activeWords[word] = found;
-    }
-    // else if (found == null) {
-    //   browser.runtime.sendMessage({word: word}); // open external MED tab if want
-    // }
-  }
-  console.log("Active words: " + Object.keys(activeWords).join(', '));
-} 
-
-
-/** 
- * EVENT LISTENER FOR CLICK + DRAG ON DOM TEXT
- */
-document.addEventListener("selectionchange", async function(event) {
-  const currentState = await browser.storage.local.get();
-  if (currentState.onOffState != 'on') {
-    return;
-  }
-  // console.log("Selection: "+ document.getSelection().toString().toLowerCase());
-  // processSelection(document.getSelection().toString().toLowerCase())
-});
-
-
-/**
- * EVENT LISTENER FOR DOUBLE CLICK ON DOM TEXT
- */
-document.addEventListener('dblclick', async function(event) {
-  event.preventDefault();
-
-  const currentState = await browser.storage.local.get();
-  if (currentState.onOffState != 'on') {
-    return;
-  }
-
-  const selectedText = window.getSelection().toString().toLowerCase();
-  if (selectedText == null || selectedText.length < 2) {
-    /// the user is clicking on whitespace, or maybe punctuation? Do not show. Fuck the word 'a' in particular.
-    return;
-  }
-
-  // processSelection(selectedText);
-  const selectedWordInfo = searchDictionary(selectedText); 
-  if (selectedWordInfo == null || selectedWordInfo == undefined) {
-    // browser.runtime.sendMessage({word: selectedText}); // query MED online dictionary
-    return; // User word is not in the dictionary
-  }
-  
-  // All checks passed: style, position, and then show a word info popup
-  const printout = getWordInfoPrintout(selectedWordInfo);
-  createPopup(event, printout);
-  await addToUserWordList(selectedWordInfo, currentState);
-});
-
-
 /**
  * @param {number} lookupIndex a single key to an object in dict.json
  * @param {string} matchedVariant the specific matched variant in lookup.json
@@ -116,6 +32,105 @@ class UserWordListEntry {
   }
 }
 
+const popupId = 'yeFloatingeWindowe';
+
+/** @type {Object<string,Array<UserWordListEntry[]>>} */
+var activeWords = {};
+
+function clearActiveWords() {
+  activeWords = {};
+}
+
+/**
+ * Processes a new selection. 
+ * Removes words that are no longer selected, and adds words that are newly selected.
+ * This is agnostic of selection method.
+ * @param {string} selection a sentence, potentially a single word
+ * @returns {bool} hasChanged
+ */
+function processSelection(selection){
+  /** @type {Set<string>} */
+  const prev = new Set(Object.keys(activeWords))
+  const sel = new Set(selection.split(" "))
+  // console.log([...cur].join(' '));
+  // console.log([...sel].join(' '));
+  const newWords = new Set([...sel].filter(x => !prev.has(x)));
+  const oldWords = new Set([...prev].filter(x => !sel.has(x)));
+  for (const word of oldWords) {
+    delete activeWords[word];
+  }
+  for (const word of newWords) {
+    const found = searchDictionary(word);
+    if (found != null) {
+      activeWords[word] = found;
+    }
+    // else if (found == null) {
+    //   browser.runtime.sendMessage({word: word}); // open external MED tab if want
+    // }
+  }
+  const updated = new Set(Object.keys(activeWords));
+  console.log("Active words: " + Object.keys(activeWords).join(', '));
+  return !areSetsEqual(prev, updated);
+} 
+
+
+/** 
+ * EVENT LISTENER FOR CLICK + DRAG ON DOM TEXT
+ */
+document.addEventListener("selectionchange", async function(event) {
+  const currentState = await browser.storage.local.get();
+  if (currentState.onOffState != 'on') return;
+  // console.log("Selection: "+ document.getSelection().toString().toLowerCase());
+  const selection = document.getSelection();
+  const hasChanged = processSelection(selection.toString().toLowerCase())
+  console.log('hasChanged = ' + hasChanged);
+  console.log('activeWords.length = ' + Object.keys(activeWords).length);
+  if(!hasChanged) return;
+  if(activeWords.length === 0) {
+    // hide popup
+  } else {
+    const keys = Object.keys(activeWords);
+    const printout = getWordInfoPrintout(activeWords[keys[keys.length-1]]);
+    // @ CAL : this is how you get the position, you need to pass it to the popup instead of clientx clienty
+    if (selection.rangeCount > 0) {
+      const range = selection.getRangeAt(0);
+      const rect = range.getBoundingClientRect();
+      console.log('Selection position:', rect.left, rect.top);
+    }
+    createOrUpdatePopup(event, printout);
+  }
+});
+
+
+// /**
+//  * EVENT LISTENER FOR DOUBLE CLICK ON DOM TEXT
+//  */
+// document.addEventListener('dblclick', async function(event) {
+//   event.preventDefault();
+
+//   const currentState = await browser.storage.local.get();
+//   if (currentState.onOffState != 'on') {
+//     return;
+//   }
+
+//   const selectedText = window.getSelection().toString().toLowerCase();
+//   if (selectedText == null || selectedText.length < 2) {
+//     /// the user is clicking on whitespace, or maybe punctuation? Do not show. Fuck the word 'a' in particular.
+//     return;
+//   }
+
+//   // processSelection(selectedText);
+//   const selectedWordInfo = searchDictionary(selectedText); 
+//   if (selectedWordInfo == null || selectedWordInfo == undefined) {
+//     // browser.runtime.sendMessage({word: selectedText}); // query MED online dictionary
+//     return; // User word is not in the dictionary
+//   }
+  
+//   // All checks passed: style, position, and then show a word info popup
+//   const printout = getWordInfoPrintout(selectedWordInfo);
+//   createPopup(event, printout);
+//   await addToUserWordList(selectedWordInfo, currentState);
+// });
 
 /* 
   Helper functions begin
@@ -174,16 +189,16 @@ function searchDictionary(selectedWord) {
 
 /**
  * This function receives a list of userWordListEntry class objects and uses their index value to get info from the dictionary, and returns it as formatted text.
- * @param {userWordListEntry} info 
- * @returns HTML text ready to be passed into a popup/sidebar HTML element constructor
+ * @param {Array.<UserWordListEntry>} entries
+ * @returns {string} HTML text ready to be passed into a popup/sidebar HTML element constructor
  */
-function getWordInfoPrintout(info) {
+function getWordInfoPrintout(entries) {
   let text = "";
-  if (info.length > 1) {
+  if (entries.length > 1) {
     text += "<h5>Possible Matches:</h5>";
   }
 
-  for (entry of info) {
+  for (entry of entries) {
     const dictEntry = dictionary[entry.lookupIndex];
     
     text += "<p><b>" + entry.usersSelectedWord + "</b>";
@@ -217,11 +232,36 @@ function htmlize(entry) {
   return replacedUnderscores;
 }
 
+/**
+ * @param {MouseEvent} event 
+ * @param {string} content 
+ */
+async function createOrUpdatePopup(event, content) {
+  let popup = findPopup();
+  console.log(event.clientX);
+  if (popup == null) {
+    createPopup(event, content);
+  } else {
+    popup.innerHTML = content;
+  }
+}
 
-async function createPopup(event, info) {
+/**
+ * @returns {HTMLElement | null}
+ */
+function findPopup() {
+  return document.getElementById(popupId);
+}
+
+/**
+ * @param {MouseEvent} event 
+ * @param {string} content 
+ */
+async function createPopup(event, content) {
   let popup = document.createElement('div');
+  popup.id = popupId;
   popup.className = 'singleWordInfoPopup';
-  popup.innerHTML = info;
+  popup.innerHTML = content;
 
   popup.style.position = 'absolute';
   popup.style.left = (event.clientX + window.scrollX - 100) + 'px';
@@ -260,6 +300,9 @@ function promiseNextFrame(){
   return new Promise(resolve => requestAnimationFrame(resolve)); 
 }
 
+// 🙄
+const areSetsEqual = (a, b) =>
+  a.size === b.size && [...a].every((value) => b.has(value));
 
 
 // control key functionality prototype (if wanted)
