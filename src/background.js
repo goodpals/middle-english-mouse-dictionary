@@ -1,6 +1,5 @@
 /* 
   the background/service worker is to handle events, manage data, and perform actions that don’t require direct user interaction.
-  functions using the syntax `! function alias(){...}();` automatically execute on startup.
 */
 
 /// STORAGE.LOCAL: https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/storage/local

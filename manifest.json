@@ -25,5 +25,9 @@
   ],
   "web_accessible_resources": [
     "data/*.json"
-  ]
+  ],
+  "icons": {
+    "48": "img/icon.png",
+    "96": "img/icon@2x.png"
+  }
 }
