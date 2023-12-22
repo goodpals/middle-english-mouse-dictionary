@@ -2,12 +2,15 @@
   background-color: #dddddd;
   color: black;
   border: 1px solid #ccc;
-  padding: 15px;
+  padding: 20px;
+  margin: 0% 5% 0% 5%; /* top | right | bottom | left */
   font-family: sans-serif;
   box-shadow: 2px 2px 5px rgba(0,0,0,0.5);
   font-size: 14px;
-  max-width: 220px;
-  max-height: 220px;
+  /* max-width: 220px;
+  max-height: 220px; */
+  width: 25%;
+  height: 220px;
   overflow-y: auto;
   /*
     TODO: when near the browser window edge this can create an element that partially spills outside of the DOM

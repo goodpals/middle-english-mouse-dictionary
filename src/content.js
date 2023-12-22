@@ -10,9 +10,9 @@ var dictionaryLookupTable = {};
 
 async function loadDict() {
   dictionary = (await browser.storage.local.get("dictionary")).dictionary;
-  console.log('MEMD (content): Dictionary loaded, length: ' + Object.keys(dictionary).length);
+  // console.log('MEMD (content): Dictionary loaded, length: ' + Object.keys(dictionary).length);
   dictionaryLookupTable = (await browser.storage.local.get("lookup")).lookup;
-  console.log('MEMD (content): Lookup table loaded, length: ' + Object.keys(dictionaryLookupTable).length);
+  // console.log('MEMD (content): Lookup table loaded, length: ' + Object.keys(dictionaryLookupTable).length);
 }
 loadDict();
 
@@ -107,7 +107,7 @@ async function addToUserWordList(thisWordInfo, state) {
   const content = state.userWordList;
   let userWords = Array.from(content);
   
-  console.log(userWords) /// this log should not contain any information about the word that has just been clicked.
+  // console.log(userWords) /// this log should not contain any information about the word that has just been clicked.
   
   const hasCommonIndex = userWords.some(userWordsEntry => {
     return thisWordInfo.some(selectedEntry => {
@@ -115,16 +115,16 @@ async function addToUserWordList(thisWordInfo, state) {
     });
   });
   if (hasCommonIndex == true) {
-    console.log(hasCommonIndex + ': true : has Common word, not adding to list')
+    // console.log(hasCommonIndex + ': true : has Common word, not adding to list')
     return; /// selected word is already in dict
   }
-  console.log(hasCommonIndex + ': false : no Common word, adding to list')
+  // console.log(hasCommonIndex + ': false : no Common word, adding to list')
   
   for (entry of thisWordInfo) {
     userWords.push(entry);
   }
-  console.log(userWords);
-  console.log("____")
+  // console.log(userWords);
+  // console.log("____");
   await browser.storage.local.set({userWordList: userWords});
   /// Now, when the user opens the UWL side panel from their right-click contextMenu, the updated list will display.
 }
@@ -135,10 +135,10 @@ async function addToUserWordList(thisWordInfo, state) {
 function searchDictionary(selectedWord) {
   /// Check if the passed-in word matches a key in lookup.json. 
   /// The value to this lookup will be an index for an entry in dict.json.
-  console.log('searching dictionary for ' + selectedWord + ', found: ' + (selectedWord in dictionaryLookupTable));
+  // console.log('searching dictionary for ' + selectedWord + ', found: ' + (selectedWord in dictionaryLookupTable));
   if (selectedWord in dictionaryLookupTable) {
     const wordIndexes = dictionaryLookupTable[selectedWord];
-    // console.log(wordIndex)
+    // // console.log(wordIndex)
 
     let extractedEntries = []; 
     for (index of wordIndexes) {
@@ -156,14 +156,14 @@ function searchDictionary(selectedWord) {
 
 /// This function receives a list of userWordListEntry class objects and uses their index value to get info from the dictionary, and returns it as formatted text. 
 function getWordInfoPrintout(info) {
-  // console.log(info)
+  // // console.log(info)
   let text = "";
   if (info.length > 1) {
     text += "<h4>Possible Matches:</h4>";
   }
 
   for (entry of info) {
-    const dictEntry = dictionary[entry.lookupIndex]; /// 
+    const dictEntry = dictionary[entry.lookupIndex];
     
     text += "<p><b>" + entry.usersSelectedWord + "</b>";
     
@@ -198,7 +198,7 @@ function htmlize(entry) {
 }
 
 
-function createPopup(event, info) {
+async function createPopup(event, info) {
   let popup = document.createElement('div');
   popup.className = 'singleWordInfoPopup';
   popup.innerHTML = info;
@@ -207,12 +207,48 @@ function createPopup(event, info) {
   popup.style.left = (event.clientX + window.scrollX - 100) + 'px';
   popup.style.top = (event.clientY + window.scrollY + 15) + 'px';
 
-  document.body.appendChild(popup);
+  const windowWidth = window.outerWidth;
+
+
+  document.body.appendChild(popup); // dimensions must be calculated after rendering because this whole system was designed by someone with an unspecified mental disorder
+
+  let popup_leftEdge = 0;
+  let popup_rightEdge = 0;
+
+  // requestAnimationFrame(() => { 
+  //   // .getBoundingClientRect() returns a DOMRect object with properties like top, left, bottom, right, width, and height.
+  //   const popupCoordinates = popup.getBoundingClientRect();
+  //   popup_rightEdge = popupCoordinates.right;
+  //   popup_leftEdge = popupCoordinates.left; 
+    
+  // });
+  
+  await promiseNextFrame();
+
+  const popupCoordinates = popup.getBoundingClientRect();
+  popup_rightEdge = popupCoordinates.right;
+  popup_leftEdge = popupCoordinates.left; 
+
+  if (popup_rightEdge > windowWidth) {
+    const difference = popup_rightEdge - windowWidth;
+    const tonyBlair = popup_leftEdge - difference - 100; // -100 is a hacke
+    const keirStarmer = popup_rightEdge - difference - 100;
+
+    popup.style.left = tonyBlair + 'px'; // style.left takes a STRINGE
+    popup.style.right = keirStarmer + 'px';
+  }
+
+  // console.log("window Width: " + popup_rightEdge);
+  // console.log("____________________");
 
   document.addEventListener('click', function(event) {
     document.removeEventListener('click', this);
     popup.remove();
   });
+}
+
+function promiseNextFrame(){
+  return new Promise(resolve => requestAnimationFrame(resolve)); 
 }
 
 
@@ -235,7 +271,7 @@ function createPopup(event, info) {
   document.addEventListener('dblclick', (event) => {
     if (isControlPressed) {
       // Handle control + double-click event here
-      console.log('Control + double-click detected');
+      // console.log('Control + double-click detected');
     }
   });
 */
