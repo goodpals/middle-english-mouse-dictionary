@@ -38,8 +38,8 @@ void main(List<String> argss) {
     for (final (i, e) in metadata.indexed)
       DictionaryEntry(
         id: '$i',
-        variants: e.$1,
-        partOfSpeech: e.$2,
+        variants: e.words.toSet(),
+        partOfSpeech: e.partOfSpeech,
         entry: entries[i],
       ),
   ];
@@ -90,8 +90,8 @@ final _wordsRegex = RegExp(r'#([^#]+)#');
 final _bracketedRegex = RegExp(r'(\(([^(^)]+)\))');
 final _partOfSpeechRegex = RegExp(r'_(([^_]+\.))_');
 
-(List<String> words, String? partOfSpeech) parseEntry(String entry) =>
-    (findAndExpandWords(entry), findPartOfSpeech(entry));
+({List<String> words, String? partOfSpeech}) parseEntry(String entry) =>
+    (words: findAndExpandWords(entry), partOfSpeech: findPartOfSpeech(entry));
 
 List<String> tokeniseEntry(String entry) => entry.split(_tokeniseRegex);
 

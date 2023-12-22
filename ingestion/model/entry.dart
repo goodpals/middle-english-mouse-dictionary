@@ -1,6 +1,6 @@
 class DictionaryEntry {
   final String id;
-  final List<String> variants;
+  final Set<String> variants;
   final String? partOfSpeech;
   final String entry;
 
@@ -13,7 +13,7 @@ class DictionaryEntry {
 
   Map<String, dynamic> toJson([bool includeId = false]) => {
         if (includeId) 'id': id,
-        'variants': variants,
+        'variants': variants.toList(),
         'partOfSpeech': partOfSpeech,
         'entry': entry,
       };
