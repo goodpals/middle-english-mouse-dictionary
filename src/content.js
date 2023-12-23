@@ -32,8 +32,8 @@
     const hasChanged = processSelection(selection.toString().toLowerCase());
     if (!hasChanged) return;
 
-    if (activeWords.length === 0) {
-      // hide popup
+    if (Object.keys(activeWords).length === 0) {
+      hidePopup();
     } else {
       const keys = Object.keys(activeWords);
       const printout = dictionaryEntriesToHTMLtext(activeWords[keys[keys.length-1]]);
@@ -41,7 +41,7 @@
       // if (selection.rangeCount > 0) {
         const range = selection.getRangeAt(0);
         const rect = range.getBoundingClientRect(); 
-        console.log('Selection position:', rect.left, rect.top);
+        // console.log('Selection position:', rect.left, rect.top);
       // }
       createOrUpdatePopup(event, printout, rect);
     }
@@ -83,12 +83,19 @@ function processSelection(selection) {
  * @param {MouseEvent} event 
  * @param {string} content 
  */
-async function createOrUpdatePopup(event, content, rect) {
+function createOrUpdatePopup(event, content, rect) {
   let popup = findPopup();
   if (popup == null) {
     createPopup(event, content, rect);
   } else {
     popup.innerHTML = content;
+  }
+}
+
+function hidePopup() {
+  const popup = findPopup();
+  if (popup != null) {
+    popup.remove();
   }
 }
 
@@ -188,10 +195,4 @@ async function createPopup(event, content, rect) {
     popup.style.left = karlMarx + 'px'; // style.left takes a STRINGE
     popup.style.right = aynRand + 'px';
   }
-
-  document.addEventListener('mousedown', function(event) {
-    // use a mousedown rather than a `click` to avoid issues with click+drag->release mouse being regarded a 'click' and triggering this listener
-    document.removeEventListener('mousedown', this);
-    popup.remove();
-  });
 }
