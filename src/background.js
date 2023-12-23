@@ -9,7 +9,7 @@
   await browser.storage.local.set({ 
     onOffState: 'on', 
     userWordList: [], 
-    dictionaryChoice: 'mouse',
+    currentlySelectedText: '',
     // wordListViewState: 'off' 
   });
 }();
@@ -19,7 +19,6 @@
  * Construct options for an in-browser right-click menu and build their text content based off the initial state set above.
  */
 ! async function buildContextMenu() {
-  browser.runtime.onInstalled.addListener( async () => {
     const extensionState = await browser.storage.local.get(); /// gets all. not supported in safari
 
     browser.contextMenus.create({
@@ -29,21 +28,14 @@
     });
     browser.contextMenus.create({
       id: "wordListSidebarToggler",
-      // title: (extensionState.wordListViewState == 'on' ? 'hide dictionary' : 'show dictionary'),
       title: "show dictionary",
       contexts: ["all"],
     });
     browser.contextMenus.create({
-      id: "dictionarySelector",
-      title: (extensionState.dictionaryChoice == 'mouse' ? 'query MED website' : 'use mouse dictionary'),
-      contexts: ["all"],
-    });
-    browser.contextMenus.create({
-      id: "selectionOption",
-      title: "Do a selected text thing(?)",
+      id: "externalWebDictionary",
+      title: "Query selected text on online dictionary",
       contexts: ["selection"],
     });
-  });
 }();
 
 
@@ -57,61 +49,37 @@
   browser.contextMenus.onClicked.addListener(async (info, tab) => {
 
     const currentState = await browser.storage.local.get();
-    if (info.menuItemId === "functionalityToggler") 
-    {
+    if (info.menuItemId === "functionalityToggler") {
       const newState = currentState.onOffState == 'on' ? 'off' : 'on';
       await browser.storage.local.set({onOffState: newState});
       browser.contextMenus.update("functionalityToggler", {
         title: (newState == 'on' ? 'turn off' : 'turn on'),
       });
     } 
-    else if (info.menuItemId === "dictionarySelector") 
-    {
-      const newState = currentState.dictionaryChoice == 'mouse' ? 'MED' : 'mouse';
-      await browser.storage.local.set({dictionaryChoice: newState});
-      browser.contextMenus.update("dictionarySelector", {
-        title: (newState == 'mouse' ? 'query MED website if no results found' : 'use mouse dictionary'),
-      });
-    } 
-    else if (info.menuItemId === "wordListSidebarToggler") 
-    {
-      console.log('sidebar toggle')
-      /// TODO: sort out tab behaviour e.g. what if they click the "open dictionary" contextMenu button when it's already open?
-      // const newState = currentState.wordListViewState == 'on' ? 'off' : 'on';
-      // await browser.storage.local.set({wordListViewState: newState});
-
-      await browser.tabs.sendMessage(tab.id, {action: "showWordList"}); /// see: userWordListSidebar.js
+    else if (info.menuItemId === "wordListSidebarToggler") {
+      await browser.tabs.sendMessage(tab.id, {action: "showWordList"}); /// see: sidebar.js
+    }
+    else if (info.menuItemId === "externalWebDictionary") {
+      openExternalDictionaryQuery();
+      // browser.runtime.sendMessage({ action: "log", text: "sending" });
+      // const res = await browser.storage.local.get();
+      // const query = res.currentlySelectedText;
+      // browser.runtime.sendMessage({ action: "log", text: query });
+    
+    
+      // const MED_URL = 'https://quod.lib.umich.edu/m/middle-english-dictionary/dictionary?utf8=✓&search_field=anywhere&q=';  
+      // const completeURL = MED_URL + query;
+    
+      // let createTab = browser.tabs.create({
+      //   url: completeURL,
+      //   active: true,
+      // });
     }
   });
 }();
 
 
-/// If the user has used dictionarySelector to search MED website entries, this will construct a URL upon receipt of a message from content.js and open the query in a new tab
-// browser.runtime.onMessage.addListener(async function(message) {
-//   /// TODO?: if search_field is "hnf" that just checks headwords with alt spellings on MED; if it's "anywhere", it searches whole entries. This is a crapshoot option but might be worth giving the choice.
-//   const MED_URL = 'https://quod.lib.umich.edu/m/middle-english-dictionary/dictionary?utf8=✓&search_field=anywhere&q=';  
-//   const completeURL = MED_URL + message.word;
-
-//   let createTab = browser.tabs.create({
-//     url: completeURL,
-//     active: false,
-//   });
-// });
-
-
-
-/*
-  instantiate dictionary objects.
-*/
-
-async function getResource(path) {
-  let URL = browser.runtime.getURL(path);
-  const response = await fetch(URL);
-  const result = await response.json();
-  return result;
-}
-
-/**
+/** INSTANTIATE DICTIONARY OBJECTS
  * Extract extension-packaged dictionary files from their storage addresses, and pass them into k:v pair-based local storage setter.
  * These cannot be accessed directly by content.js; they must be first instantiated in background.js and then loaded into content.js specific global variables by means of a local-storage getter function.
  */
@@ -124,3 +92,29 @@ async function getResource(path) {
   
   browser.storage.local.set({dictionary, lookup});
 }();
+
+
+
+/*
+  MISCELLANEOUS HELPERS
+*/
+
+async function getResource(path) {
+  let URL = browser.runtime.getURL(path);
+  const response = await fetch(URL);
+  const result = await response.json();
+  return result;
+}
+
+
+async function openExternalDictionaryQuery() {
+  const res = await browser.storage.local.get();
+  const query = res.currentlySelectedText;
+  const MED_URL = 'https://quod.lib.umich.edu/m/middle-english-dictionary/dictionary?utf8=✓&search_field=anywhere&q=';  
+  const completeURL = MED_URL + query;
+
+  let createTab = browser.tabs.create({
+    url: completeURL,
+    active: true,
+  });
+}

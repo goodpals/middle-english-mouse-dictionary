@@ -14,6 +14,9 @@ iv. ┌─────▼───────┴─────┐
     │  ┌─────────────┐  │
     │  │ sidebar.js  │  │
     │  └─────────────┘  │
+    │  ┌─────────────┐  │
+    │  │  etc. etc.  │  │
+    │  └─────────────┘  │
     └───────────────────┘
 
 i.   The background/service worker is to handle events, manage data, and perform actions that don’t require direct user interaction.

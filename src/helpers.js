@@ -5,7 +5,7 @@
 async function addToSidebarWordlist(thisWordInfo, state) {
   const content = state.userWordList;
   let userWords = Array.from(content);
-  
+
   // console.log(userWords) /// this log should not contain any information about the word that has just been clicked.
 
   const hasCommonIndex = userWords.some(userWordsEntry => {
@@ -13,16 +13,20 @@ async function addToSidebarWordlist(thisWordInfo, state) {
       return userWordsEntry.lookupIndex === selectedEntry.lookupIndex;
     });
   });
-  if (hasCommonIndex == true) {
-    // console.log(hasCommonIndex + ': true : has Common word, not adding to list')
-    return; /// selected word is already in dict
-  }
-  // console.log(hasCommonIndex + ': false : no Common word, adding to list')
+  if (hasCommonIndex == true) return; /// selected word is already in dict
+
   for (entry of thisWordInfo) {
     userWords.push(entry);
   }
   await browser.storage.local.set({userWordList: userWords});
   /// Now, when the user opens the UWL side panel from their right-click contextMenu, the updated list will display.
+}
+
+
+async function setCurrentlySelectedTextInLocalStorage() {
+  // TODO: chat about refactoring this/other globals IRT: we need to access data from background.js in order to open website query link. Alternative is cursed messagesending shit
+  const selection = document.getSelection().toString().toLowerCase();
+  await browser.storage.local.set({currentlySelectedText: selection}); 
 }
 
 

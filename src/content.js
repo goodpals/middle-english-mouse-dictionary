@@ -7,7 +7,6 @@
 
 // SETUP & EVENT LISTENERS BEGIN
 
-
 /** 
  * Instantiate content.js specific dictionary variables, extracted from the JSON files in the `data` directory, by functions in  background.js.
  * This is done because the dictionary files cannot be accessed directly by content.js; they must be first instantiated in background.js, and then loaded into content.js specific global variables by means of a local-storage getter function.
@@ -20,6 +19,12 @@
 }();
 
 
+// document.addEventListener("contextmenu", async (event) => {
+//   const selectedText = window.getSelection().toString();
+//   browser.runtime.sendMessage({ action: "selectedText", text: selectedText });
+// });
+
+
 /** 
  * EVENT LISTENER FOR CLICK + DRAG ON DOM TEXT
  */
@@ -28,6 +33,8 @@
     const currentState = await browser.storage.local.get();
     if (currentState.onOffState != 'on') return;
     
+    setCurrentlySelectedTextInLocalStorage();
+
     const selection = document.getSelection();
     const hasChanged = processSelection(selection.toString().toLowerCase());
     if (!hasChanged) return;
@@ -36,13 +43,12 @@
       hidePopup();
     } else {
       const keys = Object.keys(activeWords);
-      const printout = dictionaryEntriesToHTMLtext(activeWords[keys[keys.length-1]]);
+      const word = activeWords[keys[keys.length-1]];
+      const printout = dictionaryEntriesToHTMLtext(word);
       if (printout == null) return;
-      // if (selection.rangeCount > 0) {
-        const range = selection.getRangeAt(0);
-        const rect = range.getBoundingClientRect(); 
-        // console.log('Selection position:', rect.left, rect.top);
-      // }
+      
+      const range = selection.getRangeAt(0);
+      const rect = range.getBoundingClientRect(); 
       createOrUpdatePopup(event, printout, rect);
     }
   });
