@@ -61,19 +61,6 @@
     }
     else if (info.menuItemId === "externalWebDictionary") {
       openExternalDictionaryQuery();
-      // browser.runtime.sendMessage({ action: "log", text: "sending" });
-      // const res = await browser.storage.local.get();
-      // const query = res.currentlySelectedText;
-      // browser.runtime.sendMessage({ action: "log", text: query });
-    
-    
-      // const MED_URL = 'https://quod.lib.umich.edu/m/middle-english-dictionary/dictionary?utf8=✓&search_field=anywhere&q=';  
-      // const completeURL = MED_URL + query;
-    
-      // let createTab = browser.tabs.create({
-      //   url: completeURL,
-      //   active: true,
-      // });
     }
   });
 }();

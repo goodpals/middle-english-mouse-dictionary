@@ -19,12 +19,6 @@
 }();
 
 
-// document.addEventListener("contextmenu", async (event) => {
-//   const selectedText = window.getSelection().toString();
-//   browser.runtime.sendMessage({ action: "selectedText", text: selectedText });
-// });
-
-
 /** 
  * EVENT LISTENER FOR CLICK + DRAG ON DOM TEXT
  */
