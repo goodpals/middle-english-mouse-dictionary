@@ -13,6 +13,10 @@ const popupId = 'yeFloatingeWindowe';
  * @type {Object<string, MatchedWordEntry>} */
 var activeWords = {};
 
+function clearActiveWords() {
+  activeWords = {};
+}
+
 /** 
  * @summary each string key is a url
  * @global 
@@ -31,9 +35,11 @@ var userAddedWords = [];
  * @type {Array<int>} */
 var presentListeners = [];
 
-function clearActiveWords() {
-  activeWords = {};
+function clearPresentListeners() {
+  presentListeners = [];
 }
+
+
 
 
 /**

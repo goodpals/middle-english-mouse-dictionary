@@ -42,15 +42,18 @@ function buildSidebar() {
   const wordsToShow = userAddedWords.filter((e) => e.url === url);
 
   // TODO
-
 }
 
+
 /**
- * @param {*} word for now, a string, not a MatchedWordEntry
+ * @param {MatchedWordEntry} word
  */
 function addWordToUserList(word) {
-  const url = extractBaseURLOfPage();
-  console.log("addWordToUserList: " + word);
+  const hasCommonIndex = userAddedWords.some((e) => e.lookupIndex === word.lookupIndex && e.url === word.url);
+  if (hasCommonIndex) return; 
+  
+  userAddedWords.push(word);
+  // console.log("addWordToUserList : added word: " + word.matchedVariant + "id: " + word.lookupIndex);
 }
 
 

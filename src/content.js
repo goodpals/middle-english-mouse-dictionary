@@ -26,11 +26,8 @@
   document.addEventListener("selectionchange", async function(event) {
     const currentState = await browser.storage.local.get();
     if (currentState.onOffState != 'on') return;
-    
-    // const checkkeys = Object.keys(activeWords);
-    // const checkword = activeWords[checkkeys[checkkeys.length-1]];
-    deleteListenersForButtons();
-    
+
+    deleteListenersForButtons();    
     setCurrentlySelectedTextInLocalStorage();
     
     const selection = document.getSelection();
@@ -58,16 +55,15 @@
 /// this is so cursed gode help me but it works
 function createListenersForButtons(entries) {
   if (entries == null) return;
-  console.log("createListenersForButtons");
-  for (entry of entries) {
+  for (const entry of entries) {
     const id = entry.lookupIndex;
     presentListeners.push(id);
     document.querySelector(`#_${id}`).addEventListener('click', event => {
-      // console.log("querySelector anonyFuncty: " + id);
-      addWordToUserList(id);
+      // console.log("querySelector anonyFuncty: " + entryConst.lookupIndex);
+      addWordToUserList(entry);
     });
   }
-  console.log("present listeners: " + presentListeners);
+  // console.log("createListenersForButtons : present listeners: " + presentListeners);
 }
 
 function deleteListenersForButtons(){
@@ -75,11 +71,11 @@ function deleteListenersForButtons(){
     const button = document.querySelector(`#_${id}`);
     if (button) {
         button.removeEventListener('click', event => {
-        addWordToUserList(id);
+        addWordToUserList(entry);
       });
     }
   }
-  presentListeners = []; // empty the array of IDs
+  clearPresentListeners();
 }
 
 
