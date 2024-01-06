@@ -63,14 +63,14 @@ function createListenersForButtons(entries) {
       addWordToUserList(entry);
     });
   }
-  // console.log("createListenersForButtons : present listeners: " + presentListeners);
+  console.log("createListenersForButtons : present listeners: " + presentListeners);
 }
 
 function deleteListenersForButtons(){
   for (const id of presentListeners) {
     const button = document.querySelector(`#_${id}`);
     if (button) {
-        button.removeEventListener('click', event => {
+      button.removeEventListener('click', event => {
         addWordToUserList(entry);
       });
     }
@@ -162,6 +162,7 @@ function searchDictionary(selectedWord) {
  * @returns {string} HTML text ready to be passed into a popup/sidebar HTML element constructor, or `null` if there are no entries to parse.
  */
 function dictionaryEntriesToHTMLtext(entries) {
+  console.log(entries);
   if (entries == null) return;
   
   let text = "";

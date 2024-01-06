@@ -7,7 +7,9 @@ browser.runtime.onMessage.addListener(async function(request, sender, sendRespon
   // await browser.storage.local.set({wordListViewState: 'on'});
 
   if (request.action === "showWordList") {
-    sidebarState = await createSidebar(); 
+    console.log("showingSidebar1");
+    sidebarState = createSidebar(); 
+    console.log("showingSidebar2");
 
     document.addEventListener('dblclick', async function(event) {
       if (event.target.matches('.wordListSidebar') || event.target.matches('.wordListSidebar p')) {
@@ -20,19 +22,21 @@ browser.runtime.onMessage.addListener(async function(request, sender, sendRespon
 
 });
 
+/// TODO: adapt dictionaryEntriesToHTMLtext() to sidebar-specific needs
+function createSidebar() {
+  const url =  extractBaseURLOfPage();
+  const urlExists = userPages.hasOwnProperty(url);
+  if (!urlExists) return;
+  
+  const wordsToShow = userAddedWords.filter((e) => e.url === url);
 
-async function createSidebar() {
   let sidebar = document.createElement('div');
   sidebar.className = 'wordListSidebar';
 
-  let printout = "<p><b>double-click this sidebar to close it</b></p><br>";
-  const keys = Object.keys(activeWords);
-  for (k of keys) {
-    const word = activeWords[keys[k]];
-    const res = dictionaryEntriesToHTMLtext(word);
-    printout += res;
-  }
+  let printout = "<p><b>double-click this sidebar to close it</b></p><br>";  
+  printout += dictionaryEntriesToHTMLtext(wordsToShow);
   sidebar.innerHTML = printout;
+
   document.body.appendChild(sidebar);
   return sidebar;
 }

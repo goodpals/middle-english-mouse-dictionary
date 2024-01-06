@@ -1,11 +1,12 @@
 /* 
-  These are accessed by content.js and sidebar.js
+  These are accessed by content.js and sidebar.js etc
 */
 
 // Global variables (brave singletons)
 var dictionary = {};
 var dictionaryLookupTable = {};
 const popupId = 'yeFloatingeWindowe';
+
 
 /** 
  * @summary the words currently selected by the user in the window, each of which being a key to a `MatchedWordEntry` containing further information.
@@ -40,8 +41,6 @@ function clearPresentListeners() {
 }
 
 
-
-
 /**
  * @param {number} lookupIndex a single key to an object in dict.json
  * @param {string} matchedVariant the specific matched variant in lookup.json
@@ -55,6 +54,7 @@ class MatchedWordEntry {
     this.url = url;
   }
 
+  /// we probably don't need this but on the offchance we REALLY need to check class instance equality JS is Badde
   isEqual(otherEntry) {
     return (
       this.lookupIndex === otherEntry.lookupIndex &&
