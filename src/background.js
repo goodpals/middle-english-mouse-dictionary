@@ -36,7 +36,13 @@
       title: "Query selected text on online dictionary",
       contexts: ["selection"],
     });
+    browser.contextMenus.create({
+      id: "addToList",
+      title: "add to list",
+      contexts: ["selection"],
+    });
 }();
+
 
 
 /** RIGHT-CLICK CONTEXTMENU LISTENER

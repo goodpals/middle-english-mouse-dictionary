@@ -27,8 +27,12 @@
     const currentState = await browser.storage.local.get();
     if (currentState.onOffState != 'on') return;
     
+    // const checkkeys = Object.keys(activeWords);
+    // const checkword = activeWords[checkkeys[checkkeys.length-1]];
+    deleteListenersForButtons();
+    
     setCurrentlySelectedTextInLocalStorage();
-
+    
     const selection = document.getSelection();
     const hasChanged = processSelection(selection.toString().toLowerCase());
     if (!hasChanged) return;
@@ -38,15 +42,45 @@
     } else {
       const keys = Object.keys(activeWords);
       const word = activeWords[keys[keys.length-1]];
+      
       const printout = dictionaryEntriesToHTMLtext(word);
       if (printout == null) return;
       
       const range = selection.getRangeAt(0);
       const rect = range.getBoundingClientRect(); 
       createOrUpdatePopup(event, printout, rect);
+      createListenersForButtons(word);
     }
   });
 }();
+
+
+/// this is so cursed gode help me but it works
+function createListenersForButtons(entries) {
+  if (entries == null) return;
+  console.log("createListenersForButtons");
+  for (entry of entries) {
+    const id = entry.lookupIndex;
+    presentListeners.push(id);
+    document.querySelector(`#_${id}`).addEventListener('click', event => {
+      // console.log("querySelector anonyFuncty: " + id);
+      addWordToUserList(id);
+    });
+  }
+  console.log("present listeners: " + presentListeners);
+}
+
+function deleteListenersForButtons(){
+  for (const id of presentListeners) {
+    const button = document.querySelector(`#_${id}`);
+    if (button) {
+        button.removeEventListener('click', event => {
+        addWordToUserList(id);
+      });
+    }
+  }
+  presentListeners = []; // empty the array of IDs
+}
 
 
 /**
@@ -94,10 +128,13 @@ function createOrUpdatePopup(event, content, rect) {
 
 function hidePopup() {
   const popup = findPopup();
+
   if (popup != null) {
     popup.remove();
   }
 }
+
+
 
 
 /** 
@@ -110,11 +147,11 @@ function searchDictionary(selectedWord) {
   // console.log('searching dictionary for ' + selectedWord + ', found: ' + (selectedWord in dictionaryLookupTable));
   if (selectedWord in dictionaryLookupTable) {
     const wordIndexes = dictionaryLookupTable[selectedWord];
-
+    const url = extractBaseURLOfPage();
     let extractedEntries = []; 
     for (index of wordIndexes) {
       /// TODO: change "matchedVariant" to whatever selectedWord is fuzzymatched to once fuzzymatching is implemented
-      const entry = new MatchedWordEntry(index, selectedWord, selectedWord); 
+      const entry = new MatchedWordEntry(index, selectedWord, selectedWord, url); 
       extractedEntries.push(entry);
     }
     return extractedEntries;
@@ -148,6 +185,15 @@ function dictionaryEntriesToHTMLtext(entries) {
     }
     text += "</p>";
 
+    // const stringified = encodeURIComponent(JSON.stringify(entry));
+    // console.log(stringified);
+    const id = entry.lookupIndex;
+    text += `</p><button id="_${id}">Do Thing</button>`;
+
+
+    // text += `</p><button onclick="javascript: addWordToUserList('${stringified}')">Do Thing</button>`;
+    // document.querySelector(`#_${id}`).addEventListener('click', addWordToUserList(id));
+
     if (dictEntry.variants != null) {
       text += "<p>Variants: " + dictEntry.variants.join(", ") + "</p>";
     }
@@ -161,6 +207,7 @@ function dictionaryEntriesToHTMLtext(entries) {
 
   return text;
 }
+
 
 
 /**

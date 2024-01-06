@@ -2,6 +2,7 @@
   misc & in development functions
 */
 
+
 async function addToSidebarWordlist(thisWordInfo, state) {
   const content = state.userWordList;
   let userWords = Array.from(content);
@@ -27,6 +28,57 @@ async function setCurrentlySelectedTextInLocalStorage() {
   // TODO: chat about refactoring this/other globals IRT: we need to access data from background.js in order to open website query link. Alternative is cursed messagesending shit
   const selection = document.getSelection().toString().toLowerCase();
   await browser.storage.local.set({currentlySelectedText: selection}); 
+}
+
+
+//////////// VVVVVVVVVVVV
+
+
+function buildSidebar() {
+  const url =  extractBaseURLOfPage();
+  const urlExists = userPages.hasOwnProperty(url);
+  if (!urlExists) return; // TODO: fix up
+  
+  const wordsToShow = userAddedWords.filter((e) => e.url === url);
+
+  // TODO
+
+}
+
+/**
+ * @param {*} word for now, a string, not a MatchedWordEntry
+ */
+function addWordToUserList(word) {
+  const url = extractBaseURLOfPage();
+  console.log("addWordToUserList: " + word);
+}
+
+
+function addPageToUserPagesList() {
+  const url =  extractBaseURLOfPage();
+  const urlExists = userPages.hasOwnProperty(url);
+  if (!urlExists) { 
+    userPages[url] = buildPageInfo();
+  }
+  // console.log(userPages[url].pageName);
+}
+
+
+function buildPageInfo() {
+  const pageTitle = document.title;
+  const faviconUrl = document.querySelector('link[rel="shortcut icon"]')?.href || document.querySelector('link[rel="icon"]')?.href || 'https://www.google.com/s2/favicons?domain=' + window.location.hostname;
+
+  const pageEntry = new PageInfo(pageTitle, faviconUrl);
+  return pageEntry;
+}
+
+
+function extractBaseURLOfPage() {
+  const currentUrl = window.location.href;
+  const urlObject = new URL(currentUrl);
+  const baseUrl = `${urlObject.hostname}${urlObject.pathname}`;
+  // console.log('Base URL:', baseUrl);
+  return baseUrl;
 }
 
 
