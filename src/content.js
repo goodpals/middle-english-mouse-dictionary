@@ -1,26 +1,18 @@
 /* The content.js file is responsible for injecting or modifying the content of web pages that you visit */
 
 /* 
-  WORD LOOKUP LISTENER: this listens for the user double-clicking a word in the DOM and checks the dictionary for that word, making an info popup & adding it to the user's dictionary. The popup then closes on a single click anywhere in the DOM.
+  WORD LOOKUP LISTENER: this listens for the user double-clicking a word in the DOM and checks the dictionary for that word, making an info modal pop up. The modal then closes on a single click anywhere in the DOM.
 */
-
-
-// SETUP & EVENT LISTENERS BEGIN
-
-/** 
- * Instantiate content.js specific dictionary variables, extracted from the JSON files in the `data` directory, by functions in  background.js.
- * This is done because the dictionary files cannot be accessed directly by content.js; they must be first instantiated in background.js, and then loaded into content.js specific global variables by means of a local-storage getter function.
- */
-! async function loadDict() {
-  dictionary = (await browser.storage.local.get("dictionary")).dictionary;
-  dictionaryLookupTable = (await browser.storage.local.get("lookup")).lookup;
-  // console.log('MEMD (content): Dictionary loaded, length: ' + Object.keys(dictionary).length);
-  // console.log('MEMD (content): Lookup table loaded, length: ' + Object.keys(dictionaryLookupTable).length);
-}();
 
 
 /** 
  * EVENT LISTENER FOR CLICK + DRAG ON DOM TEXT
+ * @summary When the user selects text in their browser, this will: 
+ *  1. Check whether the extension is enabled (see: context menu features in background.js)
+ *  2. Delete any 'click' listeners for buttons in the modal (the word definitions popup that appears on mouseclick)
+ *  3. Set the selected text in local storage (see: openExternalDictionaryQuery() in background.js)
+ *  4. get the current selected text and check whether it is the same as before. 
+ *  5. If it is, a new modal will be created with new listeners.
  */
 ! async function listenForTextSelection() {
   document.addEventListener("selectionchange", async function(event) {
@@ -50,8 +42,6 @@
     }
   });
 }();
-
-
 
 
 
@@ -109,6 +99,7 @@ function searchDictionary(selectedWord) {
 }
 
 
+
 /**
  * This function receives a list of userWordListEntry class objects and uses their index value to get info from the dictionary, and returns it as formatted text.
  * @param {Array.<MatchedWordEntry>} entries
@@ -142,7 +133,6 @@ function dictionaryEntriesToHTMLtext(entries, mode, pageData) {
       const id = entry.lookupIndex;
       text += ` <button id="_${id}" class="modalButton">+</button> `;
     }
-
     text += "</p>";
 
     if (dictEntry.variants != null) text += "<p>Variants: " + dictEntry.variants.join(", ") + "</p>";
@@ -154,7 +144,6 @@ function dictionaryEntriesToHTMLtext(entries, mode, pageData) {
     }
     text += "<p>_____</p>";
   }
-
   return text;
 }
 

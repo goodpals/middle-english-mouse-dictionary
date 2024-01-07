@@ -1,12 +1,12 @@
 /* 
-  USER DICTIONARY POPUP LISTENER: This listens for a message sent from the contextMenu listener and toggles a popup modal held in global scope (see: globals.js). Because HTML content injection cannot be done from the background.js script, a message must be sent from the contextMenu action listener in background.js, using the browser.tabs.sendMessage functionality.
+  USER WORDLIST SIDEBAR LISTENER: This listens for a message sent from the contex menu listener and toggles a sidebar HTML element held in global scope (see: globals.js). 
+  Because HTML content injection cannot be done from the background.js script, a message must be sent from the contextMenu action listener in background.js, using the browser.tabs.sendMessage functionality.
 */
 
 !async function listenForSidebarRequest () {
   browser.runtime.onMessage.addListener(async function(request, sender, sendResponse) {
     const url = extractBaseURLOfPage();
     if (request.action === "showWordList") {
-      console.log(! sidebarExists(url))
       if (! sidebarExists(url)) {
         sidebarStates[url] = createSidebar(); 
       }
@@ -57,7 +57,7 @@ function sidebarExists(url) {
 }
 
 
-/// TODO: adapt dictionaryEntriesToHTMLtext() to sidebar-specific needs
+
 function createSidebar() {
   const url =  extractBaseURLOfPage();
   if (! userPages.hasOwnProperty(url)) {
@@ -74,7 +74,7 @@ function createSidebar() {
 
   document.body.appendChild(sidebar);
 
-  // must add query AFTER appended into page body
+  // must add eventListener AFTER element has been appended into page body
   document.querySelector(`#${delSidebarButtonId}`).addEventListener('click', event => {
     removeSidebar();
   });

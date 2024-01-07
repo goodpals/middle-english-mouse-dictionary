@@ -1,6 +1,8 @@
 /* 
-  The modal is the little popup that appears near the mouse when the user selects text.
+  The modal is the little popup that appears near the mouse when the user selects text. 
+  See listenForTextSelection() in content.js for how decisions are made about the modal.
 */
+
 
 /**
  * @param {MouseEvent} event contains co-ordinates for your mouse position etc.
@@ -35,6 +37,35 @@ async function createModal(event, content, rect) {
     modal.style.right = aynRand + 'px';
   }
 }
+
+
+
+function createListenersForModalButtons(entries) {
+  if (entries == null) return;
+  for (const entry of entries) {
+    const id = entry.lookupIndex;
+    presentListeners.push(id);
+    document.querySelector(`#_${id}`).addEventListener('click', event => {
+      // console.log("querySelector anonyFuncty: " + entryConst.lookupIndex);
+      addWordToUserList(entry);
+    });
+  }
+  // console.log("createListenersForButtons : present listeners: " + presentListeners);
+}
+
+
+function deleteListenersForModalButtons() {
+  for (const id of presentListeners) {
+    const button = document.querySelector(`#_${id}`);
+    if (button) {
+      button.removeEventListener('click', event => {
+        addWordToUserList(entry);
+      });
+    }
+  }
+  clearPresentListeners();
+}
+
 
 
 /**
@@ -73,30 +104,3 @@ function promiseNextFrame(){
 }
 
 
-
-/// this is so cursed gode help me but it works
-function createListenersForModalButtons(entries) {
-  if (entries == null) return;
-  for (const entry of entries) {
-    const id = entry.lookupIndex;
-    presentListeners.push(id);
-    document.querySelector(`#_${id}`).addEventListener('click', event => {
-      // console.log("querySelector anonyFuncty: " + entryConst.lookupIndex);
-      addWordToUserList(entry);
-    });
-  }
-  // console.log("createListenersForButtons : present listeners: " + presentListeners);
-}
-
-
-function deleteListenersForModalButtons(){
-  for (const id of presentListeners) {
-    const button = document.querySelector(`#_${id}`);
-    if (button) {
-      button.removeEventListener('click', event => {
-        addWordToUserList(entry);
-      });
-    }
-  }
-  clearPresentListeners();
-}
