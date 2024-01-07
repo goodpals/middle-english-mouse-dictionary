@@ -45,8 +45,7 @@ function removeSidebar() {
 function updateSidebar() {
   const url = extractBaseURLOfPage();
   if (sidebarExists(url)) {
-    sidebarStates[url].remove();
-    delete sidebarStates[url];
+    removeSidebar();
     sidebarStates[url] = createSidebar();
   }
 }
@@ -61,18 +60,17 @@ function sidebarExists(url) {
 /// TODO: adapt dictionaryEntriesToHTMLtext() to sidebar-specific needs
 function createSidebar() {
   const url =  extractBaseURLOfPage();
-  if (! userPages.hasOwnProperty(url)) return;
+  if (! userPages.hasOwnProperty(url)) {
+    return; // the user must have already added a word from this page. doing so creates a log in userPages global variable.
+  }
+
   const pageData = userPages[url];
-  
   const wordsToShow = userAddedWords.filter((e) => e.url === url).reverse();
 
   let sidebar = document.createElement('div');
   sidebar.className = 'wordListSidebar';
 
-  let printout = "";
-  // printout += "<p><b>double-click this sidebar to close it</b></p><br>";  
-  printout += dictionaryEntriesToHTMLtext(wordsToShow, "sidebar", pageData);
-  sidebar.innerHTML = printout;
+  sidebar.innerHTML = dictionaryEntriesToHTMLtext(wordsToShow, "sidebar", pageData);
 
   document.body.appendChild(sidebar);
 
