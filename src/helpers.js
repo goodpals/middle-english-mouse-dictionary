@@ -19,13 +19,13 @@ function addWordToUserList(word) {
   
   userAddedWords.push(word);
   addPageToUserPagesList();
-
-  console.log("addWordToUserList : added word: " + word.matchedVariant + " id: " + word.lookupIndex);
+  updateSidebar();
+  // console.log("addWordToUserList : added word: " + word.matchedVariant + " id: " + word.lookupIndex);
 }
 
 
 function addPageToUserPagesList() {
-  const url =  extractBaseURLOfPage();
+  const url = extractBaseURLOfPage();
   const urlExists = userPages.hasOwnProperty(url);
   if (!urlExists) { 
     userPages[url] = buildPageInfo();
@@ -65,17 +65,7 @@ function htmlize(entry) {
 }
 
 
-/**
- * @returns {HTMLElement | null}
- */
-function findPopup() {
-  return document.getElementById(popupId);
-}
 
-
-function promiseNextFrame(){
-  return new Promise(resolve => requestAnimationFrame(resolve)); 
-}
 
 
 // 🙄

@@ -33,3 +33,10 @@
   width: 22%;
   overflow-y: auto;
 }
+
+.modalButton {
+  height: 24px;
+  width: 24px;
+  border-radius: 37%;
+  background-color: #4cc9fa;
+}

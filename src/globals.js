@@ -5,7 +5,15 @@
 // Global variables (brave singletons)
 var dictionary = {};
 var dictionaryLookupTable = {};
-const popupId = 'yeFloatingeWindowe';
+
+const modalId = 'yeFloatingeWindowe';
+const delSidebarButtonId = 'delSidebar';
+
+/**
+ * @summary each key is the url of a page; each HTMLDivElement is the address of an existing sidebar
+ * @type {Object<string, HTMLDivElement>}
+ */
+var sidebarStates = {}; /// Tried implementing keeping this in the local storage; didn't work.
 
 
 /** 

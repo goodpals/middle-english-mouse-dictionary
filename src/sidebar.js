@@ -1,42 +1,84 @@
 /* 
-  USER DICTIONARY POPUP LISTENER: This listens for a message sent from the contextMenu listener and toggles a popup held in global named "popupState". Because HTML content injection cannot be done from the background.js script, a message must be sent from the contextMenu action listener in background.js, using the browser.tabs.sendMessage functionality.
+  USER DICTIONARY POPUP LISTENER: This listens for a message sent from the contextMenu listener and toggles a popup modal held in global scope (see: globals.js). Because HTML content injection cannot be done from the background.js script, a message must be sent from the contextMenu action listener in background.js, using the browser.tabs.sendMessage functionality.
 */
-let sidebarState; /// Tried implementing this algorithm keeping this in the local storage; didn't work.
 
-browser.runtime.onMessage.addListener(async function(request, sender, sendResponse) {
-  // await browser.storage.local.set({wordListViewState: 'on'});
-
-  if (request.action === "showWordList") {
-    console.log("showingSidebar1");
-    sidebarState = createSidebar(); 
-    console.log("showingSidebar2");
-
-    document.addEventListener('dblclick', async function(event) {
-      if (event.target.matches('.wordListSidebar') || event.target.matches('.wordListSidebar p')) {
-        document.removeEventListener('dblclick', this);
-        // await browser.storage.local.set({wordListViewState: 'off'});
-        sidebarState.remove();
+!async function listenForSidebarRequest () {
+  browser.runtime.onMessage.addListener(async function(request, sender, sendResponse) {
+    const url = extractBaseURLOfPage();
+    if (request.action === "showWordList") {
+      console.log(! sidebarExists(url))
+      if (! sidebarExists(url)) {
+        sidebarStates[url] = createSidebar(); 
       }
-    });
+      /// TODO: decide on whether we want this functionality or not <----------------------- 
+
+      // document.addEventListener('dblclick', async function(event) {
+      //   if (event.target.matches('.wordListSidebar') || event.target.matches('.wordListSidebar p')) {
+      //     document.removeEventListener('dblclick', this);
+      //     sidebarStates[url].remove();
+      //     delete sidebarStates[url];
+      //   }
+      // });
+    }
+  });
+}();
+
+
+
+function removeSidebar() {
+  // remove event listener for the Close Button in the sidebar
+  const button = document.querySelector(`${delSidebarButtonId}`);
+  if (button) {
+    button.removeEventListener('click', event => {
+      removeSidebar();
+    })
   }
 
-});
+  const url = extractBaseURLOfPage();
+  if (sidebarExists(url)) {
+    sidebarStates[url].remove();
+    delete sidebarStates[url];
+  }
+}
+
+
+function updateSidebar() {
+  const url = extractBaseURLOfPage();
+  if (sidebarExists(url)) {
+    sidebarStates[url].remove();
+    delete sidebarStates[url];
+    sidebarStates[url] = createSidebar();
+  }
+}
+
+
+function sidebarExists(url) {
+  if (sidebarStates[url] == null || sidebarStates[url] == undefined) return false;
+  return true;
+}
+
 
 /// TODO: adapt dictionaryEntriesToHTMLtext() to sidebar-specific needs
 function createSidebar() {
   const url =  extractBaseURLOfPage();
-  const urlExists = userPages.hasOwnProperty(url);
-  if (!urlExists) return;
+  if (! userPages.hasOwnProperty(url)) return;
+  const pageData = userPages[url];
   
-  const wordsToShow = userAddedWords.filter((e) => e.url === url);
+  const wordsToShow = userAddedWords.filter((e) => e.url === url).reverse();
 
   let sidebar = document.createElement('div');
   sidebar.className = 'wordListSidebar';
 
-  let printout = "<p><b>double-click this sidebar to close it</b></p><br>";  
-  printout += dictionaryEntriesToHTMLtext(wordsToShow);
+  let printout = "";
+  // printout += "<p><b>double-click this sidebar to close it</b></p><br>";  
+  printout += dictionaryEntriesToHTMLtext(wordsToShow, "sidebar", pageData);
   sidebar.innerHTML = printout;
 
   document.body.appendChild(sidebar);
+
+  // must add query AFTER appended into page body
+  document.querySelector(`#${delSidebarButtonId}`).addEventListener('click', event => {
+    removeSidebar();
+  });
   return sidebar;
 }

@@ -27,7 +27,7 @@
     const currentState = await browser.storage.local.get();
     if (currentState.onOffState != 'on') return;
 
-    deleteListenersForButtons();    
+    deleteListenersForModalButtons();    
     setCurrentlySelectedTextInLocalStorage();
     
     const selection = document.getSelection();
@@ -35,48 +35,24 @@
     if (!hasChanged) return;
 
     if (Object.keys(activeWords).length === 0) {
-      hidePopup();
+      hideModal();
     } else {
       const keys = Object.keys(activeWords);
       const word = activeWords[keys[keys.length-1]];
       
-      const printout = dictionaryEntriesToHTMLtext(word);
+      const printout = dictionaryEntriesToHTMLtext(word, "modal", null);
       if (printout == null) return;
       
       const range = selection.getRangeAt(0);
       const rect = range.getBoundingClientRect(); 
-      createOrUpdatePopup(event, printout, rect);
-      createListenersForButtons(word);
+      createOrUpdateModal(event, printout, rect);
+      createListenersForModalButtons(word);
     }
   });
 }();
 
 
-/// this is so cursed gode help me but it works
-function createListenersForButtons(entries) {
-  if (entries == null) return;
-  for (const entry of entries) {
-    const id = entry.lookupIndex;
-    presentListeners.push(id);
-    document.querySelector(`#_${id}`).addEventListener('click', event => {
-      // console.log("querySelector anonyFuncty: " + entryConst.lookupIndex);
-      addWordToUserList(entry);
-    });
-  }
-  console.log("createListenersForButtons : present listeners: " + presentListeners);
-}
 
-function deleteListenersForButtons(){
-  for (const id of presentListeners) {
-    const button = document.querySelector(`#_${id}`);
-    if (button) {
-      button.removeEventListener('click', event => {
-        addWordToUserList(entry);
-      });
-    }
-  }
-  clearPresentListeners();
-}
 
 
 /**
@@ -109,29 +85,6 @@ function processSelection(selection) {
 } 
 
 
-/**
- * @param {MouseEvent} event 
- * @param {string} content 
- */
-function createOrUpdatePopup(event, content, rect) {
-  let popup = findPopup();
-  if (popup == null) {
-    createPopup(event, content, rect);
-  } else {
-    popup.innerHTML = content;
-  }
-}
-
-function hidePopup() {
-  const popup = findPopup();
-
-  if (popup != null) {
-    popup.remove();
-  }
-}
-
-
-
 
 /** 
  * Check if the passed-in word matches a key in lookup.json. 
@@ -159,41 +112,41 @@ function searchDictionary(selectedWord) {
 /**
  * This function receives a list of userWordListEntry class objects and uses their index value to get info from the dictionary, and returns it as formatted text.
  * @param {Array.<MatchedWordEntry>} entries
- * @returns {string} HTML text ready to be passed into a popup/sidebar HTML element constructor, or `null` if there are no entries to parse.
+ * @param {string} mode either "modal" or "sidebar"
+ * @param {PageInfo} pageData to be used with "sidebar" `mode`. Get extra pre-stored info about the page user is presently on
+ * @returns {string} HTML text ready to be passed into a modal/sidebar HTML element constructor, or `null` if there are no entries to parse.
  */
-function dictionaryEntriesToHTMLtext(entries) {
-  console.log(entries);
+function dictionaryEntriesToHTMLtext(entries, mode, pageData) {
   if (entries == null) return;
   
   let text = "";
-  if (entries.length > 1) {
-    text += "<h5>Possible Matches:</h5>";
+  
+  // build headers where appropriate
+  if (entries.length > 1 && mode != "sidebar") text += "<h5>Possible Matches:</h5>";
+  if (pageData != null   && mode == "sidebar") {
+    text += `<button id="${delSidebarButtonId}" class="delButton">x</button><br>`;
+    text += "<h6>" + pageData.pageName + "</h6><br>";
   }
 
+  // build word info data for each entry
   for (entry of entries) {
     const dictEntry = dictionary[entry.lookupIndex];
     
     let url = "https://quod.lib.umich.edu/m/middle-english-dictionary/dictionary?utf8=✓&search_field=anywhere&q=" + entry.usersSelectedWord;
 
     text += "<p><b><a href=\"" + url + "\"target=\"_blank\" rel=\"noopener\">" + entry.usersSelectedWord + "</a></b>";
-    
-    if (dictEntry.partOfSpeech != null) {
-      text += ": " + dictEntry.partOfSpeech;
+
+    if (dictEntry.partOfSpeech != null) text += ": " + dictEntry.partOfSpeech;
+
+    if (mode != "sidebar") {
+      const id = entry.lookupIndex;
+      text += ` <button id="_${id}" class="modalButton">+</button> `;
     }
+
     text += "</p>";
 
-    // const stringified = encodeURIComponent(JSON.stringify(entry));
-    // console.log(stringified);
-    const id = entry.lookupIndex;
-    text += `</p><button id="_${id}">Do Thing</button>`;
+    if (dictEntry.variants != null) text += "<p>Variants: " + dictEntry.variants.join(", ") + "</p>";
 
-
-    // text += `</p><button onclick="javascript: addWordToUserList('${stringified}')">Do Thing</button>`;
-    // document.querySelector(`#_${id}`).addEventListener('click', addWordToUserList(id));
-
-    if (dictEntry.variants != null) {
-      text += "<p>Variants: " + dictEntry.variants.join(", ") + "</p>";
-    }
     if (dictEntry.entry != null) {
       const entryText = dictEntry.entry;
       const htmlizedEntry = htmlize(entryText);
@@ -206,37 +159,3 @@ function dictionaryEntriesToHTMLtext(entries) {
 }
 
 
-
-/**
- * @param {MouseEvent} event contains co-ordinates for your mouse position etc.
- * @param {string} content HTML-formatted dictionary entry data
- * @param {DOMRect} rect position data for adjusting the popup location
- */
-async function createPopup(event, content, rect) {
-  let popup = document.createElement('div');
-  popup.id = popupId;
-  popup.className = 'singleWordInfoPopup';
-  popup.innerHTML = content;
-
-  popup.style.position = 'absolute';
-  popup.style.left = (rect.x  + window.scrollX - 120) + 'px';
-  popup.style.top = (rect.y + window.scrollY + 35) + 'px';
-
-  const windowWidth = window.outerWidth;
-
-  document.body.appendChild(popup); // the element must be rendered in order to then get the boundingClientRect();
-  await promiseNextFrame();
-
-  const popupCoordinates = popup.getBoundingClientRect();
-  const popup_rightEdge = popupCoordinates.right;
-  const popup_leftEdge = popupCoordinates.left; 
-
-  // deal with the popup rendering outside the window's boundary
-  if (popup_rightEdge > windowWidth) {
-    const difference = popup_rightEdge - windowWidth;
-    const karlMarx = popup_leftEdge - difference - 100; // -100 is a hacke
-    const aynRand = popup_rightEdge - difference - 100;
-    popup.style.left = karlMarx + 'px'; // style.left takes a STRINGE
-    popup.style.right = aynRand + 'px';
-  }
-}
