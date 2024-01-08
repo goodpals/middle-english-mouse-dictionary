@@ -75,6 +75,7 @@
 /** INSTANTIATE DICTIONARY OBJECTS
  * Extract extension-packaged dictionary files from their storage addresses, and pass them into k:v pair-based local storage setter.
  * These cannot be accessed directly by content.js; they must be first instantiated in background.js and then loaded into content.js specific global variables by means of a local-storage getter function.
+ * see: https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/manifest.json/web_accessible_resources
  */
 ! async function loadDictionariesIntoLocalStorage() {
   const dictionary = await getResource('data/dict.json');
@@ -82,7 +83,7 @@
   
   const lookup = await getResource('data/lookup.json');
   // console.log('MEMD: Lookup table loaded, length: ' + Object.keys(lookup).length);
-  
+
   browser.storage.local.set({dictionary, lookup});
 }();
 

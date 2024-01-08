@@ -144,6 +144,12 @@ function dictionaryEntriesToHTMLtext(entries, mode, pageData) {
     }
     text += "<p>_____</p>";
   }
+
+  // if (entries.length > 5) {
+    let fullURL = browser.runtime.getURL(getRandomImagePath());
+    if (fullURL) text += `<img src="${fullURL}" style="width:80%;display:block; margin: 0 auto;">`;
+  // }
+
   return text;
 }
 

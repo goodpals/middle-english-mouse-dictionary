@@ -9,6 +9,7 @@ const delSidebarButtonId = 'delSidebar';
 
 
 
+
 // DICTIONARIES
 
 var dictionary = {};
@@ -107,4 +108,23 @@ class PageInfo {
     this.pageName = pageName;
     this.favicon = favicon;
   }
+}
+
+
+
+// MARGINALIA IMAGE HANDLING
+// this is an ugly way of doing this but just for proof of concept this is *one* way.
+
+const imageFilePaths = [
+  "img/marginalia/bum.png",
+  "img/marginalia/unicorn.png",
+  "img/marginalia/willy.png",
+  "img/marginalia/rabbitHorn.png",
+  "img/marginalia/hand.png",
+  "img/marginalia/infectedBottom.png",
+];
+
+function getRandomImagePath() {
+  const randomIndex = Math.floor(Math.random() * imageFilePaths.length);
+  return imageFilePaths[randomIndex];
 }
