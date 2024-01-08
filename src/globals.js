@@ -121,6 +121,7 @@ const imageFilePaths = [
   "img/marginalia/willy.png",
   "img/marginalia/rabbitHorn.png",
   "img/marginalia/hand.png",
+  "img/marginalia/hedgy.png",
   "img/marginalia/infectedBottom.png",
 ];
 
