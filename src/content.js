@@ -130,18 +130,13 @@ function dictionaryEntriesToHTMLtext(entries, mode, pageData) {
     if (dictEntry.partOfSpeech != null) text += ": " + dictEntry.partOfSpeech;
 
     if (mode != "sidebar") {
-      const id = entry.lookupIndex;
+      const id = entry.lookupIndex; // must assign this to const first
       text += ` <button id="_${id}" class="modalButton">+</button> `;
     }
     text += "</p>";
 
     if (dictEntry.variants != null) text += "<p>Variants: " + dictEntry.variants.join(", ") + "</p>";
-
-    if (dictEntry.entry != null) {
-      const entryText = dictEntry.entry;
-      const htmlizedEntry = htmlize(entryText);
-      text += "<p>" + htmlizedEntry + "</p>";
-    }
+    if (dictEntry.entry != null) text += "<p>" + htmlize(dictEntry.entry) + "</p>";
 
     // This will display a single, randomised marginalia in any modal with >3 entries, in the middle of the entries.
     // Around 20% of lookup words have > 1 indexes; ~5% have > 2. 
@@ -151,7 +146,7 @@ function dictionaryEntriesToHTMLtext(entries, mode, pageData) {
     &&  (index+1 == Math.round(entries.length / 2))) {
       let fullURL = browser.runtime.getURL(getRandomImagePath());
       if (fullURL) {
-        text += `<img src="${fullURL}" style="width:90%;display:block; margin: 0 auto;">`;
+        text += `<img src="${fullURL}" style="width:85%;display:block; margin: 0 auto;">`;
         marginaliaShown = true;
       }
     }
@@ -161,7 +156,7 @@ function dictionaryEntriesToHTMLtext(entries, mode, pageData) {
     &&  (entries.length > 2) 
     &&  (index+1 == Math.round(entries.length / 2)  )) {
       if (persistentSideBarMarginaliaURL == null) persistentSideBarMarginaliaURL = browser.runtime.getURL(getRandomImagePath());
-      text += `<img src="${persistentSideBarMarginaliaURL}" style="width:90%;display:block; margin: 0 auto;">`;
+      text += `<img src="${persistentSideBarMarginaliaURL}" style="width:85%;display:block; margin: 0 auto;">`;
     }
     
     text += "<p>_____</p>";
