@@ -118,8 +118,20 @@ class PageInfo {
 // FUNNY FONTS, MARGINALIA IMAGE HANDLING &c.
 // this is an ugly way of doing this but just for proof of concept this is *one* way.
 
-const imageFilePaths = [
+/**
+ * @summary this is altered in content.js -> dictionaryEntriesToHTMLtext() when creating the sidebar. It is instantiated when the user first opens a sidebar, after which it will not be changed
+ */
+var persistentSideBarMarginaliaURL = null;
+
+const marginaliaFilepaths = [
   "marginalia/bum.png",
+  "marginalia/arseface.png",
+  "marginalia/horsnail.png",
+  "marginalia/hydra.png",
+  "marginalia/killerrabbit.png",
+  "marginalia/mixedupman.png",
+  "marginalia/prancingknight.png",
+  "marginalia/skullbishop.png",
   "marginalia/unicorn.png",
   "marginalia/willy.png",
   "marginalia/rabbitHorn.png",
@@ -136,8 +148,8 @@ const imageFilePaths = [
 ];
 
 function getRandomImagePath() {
-  const randomIndex = Math.floor(Math.random() * imageFilePaths.length);
-  return imageFilePaths[randomIndex];
+  const randomIndex = Math.floor(Math.random() * marginaliaFilepaths.length);
+  return marginaliaFilepaths[randomIndex];
 }
 
 

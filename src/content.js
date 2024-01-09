@@ -125,7 +125,6 @@ function dictionaryEntriesToHTMLtext(entries, mode, pageData) {
     const dictEntry = dictionary[entry.lookupIndex];
     
     const url = "https://quod.lib.umich.edu/m/middle-english-dictionary/dictionary?utf8=✓&search_field=anywhere&q=" + entry.usersSelectedWord;
-
     text += "<p><b><a href=\"" + url + "\"target=\"_blank\" rel=\"noopener\">" + entry.usersSelectedWord + "</a></b>";
 
     if (dictEntry.partOfSpeech != null) text += ": " + dictEntry.partOfSpeech;
@@ -144,24 +143,32 @@ function dictionaryEntriesToHTMLtext(entries, mode, pageData) {
       text += "<p>" + htmlizedEntry + "</p>";
     }
 
-    // This will display a single marginalia a little after the centre of the sidebar list, or one in any modal with >3 entries.
+    // This will display a single, randomised marginalia in any modal with >3 entries, in the middle of the entries.
     // Around 20% of lookup words have > 1 indexes; ~5% have > 2. 
-    // TODO: set a specific URL for each page's sidebar & make that marginalia persistent specifically for that page's sidebar, but not the modal.
-    if ((marginaliaShown == false)
+    if ((mode == "modal")
+    &&  (marginaliaShown == false)
     &&  (entries.length > 2) 
     &&  (index+1 == Math.round(entries.length / 2))) {
       let fullURL = browser.runtime.getURL(getRandomImagePath());
-      if (fullURL) text += `<img src="${fullURL}" style="width:80%;display:block; margin: 0 auto;">`;
-      marginaliaShown = true;
+      if (fullURL) {
+        text += `<img src="${fullURL}" style="width:90%;display:block; margin: 0 auto;">`;
+        marginaliaShown = true;
+      }
     }
 
+    // Same as for modal, but then that marginalia will be persistent for that page's sidebar for that session.
+    if ((mode == "sidebar") 
+    &&  (entries.length > 2) 
+    &&  (index+1 == Math.round(entries.length / 2)  )) {
+      if (persistentSideBarMarginaliaURL == null) persistentSideBarMarginaliaURL = browser.runtime.getURL(getRandomImagePath());
+      text += `<img src="${persistentSideBarMarginaliaURL}" style="width:90%;display:block; margin: 0 auto;">`;
+    }
+    
     text += "<p>_____</p>";
   }
 
   return text;
 }
-
-
 
 
 
