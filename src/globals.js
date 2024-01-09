@@ -1,6 +1,7 @@
 /* 
   Global variables (brave singletons)
   These are accessed by content.js and sidebar.js etc
+  Functions tightly associated with these globals such as those which instantiate their base values are also stored here.
 */
 
 // PAGE-SCOPED HTML ELEMENT IDs
@@ -23,6 +24,8 @@ var dictionaryLookupTable = {};
   dictionaryLookupTable = (await browser.storage.local.get("lookup")).lookup;
   // console.log('MEMD (content): Dictionary loaded, length: ' + Object.keys(dictionary).length);
   // console.log('MEMD (content): Lookup table loaded, length: ' + Object.keys(dictionaryLookupTable).length);
+  console.log(Object.values(dictionaryLookupTable).filter(e => e.length > 2).length)
+  console.log(Object.values(dictionaryLookupTable).length)
 }();
 
 
@@ -112,20 +115,87 @@ class PageInfo {
 
 
 
-// MARGINALIA IMAGE HANDLING
+// FUNNY FONTS, MARGINALIA IMAGE HANDLING &c.
 // this is an ugly way of doing this but just for proof of concept this is *one* way.
 
 const imageFilePaths = [
-  "img/marginalia/bum.png",
-  "img/marginalia/unicorn.png",
-  "img/marginalia/willy.png",
-  "img/marginalia/rabbitHorn.png",
-  "img/marginalia/hand.png",
-  "img/marginalia/hedgy.png",
-  "img/marginalia/infectedBottom.png",
+  "marginalia/bum.png",
+  "marginalia/unicorn.png",
+  "marginalia/willy.png",
+  "marginalia/rabbitHorn.png",
+  "marginalia/hand.png",
+  "marginalia/hedgy.png",
+  "marginalia/infectedBottom.png",
+  "marginalia/catSnail.png",
+  "marginalia/merman.png",
+  "marginalia/rabbitsProcession.png",
+  "marginalia/toad.png",
+  "marginalia/catMirror.png",
+  "marginalia/bellows.png",
+  "marginalia/catLicker.png",
 ];
 
 function getRandomImagePath() {
   const randomIndex = Math.floor(Math.random() * imageFilePaths.length);
   return imageFilePaths[randomIndex];
+}
+
+
+const blackletters = new Map([
+  ['A', '𝔄'],
+  ['B', '𝔅'],
+  ['C', 'ℭ'],
+  ['D', '𝔇'],
+  ['E', '𝔈'],
+  ['F', '𝔉'],
+  ['G', '𝔊'],
+  ['H', 'ℌ'],
+  ['I', 'ℑ'],
+  ['J', '𝔍'],
+  ['K', '𝔎'],
+  ['L', '𝔏'],
+  ['M', '𝔐'],
+  ['N', '𝔑'],
+  ['O', '𝔒'],
+  ['P', '𝔓'],
+  ['Q', '𝔔'],
+  ['R', 'ℜ'],
+  ['S', '𝔖'],
+  ['T', '𝔗'],
+  ['U', '𝔘'],
+  ['V', '𝔙'],
+  ['W', '𝔚'],
+  ['X', '𝔛'],
+  ['Y', '𝔜'],
+  ['Z', 'ℨ'],
+  ['a', '𝔞'],
+  ['b', '𝔟'],
+  ['c', '𝔠'],
+  ['d', '𝔡'],
+  ['e', '𝔢'],
+  ['f', '𝔣'],
+  ['g', '𝔤'],
+  ['h', '𝔥'],
+  ['i', '𝔦'],
+  ['j', '𝔧'],
+  ['k', '𝔨'],
+  ['l', '𝔩'],
+  ['m', '𝔪'],
+  ['n', '𝔫'],
+  ['o', '𝔬'],
+  ['p', '𝔭'],
+  ['q', '𝔮'],
+  ['r', '𝔯'],
+  ['s', '𝔰'],
+  ['t', '𝔱'],
+  ['u', '𝔲'],
+  ['v', '𝔳'],
+  ['w', '𝔴'],
+  ['x', '𝔵'],
+  ['y', '𝔶'],
+  ['z', '𝔷']
+]);
+
+function plaintextToFraktur(input) {
+  return input.split('').map((e) => blackletters.has(e) ? blackletters.get(e) : e).join('');
 }

@@ -110,20 +110,21 @@ function searchDictionary(selectedWord) {
 function dictionaryEntriesToHTMLtext(entries, mode, pageData) {
   if (entries == null) return;
   
+  let marginaliaShown = false;
   let text = "";
   
   // build headers where appropriate
-  if (entries.length > 1 && mode != "sidebar") text += "<h5>Possible Matches:</h5>";
+  if (entries.length > 1 && mode != "sidebar") text += `<p class="textHeader">` + plaintextToFraktur("Possible Matches")+"</p>";
   if (pageData != null   && mode == "sidebar") {
     text += `<button id="${delSidebarButtonId}" class="delButton">x</button><br>`;
-    text += "<h6>" + pageData.pageName + "</h6><br>";
+    text += `<p class="textHeader">` + plaintextToFraktur(pageData.pageName) + "</p><br>";
   }
 
   // build word info data for each entry
-  for (entry of entries) {
+  for (const [index, entry] of entries.entries()) {
     const dictEntry = dictionary[entry.lookupIndex];
     
-    let url = "https://quod.lib.umich.edu/m/middle-english-dictionary/dictionary?utf8=✓&search_field=anywhere&q=" + entry.usersSelectedWord;
+    const url = "https://quod.lib.umich.edu/m/middle-english-dictionary/dictionary?utf8=✓&search_field=anywhere&q=" + entry.usersSelectedWord;
 
     text += "<p><b><a href=\"" + url + "\"target=\"_blank\" rel=\"noopener\">" + entry.usersSelectedWord + "</a></b>";
 
@@ -142,15 +143,26 @@ function dictionaryEntriesToHTMLtext(entries, mode, pageData) {
       const htmlizedEntry = htmlize(entryText);
       text += "<p>" + htmlizedEntry + "</p>";
     }
+
+    // This will display a single marginalia a little after the centre of the sidebar list, or one in any modal with >3 entries.
+    // Around 20% of lookup words have > 1 indexes; ~5% have > 2. 
+    // TODO: set a specific URL for each page's sidebar & make that marginalia persistent specifically for that page's sidebar, but not the modal.
+    if ((marginaliaShown == false)
+    &&  (entries.length > 2) 
+    &&  (index+1 == Math.round(entries.length / 2))) {
+      let fullURL = browser.runtime.getURL(getRandomImagePath());
+      if (fullURL) text += `<img src="${fullURL}" style="width:80%;display:block; margin: 0 auto;">`;
+      marginaliaShown = true;
+    }
+
     text += "<p>_____</p>";
   }
 
-  // if (entries.length > 5) {
-    let fullURL = browser.runtime.getURL(getRandomImagePath());
-    if (fullURL) text += `<img src="${fullURL}" style="width:80%;display:block; margin: 0 auto;">`;
-  // }
-
   return text;
 }
+
+
+
+
 
 
