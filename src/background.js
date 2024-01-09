@@ -28,17 +28,12 @@
     });
     browser.contextMenus.create({
       id: "wordListSidebarToggler",
-      title: "show dictionary",
+      title: "open saved words sidebar",
       contexts: ["all"],
     });
     browser.contextMenus.create({
       id: "externalWebDictionary",
       title: "Query selected text on online dictionary",
-      contexts: ["selection"],
-    });
-    browser.contextMenus.create({
-      id: "addToList",
-      title: "add to list",
       contexts: ["selection"],
     });
 }();
@@ -70,6 +65,7 @@
     }
   });
 }();
+
 
 
 /** INSTANTIATE DICTIONARY OBJECTS

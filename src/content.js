@@ -130,7 +130,7 @@ function dictionaryEntriesToHTMLtext(entries, mode, pageData) {
     if (dictEntry.partOfSpeech != null) text += ": " + dictEntry.partOfSpeech;
 
     if (mode != "sidebar") {
-      const id = entry.lookupIndex; // must assign this to const first
+      const id = entry.lookupIndex; // must assign this to a const var first
       text += ` <button id="_${id}" class="modalButton">+</button> `;
     }
     text += "</p>";
@@ -146,7 +146,7 @@ function dictionaryEntriesToHTMLtext(entries, mode, pageData) {
     &&  (index+1 == Math.round(entries.length / 2))) {
       let fullURL = browser.runtime.getURL(getRandomImagePath());
       if (fullURL) {
-        text += `<img src="${fullURL}" style="width:85%;display:block; margin: 0 auto;">`;
+        text += `<img src="${fullURL}" style="width:80%;display:block; margin: 0 auto;">`;
         marginaliaShown = true;
       }
     }
@@ -156,7 +156,7 @@ function dictionaryEntriesToHTMLtext(entries, mode, pageData) {
     &&  (entries.length > 2) 
     &&  (index+1 == Math.round(entries.length / 2)  )) {
       if (persistentSideBarMarginaliaURL == null) persistentSideBarMarginaliaURL = browser.runtime.getURL(getRandomImagePath());
-      text += `<img src="${persistentSideBarMarginaliaURL}" style="width:85%;display:block; margin: 0 auto;">`;
+      text += `<img src="${persistentSideBarMarginaliaURL}" style="width:95%;display:block; margin: 0 auto;">`;
     }
     
     text += "<p>_____</p>";

@@ -4,7 +4,6 @@
 
 
 async function setCurrentlySelectedTextInLocalStorage() {
-  // TODO: chat about refactoring this/other globals IRT: we need to access data from background.js in order to open website query link. Alternative is cursed messagesending shit
   const selection = document.getSelection().toString().toLowerCase();
   await browser.storage.local.set({currentlySelectedText: selection}); 
 }
@@ -63,9 +62,6 @@ function htmlize(entry) {
 
   return replacedUnderscores;
 }
-
-
-
 
 
 // 🙄

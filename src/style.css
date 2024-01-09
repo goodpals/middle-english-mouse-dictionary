@@ -10,7 +10,7 @@
   /* max-width: 220px;
   max-height: 220px; */
   width: 25%;
-  height: 220px;
+  height: 250px;
   overflow-y: auto;
   /*
     TODO: when near the browser window edge this can create an element that partially spills outside of the DOM
@@ -32,6 +32,7 @@
   height: 99%;
   width: 23%;
   overflow-y: auto;
+  z-index: 69420;
 }
 
 .modalButton {

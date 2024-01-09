@@ -24,8 +24,6 @@ var dictionaryLookupTable = {};
   dictionaryLookupTable = (await browser.storage.local.get("lookup")).lookup;
   // console.log('MEMD (content): Dictionary loaded, length: ' + Object.keys(dictionary).length);
   // console.log('MEMD (content): Lookup table loaded, length: ' + Object.keys(dictionaryLookupTable).length);
-  console.log(Object.values(dictionaryLookupTable).filter(e => e.length > 2).length)
-  console.log(Object.values(dictionaryLookupTable).length)
 }();
 
 
@@ -124,27 +122,45 @@ class PageInfo {
 var persistentSideBarMarginaliaURL = null;
 
 const marginaliaFilepaths = [
-  "marginalia/bum.png",
   "marginalia/arseface.png",
-  "marginalia/horsnail.png",
-  "marginalia/hydra.png",
-  "marginalia/killerrabbit.png",
-  "marginalia/mixedupman.png",
-  "marginalia/prancingknight.png",
-  "marginalia/skullbishop.png",
-  "marginalia/unicorn.png",
-  "marginalia/willy.png",
-  "marginalia/rabbitHorn.png",
+  "marginalia/ashmole.png",
+  "marginalia/beehives.png",
+  "marginalia/beehives2.png",
+  "marginalia/bellows.png",
+  "marginalia/birdField.png",
+  "marginalia/bum.png",
+  "marginalia/catLicker.png",
+  "marginalia/catMirror.png",
+  "marginalia/catSnail.png",
+  "marginalia/deathD.png",
+  "marginalia/dragonInBed.png",
+  "marginalia/ducky.png",
+  "marginalia/greenKnight.png",
   "marginalia/hand.png",
   "marginalia/hedgy.png",
+  "marginalia/horsnail.png",
+  "marginalia/hydra.png",
   "marginalia/infectedBottom.png",
-  "marginalia/catSnail.png",
+  "marginalia/ironworker.png",
+  "marginalia/killerrabbit.png",
+  "marginalia/kynge.png",
+  "marginalia/kynge2.png",
+  "marginalia/mermaidHarp.png",
   "marginalia/merman.png",
+  "marginalia/merman2.png",
+  "marginalia/mixedupman.png",
+  "marginalia/otter.png",
+  "marginalia/owlboi.png",
+  "marginalia/prancingknight.png",
+  "marginalia/rabbitHorn.png",
   "marginalia/rabbitsProcession.png",
+  "marginalia/salamander.png",
+  "marginalia/skullbishop.png",
+  "marginalia/threeFish.png",
   "marginalia/toad.png",
-  "marginalia/catMirror.png",
-  "marginalia/bellows.png",
-  "marginalia/catLicker.png",
+  "marginalia/unicorn.png",
+  "marginalia/unicorn2.png",
+  "marginalia/wolf.png"
 ];
 
 function getRandomImagePath() {
