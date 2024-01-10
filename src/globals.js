@@ -160,6 +160,8 @@ const marginaliaFilepaths = [
   "marginalia/toad.png",
   "marginalia/unicorn.png",
   "marginalia/unicorn2.png",
+  "marginalia/wolf.png",
+  "marginalia/winter.png",
   "marginalia/wolf.png"
 ];
 
