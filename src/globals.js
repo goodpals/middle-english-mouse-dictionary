@@ -49,11 +49,21 @@ var userPages = {}; // these keys are param-stripped URLs
 /** 
  * @summary the words currently selected by the user in the window, each of which being a key to a `MatchedWordEntry` containing further information.
  * @global
- * @type {Object<string, MatchedWordEntry>} */
+ * @type {Object<string, Array<MatchedWordEntry>>} */
 var activeWords = {};
 
 function clearActiveWords() {
   activeWords = {};
+}
+
+/**
+ * @summary a list of strings containing the IDs of CSS-class `wordInfoTabButton` tab buttons for the modal, formatted as the word of interest prefixed by `_W`. These buttons, when pressed, reveal a tab containing word info, of the CSS class `wordInfoTab`
+ * @global 
+ * @type {Array<string>} */
+let presentTabButtonListeners = []; 
+
+function clearTabButtonListeners() {
+  presentTabButtonListeners = [];
 }
 
 /** 
@@ -147,7 +157,6 @@ const marginaliaFilepaths = [
   "marginalia/kynge2.png",
   "marginalia/mermaidHarp.png",
   "marginalia/merman.png",
-  "marginalia/merman2.png",
   "marginalia/mixedupman.png",
   "marginalia/otter.png",
   "marginalia/owlboi.png",

@@ -1,22 +1,55 @@
-.singleWordInfoPopup {
+.wordInfoModalPopup {
   background-color: #dddddd;
   color: black;
   border: 1px solid #ccc;
-  padding: 20px;
+  padding: 10px;
   margin: 0% 5% 0% 5%; /* top | right | bottom | left */
   font-family: sans-serif;
   box-shadow: 2px 2px 5px rgba(0,0,0,0.5);
   font-size: 14px;
-  /* max-width: 220px;
-  max-height: 220px; */
+  
   width: 25%;
   height: 250px;
-  overflow-y: auto;
-  /*
-    TODO: when near the browser window edge this can create an element that partially spills outside of the DOM
-    See: content.js --> createPopup()
-  */
+  position: absolute;
+
+  display: flex;
+  flex-direction: column-reverse; 
+  /* flex-direction: column;  */
 }
+
+
+.wordInfoTab {
+  display: none; /* Initial invisibility */
+  overflow-y: auto;
+  padding: 5% 0% 5% 0%;
+}
+
+
+.wordInfoTabButtonContainer {
+  overflow-x: auto; /* Enable horizontal scrolling */
+  white-space: nowrap; 
+  display: block;
+  height: 70px;
+  z-index: 5;
+  background-color: lightslategray;
+}
+.wordInfoTabButtonContainer::-webkit-scrollbar {
+  display: none; /* For Chrome, Safari, and Opera */ 
+} 
+.wordInfoTabButtonContainer {
+  -ms-overflow-style: none; /* For Internet Explorer and Edge */
+  scrollbar-width: none; /* For Firefox */
+}
+
+.wordInfoTabButton {
+  display: inline-block; /* Buttons flow horizontally */
+  align-items: center;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  white-space: nowrap;
+  flex-grow: 1;
+}
+
 
 .wordListSidebar {
   background-color: #dddddd;

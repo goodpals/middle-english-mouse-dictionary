@@ -29,16 +29,15 @@
     if (Object.keys(activeWords).length === 0) {
       hideModal();
     } else {
-      const keys = Object.keys(activeWords);
-      const word = activeWords[keys[keys.length-1]];
-      
-      const printout = dictionaryEntriesToHTMLtext(word, "modal", null);
-      if (printout == null) return;
-      
+      let printouts = {};
+      Object.entries(activeWords).forEach(([key, word]) => printouts[key] = dictionaryEntriesToHTMLtext(word, "modal", null));
+
       const range = selection.getRangeAt(0);
       const rect = range.getBoundingClientRect(); 
-      createOrUpdateModal(event, printout, rect);
-      createListenersForModalButtons(word);
+      createOrUpdateModal(event, printouts, rect);
+
+      const allMatchedWordEntries = Object.values(activeWords).flatMap(entries => entries);
+      createListenersForModalButtons(allMatchedWordEntries);
     }
   });
 }();
@@ -108,7 +107,7 @@ function searchDictionary(selectedWord) {
  * @returns {string} HTML text ready to be passed into a modal/sidebar HTML element constructor, or `null` if there are no entries to parse.
  */
 function dictionaryEntriesToHTMLtext(entries, mode, pageData) {
-  if (entries == null) return;
+  if (entries == null || entries == undefined) return;
   
   let marginaliaShown = false;
   let text = "";
