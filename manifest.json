@@ -25,7 +25,8 @@
   ],
   "web_accessible_resources": [
     "data/*.json",
-    "marginalia/*.png"
+    "marginalia/*.png",
+    "img/modal_background.jpg"
   ],
   "icons": {
     "48": "img/icon.png",
