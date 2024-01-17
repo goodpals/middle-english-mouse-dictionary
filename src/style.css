@@ -29,9 +29,10 @@
   overflow-x: auto; /* Enable horizontal scrolling */
   white-space: nowrap; 
   display: block;
-  height: 70px;
+  height: 25px;
   z-index: 5;
-  background-color: lightslategray;
+  background-color: rgb(195, 203, 211);
+  flex-shrink: 0;
 }
 .wordInfoTabButtonContainer::-webkit-scrollbar {
   display: none; /* For Chrome, Safari, and Opera */ 
