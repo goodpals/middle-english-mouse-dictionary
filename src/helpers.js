@@ -64,6 +64,18 @@ function htmlize(entry) {
 }
 
 
-// 🙄
+/*
+    ,-----------.
+   (_\           \
+      |           |
+      |           |
+      |  js bad   |
+      |           |
+     _|           |
+    (_/_____(*)___/
+             \\
+              ))
+              ^ 
+*/
 const areSetsEqual = (a, b) =>
   a.size === b.size && [...a].every((value) => b.has(value));

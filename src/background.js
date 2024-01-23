@@ -1,9 +1,30 @@
-/* 
-  the background/service worker is to handle events, manage data, and perform actions that don’t require direct user interaction.
-*/
+  /*-~-*-~-*-~-*-~-*-~-*-~-*-~-*-~-*-~-*-~-*-~-*-~+ 
+  |+-*-~-*-~-*-~-*-~-*-~-*-~-*-~-*-~-*-~-*-~-*-~-+|
+  |)|                                           |(|
+  |*|           ##### #####                     |*|
+  |(|        /#####  /##############,           |)|
+  |*|      //   //  /               ###         |*|
+  |)|     /    //  /      _.--,_     ###        |(|
+  |*|         //  /    .-'      "-.   ###       |*|
+  |(|         ## ##   /            \    ##      |)|
+  |*|         ## ##  '          _.  '   ##      |*|
+  |)|         ## ##  \      "" /  ~(    ##      |(|
+  |*|         ## ##   '=,,_ =\__ `  &   ##      |*|
+  |(|         #  ##         "  "'; \\\  ##      |)|
+  |*|            //                     //      |*|  
+  |)|       //###/                    //        |(|
+  |*|      //   #####################/          |*|
+  |(|     //       ############                 |)|
+  |*|                                           |*|
+  |+-*-~-*-~-*-~-*-~-*-~-*-~-*-~-*-~-*-~-*-~-*-~-+|
+  +-~-*-~-*-~-*-~-*-~-*-~-*-~-*-~-*-~-*-~-*-~-*-~-/ ictionary data-loading, semi-persistent user data storage, and right-click context menu configuration is done here. This file is the "service worker", defined as a "background script" in the manifest.json and is used to monitor and handle tab events, manage data, retrieve JSON files defined in manifest.json->"web accessible resources", and perform actions that don’t require direct user interaction. 
 
-/// STORAGE.LOCAL: https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/storage/local
-/// CONTEXT MENUS: https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/menus
+  Background scripts are unable to directly interact with browser elements or the console, and triggering background-script-associated functions must be done by sengin messages between background scripts and content scripts using event listeners. 
+  
+  Background Scripts: https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/Background_scripts
+  Local Storage:      https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/storage/local
+  Context Menus:      https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/menus.
+*/
 
 ! async function setStateFirstTime(){  
   await browser.storage.local.set({ 

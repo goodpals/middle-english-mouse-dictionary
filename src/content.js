@@ -1,7 +1,17 @@
-/* The content.js file is responsible for injecting or modifying the content of web pages that you visit */
+/*][%][&][|][>][+][=][-][<][?]
+[.]                        [/]
+[~]      .P".  _.gbasdP`   [^] 
+[^]    dP  .aT"  Y$%P'     [~]
+[/]    #     #    ||       [*]
+[?]    #     #    ||       [%]
+[<]    Tb.   %    ||       [&]
+[-]     Y$.  '    |   !    [|]
+[=]      "Yp.    ||  ."    [>]
+[+]        "^T$%$TRP"      [+]
+[>]                        [=]  
+[|][&][%][*][~][^][/][?][<][-] ontent domain scripts are responsible for injecting or modifying the content of web pages that users visit. The 'content domain' as defined in the manifest JSON consists of scripts sharing a single scope, with this `content.js` being the main script, and listenForTextSelection() being the main driver for this extension's functionality. Content domain scripts do not have permissions for e.g. tab creation, instantiation of local storage keys etc, and so sending messages from the content domain to the background domain is necessary. 
 
-/* 
-  WORD LOOKUP LISTENER: this listens for the user double-clicking a word in the DOM and checks the dictionary for that word, making an info modal pop up. The modal then closes on a single click anywhere in the DOM.
+Once HTML is injected into the browser window from a content domain script, it exists within a different scope. So, if you create an HTML button with a function `doThing()` assigned to it, and dothing() is defined in a content domain script, the button in the user's browser no longer has access to that function, and pressing it will produce a reference error.
 */
 
 
