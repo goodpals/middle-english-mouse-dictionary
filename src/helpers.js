@@ -8,6 +8,42 @@ async function setCurrentlySelectedTextInLocalStorage() {
   await browser.storage.local.set({currentlySelectedText: selection}); 
 }
 
+/// TODO: doing new shit here
+async function addWordToLocalUserList(word) {
+  const currentState = await browser.storage.local.get("userWordList");
+  const currentWordsList = currentState.userWordList;
+  const hasCommonIndex = currentWordsList.some((e) => e.lookupIndex === word.lookupIndex && e.url === word.url);
+  if (hasCommonIndex) return;
+
+  console.log("_______\n word")
+  console.log(word)
+
+  console.log("function: currentWordsList:");
+  console.log(currentWordsList);
+
+  console.log("state: userWordList:");
+  console.log(currentState.userWordList);
+
+  await new Promise((resolve) => {
+    console.log("Inside the promise");
+    currentWordsList.push(word);
+    browser.storage.local.set({ "userWordList": currentWordsList }, resolve);
+  });
+
+  console.log("pushed to storage");
+
+  await getState()
+
+  // addPageToUserPagesList();
+  // updateSidebar();
+}
+
+async function getState(){
+  const newState = await browser.storage.local.get();
+  const newList = newState.userWordList;
+  console.log(newList);
+}
+
 
 /**
  * @param {MatchedWordEntry} word

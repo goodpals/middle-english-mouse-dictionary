@@ -120,6 +120,7 @@ function createListenersForModalButtons(entries) {
     document.querySelector(`#_${id}`).addEventListener('click', event => {
       // console.log("querySelector anonyFuncty: " + entryConst.lookupIndex);
       addWordToUserList(entry);
+      addWordToLocalUserList(entry); // changed
     });
   }
   // console.log("createListenersForButtons : present listeners: " + presentListeners);
@@ -132,6 +133,7 @@ function deleteListenersForModalButtons() {
     if (button) {
       button.removeEventListener('click', event => {
         addWordToUserList(entry);
+        addWordToLocalUserList(entry); // changed
       });
     }
   }

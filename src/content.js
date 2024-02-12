@@ -65,7 +65,7 @@ function processSelection(selection) {
   /** @type {Set<string>} */
   const prev = new Set(Object.keys(activeWords));
   const sel = new Set(selection.split(" "));
-
+  
   const newWords = new Set([...sel].filter(x => !prev.has(x)));
   const oldWords = new Set([...prev].filter(x => !sel.has(x)));
   
