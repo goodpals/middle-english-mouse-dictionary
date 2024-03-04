@@ -29,7 +29,9 @@
 ! async function setStateFirstTime(){  
   await browser.storage.local.set({ 
     onOffState: 'on', 
-    userWordList: [], 
+    userWordList: [], // words a user wants to display in sidebar
+    userPagesList: {}, // pages on which user has logged words to their userWordList
+    sidebarStatesList: {},
     currentlySelectedText: '',
     // wordListViewState: 'off' 
   });

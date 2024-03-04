@@ -8,43 +8,6 @@ async function setCurrentlySelectedTextInLocalStorage() {
   await browser.storage.local.set({currentlySelectedText: selection}); 
 }
 
-/// TODO: doing new shit here
-async function addWordToLocalUserList(word) {
-  const currentState = await browser.storage.local.get("userWordList");
-  const currentWordsList = currentState.userWordList;
-  const hasCommonIndex = currentWordsList.some((e) => e.lookupIndex === word.lookupIndex && e.url === word.url);
-  if (hasCommonIndex) return;
-
-  console.log("_______\n word")
-  console.log(word)
-
-  console.log("function: currentWordsList:");
-  console.log(currentWordsList);
-
-  console.log("state: userWordList:");
-  console.log(currentState.userWordList);
-
-  await new Promise((resolve) => {
-    console.log("Inside the promise");
-    currentWordsList.push(word);
-    browser.storage.local.set({ "userWordList": currentWordsList }, resolve);
-  });
-
-  console.log("pushed to storage");
-
-  await getState()
-
-  // addPageToUserPagesList();
-  // updateSidebar();
-}
-
-async function getState(){
-  const newState = await browser.storage.local.get();
-  const newList = newState.userWordList;
-  console.log(newList);
-}
-
-
 /**
  * @param {MatchedWordEntry} word
  */
@@ -53,7 +16,7 @@ function addWordToUserList(word) {
   if (hasCommonIndex) return; 
   
   userAddedWords.push(word);
-  addPageToUserPagesList();
+  addPageToUserPagesList(); // original
   updateSidebar();
   // console.log("addWordToUserList : added word: " + word.matchedVariant + " id: " + word.lookupIndex);
 }
@@ -115,3 +78,62 @@ function htmlize(entry) {
 */
 const areSetsEqual = (a, b) =>
   a.size === b.size && [...a].every((value) => b.has(value));
+
+
+
+
+
+
+   /// TODO: doing new shit here
+
+
+async function addWordToLocalUserList(word) {
+  const currentState = await browser.storage.local.get("userWordList");
+  const currentWordsList = currentState.userWordList;
+  const hasCommonIndex = currentWordsList.some((e) => e.lookupIndex === word.lookupIndex && e.url === word.url);
+  if (hasCommonIndex) return;
+
+  await new Promise((resolve) => {
+    console.log("Inside the promise");
+    currentWordsList.push(word);
+    browser.storage.local.set({ "userWordList": currentWordsList }, resolve);
+  });
+  // await printState('userWordList');
+
+  addPageToLocalUserPagesList();
+  updateSidebar();
+}
+
+
+// new functions begin ________________________________________________________________________
+async function addPageToLocalUserPagesList() {
+  const currentState = await browser.storage.local.get("userPagesList");
+  const currentPagesList = currentState.userPagesList;
+  const url = extractBaseURLOfPage();
+
+  const urlAlreadyLogged = currentPagesList.hasOwnProperty(url);
+  if (urlAlreadyLogged) return; 
+
+  await new Promise((resolve) => {
+    currentPagesList[url] = buildPageInfo();
+    browser.storage.local.set({ "userPagesList": currentPagesList }, resolve);
+  });
+  // await printState('userPagesList');
+}
+
+
+
+async function printState(state){
+  const newState = await browser.storage.local.get();
+  if (state === 'userWordList') {
+    console.log('userWords');
+    const newWordList = newState.userWordList;
+    console.log(newWordList);
+  }
+  if (state === 'userPagesList') {
+    console.log('userPages');
+    const newPagesList = newState.userPagesList;
+    console.log(newPagesList);
+  }
+  return;
+}
