@@ -8,28 +8,28 @@ async function setCurrentlySelectedTextInLocalStorage() {
   await browser.storage.local.set({currentlySelectedText: selection}); 
 }
 
-/**
- * @param {MatchedWordEntry} word
- */
-function addWordToUserList(word) {
-  const hasCommonIndex = userAddedWords.some((e) => e.lookupIndex === word.lookupIndex && e.url === word.url);
-  if (hasCommonIndex) return; 
+// /**
+//  * @param {MatchedWordEntry} word
+//  */
+// function addWordToUserList(word) {
+//   const hasCommonIndex = userAddedWords.some((e) => e.lookupIndex === word.lookupIndex && e.url === word.url);
+//   if (hasCommonIndex) return; 
   
-  userAddedWords.push(word);
-  addPageToUserPagesList(); // original
-  updateSidebar();
-  // console.log("addWordToUserList : added word: " + word.matchedVariant + " id: " + word.lookupIndex);
-}
+//   userAddedWords.push(word);
+//   addPageToUserPagesList(); // original
+//   updateSidebar();
+//   // console.log("addWordToUserList : added word: " + word.matchedVariant + " id: " + word.lookupIndex);
+// }
 
 
-function addPageToUserPagesList() {
-  const url = extractBaseURLOfPage();
-  const urlExists = userPages.hasOwnProperty(url);
-  if (!urlExists) { 
-    userPages[url] = buildPageInfo();
-  }
-  // console.log(userPages[url].pageName);
-}
+// function addPageToUserPagesList() {
+//   const url = extractBaseURLOfPage();
+//   const urlExists = userPages.hasOwnProperty(url);
+//   if (!urlExists) { 
+//     userPages[url] = buildPageInfo();
+//   }
+//   // console.log(userPages[url].pageName);
+// }
 
 
 /**
@@ -39,7 +39,7 @@ function buildPageInfo() {
   const pageTitle = document.title;
   const faviconUrl = document.querySelector('link[rel="shortcut icon"]')?.href || document.querySelector('link[rel="icon"]')?.href || 'https://www.google.com/s2/favicons?domain=' + window.location.hostname;
 
-  const pageEntry = new PageInfo(pageTitle, faviconUrl);
+  const pageEntry = new PageInfo(pageTitle, faviconUrl, false);
   return pageEntry;
 }
 
@@ -48,7 +48,6 @@ function extractBaseURLOfPage() {
   const currentUrl = window.location.href;
   const urlObject = new URL(currentUrl);
   const baseUrl = `${urlObject.hostname}${urlObject.pathname}`;
-  // console.log('Base URL:', baseUrl);
   return baseUrl;
 }
 
@@ -94,7 +93,6 @@ async function addWordToLocalUserList(word) {
   if (hasCommonIndex) return;
 
   await new Promise((resolve) => {
-    console.log("Inside the promise");
     currentWordsList.push(word);
     browser.storage.local.set({ "userWordList": currentWordsList }, resolve);
   });

@@ -112,11 +112,13 @@ class MatchedWordEntry {
 /**
  * @brief instances of this class should be stored in a list. Check the list for the `sourcePageEntry.pageURL` corresponding to the current page of interest and handle thereafter as required.
  * @param {string} pageName name of the webpage
+ * @param {bool} sideBarOpen current state of the sidebar on this page
  * @param {string} favicon address of which
  */
 class PageInfo {
-  constructor(pageName, favicon) {
+  constructor(pageName, favicon, sideBarOpen) {
     this.pageName = pageName;
+    this.sideBarOpen = sideBarOpen;
     this.favicon = favicon;
   }
 }
