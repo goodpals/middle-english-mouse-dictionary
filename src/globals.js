@@ -4,10 +4,15 @@
   Functions tightly associated with these globals such as those which instantiate their base values are also stored here.
 */
 
-// PAGE-SCOPED HTML ELEMENT IDs
-const modalId = 'yeFloatingeWindowe';
-const delSidebarButtonId = 'delSidebar';
 
+
+// PAGE-SCOPED HTML ELEMENT IDs
+
+const delSidebarButtonId = 'delSidebar'; // this is the X close button on the sidebar
+
+const modalId = 'yeFloatingeWindowe'; // this is the popup of word definitions
+const TAB_BTN_ID_PREFIX = '_MEMD_TAB_BTN'; // Different words the user highlights, displayed in the modal
+const ADD_BUTTON_ID_PREFIX = '_MEMD_ADD_BTN'; // Button to add to the user list (displayed in the sidebar)
 
 
 
@@ -57,7 +62,7 @@ function clearActiveWords() {
 }
 
 /**
- * @summary a list of strings containing the IDs of CSS-class `wordInfoTabButton` tab buttons for the modal, formatted as the word of interest prefixed by `_W`. These buttons, when pressed, reveal a tab containing word info, of the CSS class `wordInfoTab`
+ * @summary a list of strings containing the IDs of CSS-class `wordInfoTabButton` tab buttons for the modal, formatted as the word of interest prefixed by `_MEMD_TABBUTTON_`. These buttons, when pressed, reveal a tab containing word info, of the CSS class `wordInfoTab`
  * @global 
  * @type {Array<string>} */
 let presentTabButtonListeners = []; 
@@ -75,12 +80,6 @@ var presentListeners = [];
 function clearPresentListeners() {
   presentListeners = [];
 }
-
-/**
- * @summary each key is the url of a page; each HTMLDivElement is the address of an existing sidebar.
- * @type {Object<string, HTMLDivElement>}
- */
-var sidebarStates = {}; /// Tried implementing keeping this in the local storage; didn't work.
 
 
 

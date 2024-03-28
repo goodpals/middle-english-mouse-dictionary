@@ -4,6 +4,7 @@
 */
 
 
+
 /**
  * @param {MouseEvent} event contains co-ordinates for your mouse position etc.
  * @param {Object<string, string} content a word and its HTMLized dictionary info
@@ -31,9 +32,7 @@ async function createModal(event, content, rect) {
   await promiseNextFrame();
 
   createTabButtonsWithListeners(content, modal, buttonContainer);
-
   showRequestedWordTab(presentTabButtonListeners[0]);
-
   repositionModal(modal);
 }
 
@@ -56,6 +55,7 @@ function repositionModal(modal) {
 }
 
 
+
 /**
  * @param {Object<string, string} content a word and its HTMLized dictionary info
 */
@@ -64,16 +64,16 @@ function createTabButtonsWithListeners(content, modal, buttonContainer) {
 
   Object.keys(content).forEach((key) => {
     let button = document.createElement('button');
-    const targetId = `_W${key}`; // must be const'd
+    const targetId = `${TAB_BTN_ID_PREFIX}${key}`; // must be const'd
+
     button.id = targetId;
     button.className = 'wordInfoTabButton';
     button.textContent = key;
     button.addEventListener('click', (event) => showRequestedWordTab(targetId));
-    // modal.appendChild(button);
+
     buttonContainer.appendChild(button);
   });
 }
-
 
 function showRequestedWordTab(targetId) {
   const targetElement = document.getElementById(targetId);
@@ -82,10 +82,9 @@ function showRequestedWordTab(targetId) {
   targetElement.style.display = "block";
 }
 
-
 function removeListenersForTabButtons() {
   for (const id of presentTabButtonListeners) {
-    const button = document.querySelector(`#_W${id}`);
+    const button = document.querySelector(`#${TAB_BTN_ID_PREFIX}${id}`); // note the hash
     if (button) button.removeEventListener('click', (event) => showRequestedWordTab(targetId));
   }
   clearTabButtonListeners();
@@ -99,7 +98,7 @@ function removeListenersForTabButtons() {
 function buildWordInfoTabSections(content, modal) {
   Object.entries(content).forEach(([key, HTMLText]) => {
     let elem = document.createElement('div');
-    const id = `_W${key}`;
+    const id = `${TAB_BTN_ID_PREFIX}${key}`;
     presentTabButtonListeners.push(id);
 
     elem.id = id;
@@ -117,20 +116,19 @@ function createListenersForModalButtons(entries) {
   for (const entry of entries) {
     const id = entry.lookupIndex;
     presentListeners.push(id);
-    document.querySelector(`#_${id}`).addEventListener('click', event => {
-      addWordToLocalUserList(entry); // changed
+    document.querySelector(`#${ADD_BUTTON_ID_PREFIX}${id}`).addEventListener('click', event => {
+      addWordToLocalUserList(entry); 
     });
   }
-  // console.log("createListenersForButtons : present listeners: " + presentListeners);
 }
 
 
 function deleteListenersForModalButtons() {
   for (const id of presentListeners) {
-    const button = document.querySelector(`#_${id}`);
+    const button = document.querySelector(`#${ADD_BUTTON_ID_PREFIX}${id}`);
     if (button) {
       button.removeEventListener('click', event => {
-        addWordToLocalUserList(entry); // changed
+        addWordToLocalUserList(entry);
       });
     }
   }
@@ -148,8 +146,6 @@ function createOrUpdateModal(event, content, rect) {
   if (modal == null || modal == undefined) {
     createModal(event, content, rect);
   } else {
-    // TODO: FIX so removal and recreation unnecessary
-    // modal.innerHTML = content; // before
     modal.remove();
     createModal(event, content, rect);
   }

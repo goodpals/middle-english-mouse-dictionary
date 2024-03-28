@@ -30,9 +30,9 @@
   await browser.storage.local.set({ 
     onOffState: 'on', 
     userWordList: [], // words a user wants to display in sidebar
-    userPagesList: {}, // pages on which user has logged words to their userWordList, and their sidebarOpen? state
+    userPagesList: {}, // pages on which user has logged words to their userWordList
     currentlySelectedText: '',
-    // wordListViewState: 'off' 
+
   });
 }();
 

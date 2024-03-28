@@ -109,6 +109,7 @@ function searchDictionary(selectedWord) {
 
 
 
+
 /**
  * This function receives a list of userWordListEntry class objects and uses their index value to get info from the dictionary, and returns it as formatted text.
  * @param {Array.<MatchedWordEntry>} entries
@@ -140,7 +141,7 @@ function dictionaryEntriesToHTMLtext(entries, mode, pageData) {
 
     if (mode != "sidebar") {
       const id = entry.lookupIndex; // must assign this to a const var first
-      text += ` <button id="_${id}" class="modalButton">+</button> `;
+      text += ` <button id="${ADD_BUTTON_ID_PREFIX}${id}" class="modalButton">+</button> `;
     }
     text += "</p>";
 

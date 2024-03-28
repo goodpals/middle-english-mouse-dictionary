@@ -8,29 +8,6 @@ async function setCurrentlySelectedTextInLocalStorage() {
   await browser.storage.local.set({currentlySelectedText: selection}); 
 }
 
-// /**
-//  * @param {MatchedWordEntry} word
-//  */
-// function addWordToUserList(word) {
-//   const hasCommonIndex = userAddedWords.some((e) => e.lookupIndex === word.lookupIndex && e.url === word.url);
-//   if (hasCommonIndex) return; 
-  
-//   userAddedWords.push(word);
-//   addPageToUserPagesList(); // original
-//   updateSidebar();
-//   // console.log("addWordToUserList : added word: " + word.matchedVariant + " id: " + word.lookupIndex);
-// }
-
-
-// function addPageToUserPagesList() {
-//   const url = extractBaseURLOfPage();
-//   const urlExists = userPages.hasOwnProperty(url);
-//   if (!urlExists) { 
-//     userPages[url] = buildPageInfo();
-//   }
-//   // console.log(userPages[url].pageName);
-// }
-
 
 /**
  * @returns {PageInfo} 
@@ -62,29 +39,6 @@ function htmlize(entry) {
 }
 
 
-/*
-    ,-----------.
-   (_\           \
-      |           |
-      |           |
-      |  js bad   |
-      |           |
-     _|           |
-    (_/_____(*)___/
-             \\
-              ))
-              ^ 
-*/
-const areSetsEqual = (a, b) =>
-  a.size === b.size && [...a].every((value) => b.has(value));
-
-
-
-
-
-
-   /// TODO: doing new shit here
-
 
 async function addWordToLocalUserList(word) {
   const currentState = await browser.storage.local.get("userWordList");
@@ -103,7 +57,7 @@ async function addWordToLocalUserList(word) {
 }
 
 
-// new functions begin ________________________________________________________________________
+
 async function addPageToLocalUserPagesList() {
   const currentState = await browser.storage.local.get("userPagesList");
   const currentPagesList = currentState.userPagesList;
@@ -135,3 +89,22 @@ async function printState(state){
   }
   return;
 }
+
+
+
+/*
+    ,-----------.
+   (_\           \
+      |           |
+      |           |
+      |  js bad   |
+      |           |
+     _|           |
+    (_/_____(*)___/
+             \\
+              ))
+              ^ 
+*/
+const areSetsEqual = (a, b) =>
+  a.size === b.size && [...a].every((value) => b.has(value));
+
