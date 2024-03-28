@@ -4,10 +4,15 @@
   Functions tightly associated with these globals such as those which instantiate their base values are also stored here.
 */
 
-// PAGE-SCOPED HTML ELEMENT IDs
-const modalId = 'yeFloatingeWindowe';
-const delSidebarButtonId = 'delSidebar';
 
+
+// PAGE-SCOPED HTML ELEMENT IDs
+
+const delSidebarButtonId = 'delSidebar'; // this is the X close button on the sidebar
+
+const modalId = 'yeFloatingeWindowe'; // this is the popup of word definitions
+const TAB_BTN_ID_PREFIX = '_MEMD_TAB_BTN'; // Different words the user highlights, displayed in the modal
+const ADD_BUTTON_ID_PREFIX = '_MEMD_ADD_BTN'; // Button to add to the user list (displayed in the sidebar)
 
 
 
@@ -57,7 +62,7 @@ function clearActiveWords() {
 }
 
 /**
- * @summary a list of strings containing the IDs of CSS-class `wordInfoTabButton` tab buttons for the modal, formatted as the word of interest prefixed by `_W`. These buttons, when pressed, reveal a tab containing word info, of the CSS class `wordInfoTab`
+ * @summary a list of strings containing the IDs of CSS-class `wordInfoTabButton` tab buttons for the modal, formatted as the word of interest prefixed by `_MEMD_TABBUTTON_`. These buttons, when pressed, reveal a tab containing word info, of the CSS class `wordInfoTab`
  * @global 
  * @type {Array<string>} */
 let presentTabButtonListeners = []; 
@@ -75,12 +80,6 @@ var presentListeners = [];
 function clearPresentListeners() {
   presentListeners = [];
 }
-
-/**
- * @summary each key is the url of a page; each HTMLDivElement is the address of an existing sidebar.
- * @type {Object<string, HTMLDivElement>}
- */
-var sidebarStates = {}; /// Tried implementing keeping this in the local storage; didn't work.
 
 
 
@@ -112,11 +111,13 @@ class MatchedWordEntry {
 /**
  * @brief instances of this class should be stored in a list. Check the list for the `sourcePageEntry.pageURL` corresponding to the current page of interest and handle thereafter as required.
  * @param {string} pageName name of the webpage
+ * @param {bool} sideBarOpen current state of the sidebar on this page
  * @param {string} favicon address of which
  */
 class PageInfo {
-  constructor(pageName, favicon) {
+  constructor(pageName, favicon, sideBarOpen) {
     this.pageName = pageName;
+    this.sideBarOpen = sideBarOpen;
     this.favicon = favicon;
   }
 }
@@ -132,51 +133,52 @@ class PageInfo {
 var persistentSideBarMarginaliaURL = null;
 
 const marginaliaFilepaths = [
-  "marginalia/arseface.png",
-  "marginalia/ashmole.png",
-  "marginalia/beehives.png",
-  "marginalia/beehives2.png",
-  "marginalia/bellows.png",
-  "marginalia/birdField.png",
-  "marginalia/bum.png",
-  "marginalia/catLicker.png",
-  "marginalia/catMirror.png",
-  "marginalia/catSnail.png",
-  "marginalia/deathD.png",
-  "marginalia/dragonInBed.png",
-  "marginalia/ducky.png",
-  "marginalia/greenKnight.png",
-  "marginalia/hand.png",
-  "marginalia/hedgy.png",
-  "marginalia/horsnail.png",
-  "marginalia/hydra.png",
-  "marginalia/infectedBottom.png",
-  "marginalia/ironworker.png",
-  "marginalia/killerrabbit.png",
-  "marginalia/kynge.png",
-  "marginalia/kynge2.png",
-  "marginalia/mermaidHarp.png",
-  "marginalia/merman.png",
-  "marginalia/mixedupman.png",
-  "marginalia/otter.png",
-  "marginalia/owlboi.png",
-  "marginalia/prancingknight.png",
-  "marginalia/rabbitHorn.png",
-  "marginalia/rabbitsProcession.png",
-  "marginalia/salamander.png",
-  "marginalia/skullbishop.png",
-  "marginalia/threeFish.png",
-  "marginalia/toad.png",
-  "marginalia/unicorn.png",
-  "marginalia/unicorn2.png",
-  "marginalia/wolf.png",
-  "marginalia/winter.png",
-  "marginalia/wolf.png"
+  "arseface",
+  "ashmole",
+  "beehives",
+  "beehives2",
+  "bellows",
+  "birdField",
+  "bum",
+  "catLicker",
+  "catMirror",
+  "catSnail",
+  "deathD",
+  "dragonInBed",
+  "ducky",
+  "greenKnight",
+  "hand",
+  "hedgy",
+  "horsnail",
+  "hydra",
+  "infectedBottom",
+  "ironworker",
+  "killerrabbit",
+  "kynge",
+  "kynge2",
+  "mermaidHarp",
+  "merman",
+  "mixedupman",
+  "otter",
+  "owlboi",
+  "prancingknight",
+  "rabbitHorn",
+  "rabbitsProcession",
+  "salamander",
+  "skullbishop",
+  "threeFish",
+  "toad",
+  "unicorn",
+  "unicorn2",
+  "wolf",
+  "winter",
+  "wolf"
 ];
 
 function getRandomImagePath() {
   const randomIndex = Math.floor(Math.random() * marginaliaFilepaths.length);
-  return marginaliaFilepaths[randomIndex];
+  const filepath = marginaliaFilepaths[randomIndex];
+  return `marginalia/${filepath}.png`;
 }
 
 

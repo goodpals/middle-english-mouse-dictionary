@@ -3,80 +3,84 @@
   Because HTML content injection cannot be done from the background.js script, a message must be sent from the contextMenu action listener in background.js, using the browser.tabs.sendMessage functionality.
 */
 
-!async function listenForSidebarRequest () {
+// this is injected into EACH TAB and as such any interaction within a given webpage with this element will only apply to the element in that webpage.
+const SIDEBAR_ID = 'memdsidebar'; 
+
+
+// this waits for the user to open the right-click contextMenu and open the sidebar open button
+!async function listenForSidebarRequest() {
   browser.runtime.onMessage.addListener(async function(request, sender, sendResponse) {
     const url = extractBaseURLOfPage();
     if (request.action === "showWordList") {
-      if (! sidebarExists(url)) {
-        sidebarStates[url] = createSidebar(); 
-      }
-      /// TODO: decide on whether we want this functionality or not <----------------------- 
-
-      // document.addEventListener('dblclick', async function(event) {
-      //   if (event.target.matches('.wordListSidebar') || event.target.matches('.wordListSidebar p')) {
-      //     document.removeEventListener('dblclick', this);
-      //     sidebarStates[url].remove();
-      //     delete sidebarStates[url];
-      //   }
-      // });
+      if (sidebarExists()) return; 
+      await createSidebar(); 
     }
   });
 }();
 
 
-
-function removeSidebar() {
-  // remove event listener for the Close Button in the sidebar
-  const button = document.querySelector(`${delSidebarButtonId}`);
-  if (button) {
-    button.removeEventListener('click', event => {
-      removeSidebar();
-    })
-  }
-
-  const url = extractBaseURLOfPage();
-  if (sidebarExists(url)) {
-    sidebarStates[url].remove();
-    delete sidebarStates[url];
-  }
-}
-
-
-function updateSidebar() {
-  const url = extractBaseURLOfPage();
-  if (sidebarExists(url)) {
-    removeSidebar();
-    sidebarStates[url] = createSidebar();
-  }
-}
-
-
-function sidebarExists(url) {
-  if (sidebarStates[url] == null || sidebarStates[url] == undefined) return false;
+function sidebarExists() {
+  const memdSidebar = document.getElementById(SIDEBAR_ID);
+  if (!memdSidebar) return false;
   return true;
 }
 
 
+async function removeSidebar() {
+  // remove event listener for the Close Button in the sidebar
+  // then remove the sidebar itself
 
-function createSidebar() {
-  const url =  extractBaseURLOfPage();
-  if (! userPages.hasOwnProperty(url)) {
-    return; // the user must have already added a word from this page. doing so creates a log in userPages global variable.
+  const button = document.querySelector(`${delSidebarButtonId}`);
+  if (button) {
+    button.removeEventListener('click', async event => {
+      await removeSidebar();
+    });
   }
 
-  const pageData = userPages[url];
-  const wordsToShow = userAddedWords.filter((e) => e.url === url).reverse();
+  const memdSidebar = document.getElementById(SIDEBAR_ID);
+  if (memdSidebar) memdSidebar.remove();
+}
 
+
+async function updateSidebar() {
+  const sidebarPresent = sidebarExists();
+  if (! sidebarPresent) return;
+
+  await removeSidebar();
+  await createSidebar(); 
+}
+
+
+async function createSidebar() {
+
+  const currentState = await browser.storage.local.get(["userWordList", "userPagesList",]);
+  const currentPagesList = currentState.userPagesList;
+
+  // Has the user added a word from this page to their list? 
+  // If not, then the page's URL won't have been registered in the pagesList
+  // ...and therefore there is nothing to show in the sidebar.
+  const url = extractBaseURLOfPage();
+  const urlExists = currentPagesList.hasOwnProperty(url);
+  if (!urlExists) return;
+  
+  // get words from the current webpage, and present them newest-first.
+  const currentWordsList = currentState.userWordList;
+  const wordsToShow = currentWordsList.filter((e) => e.url === url).reverse();
+
+  // prepare the sidebar and inject it into the browser DOM
   let sidebar = document.createElement('div');
   sidebar.className = 'wordListSidebar';
+  sidebar.id = SIDEBAR_ID;
 
+  const pageData = currentPagesList[url];
   sidebar.innerHTML = dictionaryEntriesToHTMLtext(wordsToShow, "sidebar", pageData);
-
+  
   document.body.appendChild(sidebar);
-
-  // must add eventListener AFTER element has been appended into page body
-  document.querySelector(`#${delSidebarButtonId}`).addEventListener('click', event => {
-    removeSidebar();
+  
+  // you must do this *after* the sidebar element has been injected into the browser
+  document.querySelector(`#${delSidebarButtonId}`).addEventListener('click', async event => {
+    await removeSidebar();
   });
-  return sidebar;
 }
+
+
