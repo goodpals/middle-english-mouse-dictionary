@@ -76,7 +76,7 @@ async function addPageToLocalUserPagesList() {
 
 
 async function printState(state){
-  const newState = await browser.storage.local.get();
+  const newState = await browser.storage.local.get(['userWordList', 'userPagesList']);
   if (state === 'userWordList') {
     console.log('userWords');
     const newWordList = newState.userWordList;

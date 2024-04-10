@@ -26,7 +26,7 @@ Once HTML is injected into the browser window from a content domain script, it e
  */
 ! async function listenForTextSelection() {
   document.addEventListener("selectionchange", async function(event) {
-    const currentState = await browser.storage.local.get();
+    const currentState = await browser.storage.local.get("onOffState").catch(error => onError("selectionchange", error));
     if (currentState.onOffState != 'on') return;
 
     deleteListenersForModalButtons();    

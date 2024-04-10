@@ -14,6 +14,21 @@ const modalId = 'yeFloatingeWindowe'; // this is the popup of word definitions
 const TAB_BTN_ID_PREFIX = '_MEMD_TAB_BTN'; // Different words the user highlights, displayed in the modal
 const ADD_BUTTON_ID_PREFIX = '_MEMD_ADD_BTN'; // Button to add to the user list (displayed in the sidebar)
 
+/*  Below is the modal popup, which appears when the user selects text.
+    ┌────────┬────────┬────────┬───┐
+    │ word 1 │ word 2 │ word 3 │ wo│ <--- These are the tab buttons.
+    ├────────┴────────┴────────┴───┤
+    │                              │
+    │  word: (wordtype) [+]  <----------- This [+] button is the add button.
+    │   info about the word        │
+    │   info about the word        │
+    │                              │
+    │  word: (wordtype) [+]        │
+    │   info about the word        │
+    │   info about the word        │
+    └──────────────────────────────┘
+*/
+
 
 
 // DICTIONARIES
@@ -25,11 +40,16 @@ var dictionaryLookupTable = {};
  * @summary Instantiate content-script specific dictionary variables, extracted from the JSON files in the `data` directory, by functions in  background.js. This is done because the dictionary files cannot be accessed directly by content.js; they must be first instantiated in background.js, and then loaded into content.js specific global variables by means of a local-storage getter function.
  */
 ! async function loadDict() {
-  dictionary = (await browser.storage.local.get("dictionary")).dictionary;
-  dictionaryLookupTable = (await browser.storage.local.get("lookup")).lookup;
+  const dictGot = (await browser.storage.local.get("dictionary"), onError("loadDict, dictionary", error));
+  if (dictGot) dictionary = res.dictionary;
+  
+  const tableGot = (await browser.storage.local.get("lookup")).catch(error => onError("loadDict, lookupTable", error));
+  if (tableGot) dictionaryLookupTable = tableGot.lookup;
+
   // console.log('MEMD (content): Dictionary loaded, length: ' + Object.keys(dictionary).length);
   // console.log('MEMD (content): Lookup table loaded, length: ' + Object.keys(dictionaryLookupTable).length);
 }();
+
 
 
 
@@ -46,6 +66,7 @@ var userAddedWords = [];
  * @global 
  * @type {Object<string, PageInfo>} */
 var userPages = {}; // these keys are param-stripped URLs
+
 
 
 
@@ -80,6 +101,7 @@ var presentListeners = [];
 function clearPresentListeners() {
   presentListeners = [];
 }
+
 
 
 
@@ -125,7 +147,6 @@ class PageInfo {
 
 
 // FUNNY FONTS, MARGINALIA IMAGE HANDLING &c.
-// this is an ugly way of doing this but just for proof of concept this is *one* way.
 
 /**
  * @summary this is altered in content.js -> dictionaryEntriesToHTMLtext() when creating the sidebar. It is instantiated when the user first opens a sidebar, after which it will not be changed
