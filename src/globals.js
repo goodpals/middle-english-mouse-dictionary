@@ -39,12 +39,22 @@ var dictionaryLookupTable = {};
 /** 
  * @summary Instantiate content-script specific dictionary variables, extracted from the JSON files in the `data` directory, by functions in  background.js. This is done because the dictionary files cannot be accessed directly by content.js; they must be first instantiated in background.js, and then loaded into content.js specific global variables by means of a local-storage getter function.
  */
-! async function loadDict() {
-  const dictGot = (await browser.storage.local.get("dictionary"), onError("loadDict, dictionary", error));
-  if (dictGot) dictionary = res.dictionary;
+! async function loadDict() 
+{
+  const context = "loadDict";
+  try {
+    const res = await getStateFromStorage(context, "dictionary");
+    if (res) dictionary = res.dictionary;
+  } catch (error) {
+    logError(`${context}: dictionary`, error);
+  }
   
-  const tableGot = (await browser.storage.local.get("lookup")).catch(error => onError("loadDict, lookupTable", error));
-  if (tableGot) dictionaryLookupTable = tableGot.lookup;
+  try {
+    const res = await getStateFromStorage(context, "lookup");
+    if (res) dictionaryLookupTable = res.lookup;
+  } catch (error) {
+    logError(`${context}: lookup table`, error);
+  }
 
   // console.log('MEMD (content): Dictionary loaded, length: ' + Object.keys(dictionary).length);
   // console.log('MEMD (content): Lookup table loaded, length: ' + Object.keys(dictionaryLookupTable).length);

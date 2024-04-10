@@ -13,6 +13,8 @@ const SIDEBAR_ID = 'memdsidebar';
     const url = extractBaseURLOfPage();
     if (request.action === "showWordList") {
       if (sidebarExists()) return; 
+      const currentState = await getStateFromStorage("extensionOn");
+      if (currentState.extensionOn != true) return;
       await createSidebar(); 
     }
   });
@@ -52,9 +54,13 @@ async function updateSidebar() {
 
 
 async function createSidebar() {
+  const context = "createSidebar";
 
-  const currentState = await browser.storage.local.get(["userWordList", "userPagesList",]);
+  const currentState = await getStateFromStorage(context, ["userWordList", "userPagesList",]);
   const currentPagesList = currentState.userPagesList;
+  const currentWordsList = currentState.userWordList;
+  if (stateError(`${context}: pagesList`, currentPagesList)) return;
+  if (stateError(`${context}: currentWordsList`, currentWordsList)) return;
 
   // Has the user added a word from this page to their list? 
   // If not, then the page's URL won't have been registered in the pagesList
@@ -62,9 +68,8 @@ async function createSidebar() {
   const url = extractBaseURLOfPage();
   const urlExists = currentPagesList.hasOwnProperty(url);
   if (!urlExists) return;
-  
+
   // get words from the current webpage, and present them newest-first.
-  const currentWordsList = currentState.userWordList;
   const wordsToShow = currentWordsList.filter((e) => e.url === url).reverse();
 
   // prepare the sidebar and inject it into the browser DOM

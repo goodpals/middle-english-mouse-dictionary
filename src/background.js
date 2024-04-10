@@ -28,7 +28,7 @@
 
 ! async function setStateFirstTime(){  
   await browser.storage.local.set({ 
-    onOffState: 'on', 
+    extensionOn: true, 
     userWordList: [], // words a user wants to display in sidebar
     userPagesList: {}, // pages on which user has logged words to their userWordList
     currentlySelectedText: '',
@@ -40,11 +40,11 @@
  * Construct options for an in-browser right-click menu and build their text content based off the initial state set above.
  */
 ! async function buildContextMenu() {
-    const extensionState = await browser.storage.local.get("onOffState");
+    const extensionState = await browser.storage.local.get("extensionOn");
 
     browser.contextMenus.create({
       id: "functionalityToggler",
-      title: (extensionState.onOffState == 'on' ? 'turn off' : 'turn on'),
+      title: (extensionState.extensionOn == true ? 'turn off' : 'turn on'),
       contexts: ["all"],
     });
     browser.contextMenus.create({
@@ -70,12 +70,12 @@
 ! async function addContextMenuListener() {
   browser.contextMenus.onClicked.addListener(async (info, tab) => {
 
-    const currentState = await browser.storage.local.get("onOffState");
+    const currentState = await browser.storage.local.get("extensionOn");
     if (info.menuItemId === "functionalityToggler") {
-      const newState = currentState.onOffState == 'on' ? 'off' : 'on';
-      await browser.storage.local.set({onOffState: newState});
+      const newState = currentState.extensionOn == true ? false : true;
+      await browser.storage.local.set({extensionOn: newState});
       browser.contextMenus.update("functionalityToggler", {
-        title: (newState == 'on' ? 'turn off' : 'turn on'),
+        title: (newState == true ? 'turn off' : 'turn on'),
       });
     } 
     else if (info.menuItemId === "wordListSidebarToggler") {

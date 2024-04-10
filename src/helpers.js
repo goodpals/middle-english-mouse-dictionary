@@ -5,7 +5,34 @@
 
 async function setCurrentlySelectedTextInLocalStorage() {
   const selection = document.getSelection().toString().toLowerCase();
-  await browser.storage.local.set({currentlySelectedText: selection}); 
+  try{
+    await browser.storage.local.set({currentlySelectedText: selection});
+  } catch (error) {
+    logError("setCurrentlySelectedTextInLocalStorage", error);
+  }
+}
+
+
+// "If managed storage is not set, undefined will be returned."
+async function getStateFromStorage(context, param) {
+  try {
+    const currentState = await browser.storage.local.get(param);
+    if (stateError(context, currentState)) {
+      logError(context, `Error retrieving ${param} from storage: managed storage is not set.`);
+    }
+    return currentState;
+  } catch (error) {
+    logError(context, `Error retrieving ${param} from storage: ${error}.`);
+    return undefined;
+  }
+}
+
+function stateError(context, state) {
+  if (state === undefined || state === null) {
+    logError(context, `state is: ${state}`);
+    return true;
+  }
+  return false;
 }
 
 
@@ -41,16 +68,21 @@ function htmlize(entry) {
 
 
 async function addWordToLocalUserList(word) {
-  const currentState = await browser.storage.local.get("userWordList");
+  const context = "addWordToLocalUserList";
+  const currentState = await getStateFromStorage(context, "userWordList");
+  if (currentState == undefined) logError(context, "current state is undefined");
   const currentWordsList = currentState.userWordList;
   const hasCommonIndex = currentWordsList.some((e) => e.lookupIndex === word.lookupIndex && e.url === word.url);
   if (hasCommonIndex) return;
 
-  await new Promise((resolve) => {
-    currentWordsList.push(word);
-    browser.storage.local.set({ "userWordList": currentWordsList }, resolve);
-  });
-  // await printState('userWordList');
+  currentWordsList.push(word);
+  
+  try {
+    await browser.storage.local.set({ "userWordList": currentWordsList });
+  } catch (error) {
+    logError(context, error);
+    return;
+  }
 
   addPageToLocalUserPagesList();
   updateSidebar();
@@ -59,24 +91,31 @@ async function addWordToLocalUserList(word) {
 
 
 async function addPageToLocalUserPagesList() {
-  const currentState = await browser.storage.local.get("userPagesList");
+  const context = "addPageToLocalUserPagesList";
+  const currentState = await getStateFromStorage(context, "userPagesList");
+  if (currentState == undefined) logError(context, "current state is undefined");
   const currentPagesList = currentState.userPagesList;
   const url = extractBaseURLOfPage();
 
   const urlAlreadyLogged = currentPagesList.hasOwnProperty(url);
   if (urlAlreadyLogged) return; 
 
-  await new Promise((resolve) => {
-    currentPagesList[url] = buildPageInfo();
-    browser.storage.local.set({ "userPagesList": currentPagesList }, resolve);
-  });
+  currentPagesList[url] = buildPageInfo();
+
+  try {
+    await browser.storage.local.set({ "userPagesList": currentPagesList });
+  } catch (error) {
+    logError(context, error);
+    return;
+  }
   // await printState('userPagesList');
 }
 
 
 
 async function printState(state){
-  const newState = await browser.storage.local.get(['userWordList', 'userPagesList']);
+  const context = "printState";
+  const newState = await getStateFromStorage(context, ['userWordList', 'userPagesList']);
   if (state === 'userWordList') {
     console.log('userWords');
     const newWordList = newState.userWordList;
@@ -108,3 +147,9 @@ async function printState(state){
 const areSetsEqual = (a, b) =>
   a.size === b.size && [...a].every((value) => b.has(value));
 
+
+
+function logError(context, error) {
+  console.error("MEMD: " + context + ": " + error);
+}
+  
