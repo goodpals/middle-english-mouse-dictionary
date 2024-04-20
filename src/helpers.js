@@ -1,6 +1,15 @@
 /*
-  misc & in development functions
+  gJYp Q  .gp    Q.gp
+ ' $ I.aF""Tb..aF"""Tbp
+   $=I"     Y!"Y     'Y!. 
+   $ I       $ I      $ I
+   $ I       $ I      $ I
+   $ I       $ I      $ I
+  !$!I      !$!I      $ I
+  !$!I      !$!I      !$!
+ .J^RpjF  ^J^RpjF"   ^$$$miscellaneous helper & multi-file-dependent functions
 */
+
 
 
 async function setCurrentlySelectedTextInLocalStorage() {
@@ -13,7 +22,11 @@ async function setCurrentlySelectedTextInLocalStorage() {
 }
 
 
-// "If managed storage is not set, undefined will be returned."
+/**
+ * @param {string} context user-defined string; the name of the function or scope of invocation
+ * @param {string} param the key of the specific local storage object
+ * @returns {Object|null|undefined} an object containing the field specified by `param`. If managed storage is not set, undefined will be returned. If you pass null, or an undefined value, the entire storage contents will be retrieved.
+ */
 async function getStateFromStorage(context, param) {
   try {
     const currentState = await browser.storage.local.get(param);
@@ -27,6 +40,12 @@ async function getStateFromStorage(context, param) {
   }
 }
 
+
+/**
+ * @param {string} context user-defined string; the name of the function or scope of invocation
+ * @param {string} param the key of the specific local storage object
+ * @returns {bool}
+ */
 function stateError(context, state) {
   if (state === undefined || state === null) {
     logError(context, `state is: ${state}`);
@@ -37,7 +56,7 @@ function stateError(context, state) {
 
 
 /**
- * @returns {PageInfo} 
+ * @returns {PageInfo} custom user class
  */
 function buildPageInfo() {
   const pageTitle = document.title;
@@ -48,6 +67,9 @@ function buildPageInfo() {
 }
 
 
+/**
+ * @returns a parsed URL
+ */
 function extractBaseURLOfPage() {
   const currentUrl = window.location.href;
   const urlObject = new URL(currentUrl);
@@ -56,15 +78,17 @@ function extractBaseURLOfPage() {
 }
 
 
+/**
+ * @param {string} an entry from the dictionary 
+ * @returns that entry with replaced symbols 
+ */
 function htmlize(entry) {
   const boldRegex = /#([^#]+)#/g;
   const replacedHashtags = entry.replace(boldRegex, (match, p1) => `<b>${p1}</b>`);  
   const italicRegex = /_([^_]+)_/g;
   const replacedUnderscores = replacedHashtags.replace(italicRegex, (match, p1) => `<i>${p1}</i>`);
-
   return replacedUnderscores;
 }
-
 
 
 async function addWordToLocalUserList(word) {
@@ -89,7 +113,6 @@ async function addWordToLocalUserList(word) {
 }
 
 
-
 async function addPageToLocalUserPagesList() {
   const context = "addPageToLocalUserPagesList";
   const currentState = await getStateFromStorage(context, "userPagesList");
@@ -112,7 +135,6 @@ async function addPageToLocalUserPagesList() {
 }
 
 
-
 async function printState(state){
   const context = "printState";
   const newState = await getStateFromStorage(context, ['userWordList', 'userPagesList']);
@@ -128,7 +150,6 @@ async function printState(state){
   }
   return;
 }
-
 
 
 /*

@@ -3,11 +3,11 @@
   Because HTML content injection cannot be done from the background.js script, a message must be sent from the contextMenu action listener in background.js, using the browser.tabs.sendMessage functionality.
 */
 
-// this is injected into EACH TAB and as such any interaction within a given webpage with this element will only apply to the element in that webpage.
-const SIDEBAR_ID = 'memdsidebar'; 
 
 
-// this waits for the user to open the right-click contextMenu and open the sidebar open button
+/**
+ * @summary This waits for the user to open the right-click contextMenu and open the sidebar open button
+ */
 !async function listenForSidebarRequest() {
   browser.runtime.onMessage.addListener(async function(request, sender, sendResponse) {
     const url = extractBaseURLOfPage();
@@ -32,16 +32,28 @@ async function removeSidebar() {
   // remove event listener for the Close Button in the sidebar
   // then remove the sidebar itself
 
-  const button = document.querySelector(`${delSidebarButtonId}`);
+  const button = document.querySelector(`${SIDEBAR_CLOSE_BUTTON_ID}`);
   if (button) {
     button.removeEventListener('click', async event => {
       await removeSidebar();
     });
   }
 
+  
   const memdSidebar = document.getElementById(SIDEBAR_ID);
   if (memdSidebar) memdSidebar.remove();
 }
+
+
+
+//\\\\\\\\\\\\\\\\\\\\\\\\\\\\//
+//                            //
+//           .---.            //
+//     (\./)     \.......-    //
+//     >' '<  (__.'""""BP     //
+//     " ` " "                //
+//                            //
+//\\\\\\\\\\\\\\\\\\\\\\\\\\\\//
 
 
 async function updateSidebar() {
@@ -51,6 +63,7 @@ async function updateSidebar() {
   await removeSidebar();
   await createSidebar(); 
 }
+
 
 
 async function createSidebar() {
@@ -83,9 +96,7 @@ async function createSidebar() {
   document.body.appendChild(sidebar);
   
   // you must do this *after* the sidebar element has been injected into the browser
-  document.querySelector(`#${delSidebarButtonId}`).addEventListener('click', async event => {
+  document.querySelector(`#${SIDEBAR_CLOSE_BUTTON_ID}`).addEventListener('click', async event => {
     await removeSidebar();
   });
 }
-
-

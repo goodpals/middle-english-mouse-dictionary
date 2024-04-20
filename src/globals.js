@@ -5,33 +5,45 @@
 */
 
 
+/**
+ * @summary This is injected into EACH TAB and as such any interaction within a given webpage with this element will only apply to the element in that webpage.
+ * @global
+ * @constant
+ */
+const SIDEBAR_ID = '_MEMD_sidebar'; 
 
-// PAGE-SCOPED HTML ELEMENT IDs
-
-const delSidebarButtonId = 'delSidebar'; // this is the X close button on the sidebar
-
-const modalId = 'yeFloatingeWindowe'; // this is the popup of word definitions
-const TAB_BTN_ID_PREFIX = '_MEMD_TAB_BTN'; // Different words the user highlights, displayed in the modal
-const ADD_BUTTON_ID_PREFIX = '_MEMD_ADD_BTN'; // Button to add to the user list (displayed in the sidebar)
-
-/*  Below is the modal popup, which appears when the user selects text.
-    ┌────────┬────────┬────────┬───┐
-    │ word 1 │ word 2 │ word 3 │ wo│ <--- These are the tab buttons.
-    ├────────┴────────┴────────┴───┤
-    │                              │
-    │  word: (wordtype) [+]  <----------- This [+] button is the add button.
-    │   info about the word        │
-    │   info about the word        │
-    │                              │
-    │  word: (wordtype) [+]        │
-    │   info about the word        │
-    │   info about the word        │
-    └──────────────────────────────┘
+/**
+ * @global
+ * @constant
+ * this is the X close button on the sidebar
 */
+const SIDEBAR_CLOSE_BUTTON_ID = '_MEMD_delSidebar';
+
+/**
+ * @global
+ * @constant
+ * this is the popup of word definitions
+*/
+const MODAL_ID = '_MEMD_yeFloatingeWindowe'; 
+
+/**
+ * @global
+ * @constant
+ * Different words the user highlights, displayed in the modal
+*/
+const MODAL_WORDTAB_ID_PREFIX = '_MEMD_TAB_BTN'; 
+
+/**
+ * @global
+ * @constant
+ * Button to add to the user list (displayed in the sidebar)
+ */
+const MODAL_ADDWORD_BUTTON_ID_PREFIX = '_MEMD_ADD_BTN';
 
 
 
-// DICTIONARIES
+
+//  DICTIONARIES  »»---------------------►
 
 var dictionary = {};
 var dictionaryLookupTable = {};
@@ -63,7 +75,7 @@ var dictionaryLookupTable = {};
 
 
 
-// USER DATA STORAGE
+// USER DATA STORAGE  »»---------------------►
 
 /** 
  * @summary the words the user has chosen to be added to their personal log. These word entries can be filtered by e.g. their URL. 
@@ -75,12 +87,12 @@ var userAddedWords = [];
  * @summary each string key is a url. When the user adds a word to their `userAddedWords` list, an instance of `PageInfo` will also be added here. 
  * @global 
  * @type {Object<string, PageInfo>} */
-var userPages = {}; // these keys are param-stripped URLs
+var userPages = {};
 
 
 
 
-// STATE MANAGEMENT VARIABLES
+// STATE MANAGEMENT VARIABLES  »»---------------------►
 
 /** 
  * @summary the words currently selected by the user in the window, each of which being a key to a `MatchedWordEntry` containing further information.
@@ -115,7 +127,7 @@ function clearPresentListeners() {
 
 
 
-// CLASSES
+// CLASSES  »»---------------------►
 
 /**
  * @param {number} lookupIndex a single key to an object in dict.json
@@ -156,14 +168,31 @@ class PageInfo {
 
 
 
+
+//\\\\\\\\\\\\\\\\\\\\\\\\\\\\//
+//                            //    
+//     (,_    ,_,    _,)      //
+//     /|\`-._( )_.-'/|\      //
+//    / | \`-'/ \'-`/ | \     //
+//   /__|.-'`-\_/-`'-.|__\    //
+//  `          "          `   //
+//\\\\\\\\\\\\\\\\\\\\\\\\\\\\//
+
 // FUNNY FONTS, MARGINALIA IMAGE HANDLING &c.
 
 /**
+ * @type {string}
  * @summary this is altered in content.js -> dictionaryEntriesToHTMLtext() when creating the sidebar. It is instantiated when the user first opens a sidebar, after which it will not be changed
  */
 var persistentSideBarMarginaliaURL = null;
 
-const marginaliaFilepaths = [
+/**
+ * @summary strings which correspond to the aliases of .png assets in the marginalia/ directory.
+ * @type {string}
+ * @global
+ * @constant
+ */
+const marginaliaIds = [
   "arseface",
   "ashmole",
   "beehives",
@@ -206,13 +235,21 @@ const marginaliaFilepaths = [
   "wolf"
 ];
 
+
+/**
+ * @summary Randomly selects an image from the imageIds, which correspond to the image assets in the marginalia/ directory.
+ * @returns {string}
+ */
 function getRandomImagePath() {
-  const randomIndex = Math.floor(Math.random() * marginaliaFilepaths.length);
-  const filepath = marginaliaFilepaths[randomIndex];
+  const randomIndex = Math.floor(Math.random() * marginaliaIds.length);
+  const filepath = marginaliaIds[randomIndex];
   return `marginalia/${filepath}.png`;
 }
 
-
+/**
+ * @global
+ * @constant
+ */
 const blackletters = new Map([
   ['A', '𝔄'],
   ['B', '𝔅'],

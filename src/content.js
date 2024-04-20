@@ -2,11 +2,11 @@
 [.]                        [/]
 [~]      .P".  _.gbsdP`    [^] 
 [^]    dP  .aT"  Y$P'      [~]
-[/]    #     #    I        [*]
-[?]    #     #    I        [%]
-[<]    Tb.   %    I        [&]
-[-]     Y$.  '    I   !    [|]
-[=]      Yp.     .I  ."    [>]
+[/]    #     #             [*]
+[?]    #     #             [%]
+[<]    Tb    %             [&]
+[-]    Y$.   '        !    [|]
+[=]     Yp.          ."    [>]
 [+]       `"^T$%$TRP"      [+]
 [>]                        [=]  
 [|][&][%][*][~][^][/][?][<][-] ontent domain scripts are responsible for injecting or modifying the content of web pages that users visit. The 'content domain' as defined in the manifest JSON consists of scripts sharing a single scope, with this `content.js` being the main script, and listenForTextSelection() being the main driver for this extension's functionality. Content domain scripts do not have permissions for e.g. tab creation, instantiation of local storage keys etc, and so sending messages from the content domain to the background domain is necessary. 
@@ -111,9 +111,8 @@ function searchDictionary(selectedWord) {
 
 
 
-
 /**
- * This function receives a list of userWordListEntry class objects and uses their index value to get info from the dictionary, and returns it as formatted text.
+ * This franken-function receives a list of userWordListEntry class objects and uses their index value to get info from the dictionary, and returns it as formatted text.
  * @param {Array.<MatchedWordEntry>} entries
  * @param {string} mode either "modal" or "sidebar"
  * @param {PageInfo} pageData to be used with "sidebar" `mode`. Get extra pre-stored info about the page user is presently on
@@ -128,7 +127,7 @@ function dictionaryEntriesToHTMLtext(entries, mode, pageData) {
   // build headers where appropriate
   if (entries.length > 1 && mode != "sidebar") text += `<p class="textHeader">` + plaintextToFraktur("Possible Matches")+"</p>";
   if (pageData != null   && mode == "sidebar") {
-    text += `<button id="${delSidebarButtonId}" class="delButton">x</button><br>`;
+    text += `<button id="${SIDEBAR_CLOSE_BUTTON_ID}" class="delButton">x</button><br>`;
     text += `<p class="textHeader">` + plaintextToFraktur(pageData.pageName) + "</p><br>";
   }
 
@@ -143,7 +142,7 @@ function dictionaryEntriesToHTMLtext(entries, mode, pageData) {
 
     if (mode != "sidebar") {
       const id = entry.lookupIndex; // must assign this to a const var first
-      text += ` <button id="${ADD_BUTTON_ID_PREFIX}${id}" class="modalButton">+</button> `;
+      text += ` <button id="${MODAL_ADDWORD_BUTTON_ID_PREFIX}${id}" class="modalButton">+</button> `;
     }
     text += "</p>";
 

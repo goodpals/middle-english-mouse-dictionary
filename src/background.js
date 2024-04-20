@@ -26,7 +26,7 @@
   Context Menus:      https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/menus.
 */
 
-! async function setStateFirstTime(){  
+! async function writeInitialState(){  
   await browser.storage.local.set({ 
     extensionOn: true, 
     userWordList: [], // words a user wants to display in sidebar
