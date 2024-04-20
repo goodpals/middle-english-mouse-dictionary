@@ -4,14 +4,46 @@
   Functions tightly associated with these globals such as those which instantiate their base values are also stored here.
 */
 
-// PAGE-SCOPED HTML ELEMENT IDs
-const modalId = 'yeFloatingeWindowe';
-const delSidebarButtonId = 'delSidebar';
+
+/**
+ * @summary This is injected into EACH TAB and as such any interaction within a given webpage with this element will only apply to the element in that webpage.
+ * @global
+ * @constant
+ */
+const SIDEBAR_ID = '_MEMD_sidebar'; 
+
+/**
+ * @global
+ * @constant
+ * this is the X close button on the sidebar
+*/
+const SIDEBAR_CLOSE_BUTTON_ID = '_MEMD_delSidebar';
+
+/**
+ * @global
+ * @constant
+ * this is the popup of word definitions
+*/
+const MODAL_ID = '_MEMD_yeFloatingeWindowe'; 
+
+/**
+ * @global
+ * @constant
+ * Different words the user highlights, displayed in the modal
+*/
+const MODAL_WORDTAB_ID_PREFIX = '_MEMD_TAB_BTN'; 
+
+/**
+ * @global
+ * @constant
+ * Button to add to the user list (displayed in the sidebar)
+ */
+const MODAL_ADDWORD_BUTTON_ID_PREFIX = '_MEMD_ADD_BTN';
 
 
 
 
-// DICTIONARIES
+//  DICTIONARIES  »»---------------------►
 
 var dictionary = {};
 var dictionaryLookupTable = {};
@@ -19,16 +51,31 @@ var dictionaryLookupTable = {};
 /** 
  * @summary Instantiate content-script specific dictionary variables, extracted from the JSON files in the `data` directory, by functions in  background.js. This is done because the dictionary files cannot be accessed directly by content.js; they must be first instantiated in background.js, and then loaded into content.js specific global variables by means of a local-storage getter function.
  */
-! async function loadDict() {
-  dictionary = (await browser.storage.local.get("dictionary")).dictionary;
-  dictionaryLookupTable = (await browser.storage.local.get("lookup")).lookup;
+! async function loadDict() 
+{
+  const context = "loadDict";
+  try {
+    const res = await getStateFromStorage(context, "dictionary");
+    if (res) dictionary = res.dictionary;
+  } catch (error) {
+    logError(`${context}: dictionary`, error);
+  }
+  
+  try {
+    const res = await getStateFromStorage(context, "lookup");
+    if (res) dictionaryLookupTable = res.lookup;
+  } catch (error) {
+    logError(`${context}: lookup table`, error);
+  }
+
   // console.log('MEMD (content): Dictionary loaded, length: ' + Object.keys(dictionary).length);
   // console.log('MEMD (content): Lookup table loaded, length: ' + Object.keys(dictionaryLookupTable).length);
 }();
 
 
 
-// USER DATA STORAGE
+
+// USER DATA STORAGE  »»---------------------►
 
 /** 
  * @summary the words the user has chosen to be added to their personal log. These word entries can be filtered by e.g. their URL. 
@@ -40,11 +87,12 @@ var userAddedWords = [];
  * @summary each string key is a url. When the user adds a word to their `userAddedWords` list, an instance of `PageInfo` will also be added here. 
  * @global 
  * @type {Object<string, PageInfo>} */
-var userPages = {}; // these keys are param-stripped URLs
+var userPages = {};
 
 
 
-// STATE MANAGEMENT VARIABLES
+
+// STATE MANAGEMENT VARIABLES  »»---------------------►
 
 /** 
  * @summary the words currently selected by the user in the window, each of which being a key to a `MatchedWordEntry` containing further information.
@@ -57,7 +105,7 @@ function clearActiveWords() {
 }
 
 /**
- * @summary a list of strings containing the IDs of CSS-class `wordInfoTabButton` tab buttons for the modal, formatted as the word of interest prefixed by `_W`. These buttons, when pressed, reveal a tab containing word info, of the CSS class `wordInfoTab`
+ * @summary a list of strings containing the IDs of CSS-class `wordInfoTabButton` tab buttons for the modal, formatted as the word of interest prefixed by `_MEMD_TABBUTTON_`. These buttons, when pressed, reveal a tab containing word info, of the CSS class `wordInfoTab`
  * @global 
  * @type {Array<string>} */
 let presentTabButtonListeners = []; 
@@ -76,15 +124,10 @@ function clearPresentListeners() {
   presentListeners = [];
 }
 
-/**
- * @summary each key is the url of a page; each HTMLDivElement is the address of an existing sidebar.
- * @type {Object<string, HTMLDivElement>}
- */
-var sidebarStates = {}; /// Tried implementing keeping this in the local storage; didn't work.
 
 
 
-// CLASSES
+// CLASSES  »»---------------------►
 
 /**
  * @param {number} lookupIndex a single key to an object in dict.json
@@ -112,74 +155,101 @@ class MatchedWordEntry {
 /**
  * @brief instances of this class should be stored in a list. Check the list for the `sourcePageEntry.pageURL` corresponding to the current page of interest and handle thereafter as required.
  * @param {string} pageName name of the webpage
+ * @param {bool} sideBarOpen current state of the sidebar on this page
  * @param {string} favicon address of which
  */
 class PageInfo {
-  constructor(pageName, favicon) {
+  constructor(pageName, favicon, sideBarOpen) {
     this.pageName = pageName;
+    this.sideBarOpen = sideBarOpen;
     this.favicon = favicon;
   }
 }
 
 
 
+
+//\\\\\\\\\\\\\\\\\\\\\\\\\\\\//
+//                            //    
+//     (,_    ,_,    _,)      //
+//     /|\`-._( )_.-'/|\      //
+//    / | \`-'/ \'-`/ | \     //
+//   /__|.-'`-\_/-`'-.|__\    //
+//  `          "          `   //
+//\\\\\\\\\\\\\\\\\\\\\\\\\\\\//
+
 // FUNNY FONTS, MARGINALIA IMAGE HANDLING &c.
-// this is an ugly way of doing this but just for proof of concept this is *one* way.
 
 /**
+ * @type {string}
  * @summary this is altered in content.js -> dictionaryEntriesToHTMLtext() when creating the sidebar. It is instantiated when the user first opens a sidebar, after which it will not be changed
  */
 var persistentSideBarMarginaliaURL = null;
 
-const marginaliaFilepaths = [
-  "marginalia/arseface.png",
-  "marginalia/ashmole.png",
-  "marginalia/beehives.png",
-  "marginalia/beehives2.png",
-  "marginalia/bellows.png",
-  "marginalia/birdField.png",
-  "marginalia/bum.png",
-  "marginalia/catLicker.png",
-  "marginalia/catMirror.png",
-  "marginalia/catSnail.png",
-  "marginalia/deathD.png",
-  "marginalia/dragonInBed.png",
-  "marginalia/ducky.png",
-  "marginalia/greenKnight.png",
-  "marginalia/hand.png",
-  "marginalia/hedgy.png",
-  "marginalia/horsnail.png",
-  "marginalia/hydra.png",
-  "marginalia/infectedBottom.png",
-  "marginalia/ironworker.png",
-  "marginalia/killerrabbit.png",
-  "marginalia/kynge.png",
-  "marginalia/kynge2.png",
-  "marginalia/mermaidHarp.png",
-  "marginalia/merman.png",
-  "marginalia/mixedupman.png",
-  "marginalia/otter.png",
-  "marginalia/owlboi.png",
-  "marginalia/prancingknight.png",
-  "marginalia/rabbitHorn.png",
-  "marginalia/rabbitsProcession.png",
-  "marginalia/salamander.png",
-  "marginalia/skullbishop.png",
-  "marginalia/threeFish.png",
-  "marginalia/toad.png",
-  "marginalia/unicorn.png",
-  "marginalia/unicorn2.png",
-  "marginalia/wolf.png",
-  "marginalia/winter.png",
-  "marginalia/wolf.png"
+/**
+ * @summary strings which correspond to the aliases of .png assets in the marginalia/ directory.
+ * @type {string}
+ * @global
+ * @constant
+ */
+const marginaliaIds = [
+  "arseface",
+  "ashmole",
+  "beehives",
+  "beehives2",
+  "bellows",
+  "birdField",
+  "bum",
+  "catLicker",
+  "catMirror",
+  "catSnail",
+  "deathD",
+  "dragonInBed",
+  "ducky",
+  "greenKnight",
+  "hand",
+  "hedgy",
+  "horsnail",
+  "hydra",
+  "infectedBottom",
+  "ironworker",
+  "killerrabbit",
+  "kynge",
+  "kynge2",
+  "mermaidHarp",
+  "merman",
+  "mixedupman",
+  "otter",
+  "owlboi",
+  "prancingknight",
+  "rabbitHorn",
+  "rabbitsProcession",
+  "salamander",
+  "skullbishop",
+  "threeFish",
+  "toad",
+  "unicorn",
+  "unicorn2",
+  "wolf",
+  "winter",
+  "wolf"
 ];
 
+
+/**
+ * @summary Randomly selects an image from the imageIds, which correspond to the image assets in the marginalia/ directory.
+ * @returns {string}
+ */
 function getRandomImagePath() {
-  const randomIndex = Math.floor(Math.random() * marginaliaFilepaths.length);
-  return marginaliaFilepaths[randomIndex];
+  const randomIndex = Math.floor(Math.random() * marginaliaIds.length);
+  const filepath = marginaliaIds[randomIndex];
+  return `marginalia/${filepath}.png`;
 }
 
-
+/**
+ * @global
+ * @constant
+ */
 const blackletters = new Map([
   ['A', '𝔄'],
   ['B', '𝔅'],

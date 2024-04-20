@@ -1,7 +1,21 @@
 /* 
   The modal is the little popup that appears near the mouse when the user selects text. 
   See listenForTextSelection() in content.js for how decisions are made about the modal.
-*/
+
+  Below is the modal popup (yeFloatingeWindowe), which appears when the user selects text.
+    ┌────────┬────────┬────────┬───┐
+    │ word 1 │ word 2 │ word 3 │ wo│ <--- These are the tab buttons (_MEMD_TAB_BTN).
+    ├────────┴────────┴────────┴───┤
+    │                              │
+    │  word: (wordtype) [+]  <----------- This [+] button is the add button (_MEMD_ADD_BTN).
+    │   info about the word        │
+    │   info about the word        │
+    │                              │
+    │  word: (wordtype) [+]        │
+    │   info about the word        │
+    │   info about the word        │
+    └─────────────────────────────*/
+
 
 
 /**
@@ -15,7 +29,7 @@ async function createModal(event, content, rect) {
 
   let modal = document.createElement('div');
       modal.className = 'wordInfoModalPopup';
-      modal.id = modalId; // see globals.js
+      modal.id = MODAL_ID; // see globals.js
       modal.style.left = (rect.x  + window.scrollX - 120) + 'px';
       modal.style.top = (rect.y + window.scrollY + 35) + 'px';
 
@@ -31,14 +45,23 @@ async function createModal(event, content, rect) {
   await promiseNextFrame();
 
   createTabButtonsWithListeners(content, modal, buttonContainer);
-
   showRequestedWordTab(presentTabButtonListeners[0]);
-
   repositionModal(modal);
 }
 
 
 
+/*][*][%][*][-][*][%][*][+]
+[*]  gJYp Q   .gp.      [*]
+[*]  '  $ I.aF" "Tb.    [*]    
+[%]    $=I"      $b.    [%]  
+[*]    $ I      .$$:    [*]  
+[-]    $ IFa..sFYP"     [-]  
+[*]    $ I"     "Tb     [*]  
+[%]    $ I        Yb    [%]  
+[*]    $ I         $!.  [*]  
+[*]  .J^RpjF       !P"  [*]  
+[+][*][%][*][-][*][%][*][+] epositions the modal. */
 function repositionModal(modal) {
   const windowWidth = window.outerWidth;
   const modalCoordinates = modal.getBoundingClientRect();
@@ -56,6 +79,7 @@ function repositionModal(modal) {
 }
 
 
+
 /**
  * @param {Object<string, string} content a word and its HTMLized dictionary info
 */
@@ -64,12 +88,13 @@ function createTabButtonsWithListeners(content, modal, buttonContainer) {
 
   Object.keys(content).forEach((key) => {
     let button = document.createElement('button');
-    const targetId = `_W${key}`; // must be const'd
+    const targetId = `${MODAL_WORDTAB_ID_PREFIX}${key}`; // must be const'd
+
     button.id = targetId;
     button.className = 'wordInfoTabButton';
     button.textContent = key;
     button.addEventListener('click', (event) => showRequestedWordTab(targetId));
-    // modal.appendChild(button);
+
     buttonContainer.appendChild(button);
   });
 }
@@ -85,11 +110,12 @@ function showRequestedWordTab(targetId) {
 
 function removeListenersForTabButtons() {
   for (const id of presentTabButtonListeners) {
-    const button = document.querySelector(`#_W${id}`);
+    const button = document.querySelector(`#${MODAL_WORDTAB_ID_PREFIX}${id}`); // note the hash
     if (button) button.removeEventListener('click', (event) => showRequestedWordTab(targetId));
   }
   clearTabButtonListeners();
 }
+
 
 
 /**
@@ -99,7 +125,7 @@ function removeListenersForTabButtons() {
 function buildWordInfoTabSections(content, modal) {
   Object.entries(content).forEach(([key, HTMLText]) => {
     let elem = document.createElement('div');
-    const id = `_W${key}`;
+    const id = `${MODAL_WORDTAB_ID_PREFIX}${key}`;
     presentTabButtonListeners.push(id);
 
     elem.id = id;
@@ -112,26 +138,34 @@ function buildWordInfoTabSections(content, modal) {
 
 
 
+//\\\\\\\\\\\\\\\\\\\//
+//                   //
+//    |\/| ---- _    //
+//   =(--)=_____ \   // 
+//   c___ (______/   //
+//                   //
+//\\\\\\\\\\\\\\\\\\\//
+
+
+
 function createListenersForModalButtons(entries) {
   if (entries == null || entries == undefined) return;
   for (const entry of entries) {
     const id = entry.lookupIndex;
     presentListeners.push(id);
-    document.querySelector(`#_${id}`).addEventListener('click', event => {
-      // console.log("querySelector anonyFuncty: " + entryConst.lookupIndex);
-      addWordToUserList(entry);
+    document.querySelector(`#${MODAL_ADDWORD_BUTTON_ID_PREFIX}${id}`).addEventListener('click', event => {
+      addWordToLocalUserList(entry); 
     });
   }
-  // console.log("createListenersForButtons : present listeners: " + presentListeners);
 }
 
 
 function deleteListenersForModalButtons() {
   for (const id of presentListeners) {
-    const button = document.querySelector(`#_${id}`);
+    const button = document.querySelector(`#${MODAL_ADDWORD_BUTTON_ID_PREFIX}${id}`);
     if (button) {
       button.removeEventListener('click', event => {
-        addWordToUserList(entry);
+        addWordToLocalUserList(entry);
       });
     }
   }
@@ -149,8 +183,6 @@ function createOrUpdateModal(event, content, rect) {
   if (modal == null || modal == undefined) {
     createModal(event, content, rect);
   } else {
-    // TODO: FIX so removal and recreation unnecessary
-    // modal.innerHTML = content; // before
     modal.remove();
     createModal(event, content, rect);
   }
@@ -170,12 +202,14 @@ function hideModal() {
  * @returns {HTMLElement | null}
  */
 function findModal() {
-  return document.getElementById(modalId);
+  return document.getElementById(MODAL_ID);
 }
 
 
 function promiseNextFrame(){
   return new Promise(resolve => requestAnimationFrame(resolve)); 
 }
+
+
 
 

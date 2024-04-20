@@ -1,16 +1,37 @@
-/* 
-  the background/service worker is to handle events, manage data, and perform actions that don’t require direct user interaction.
+  /*-~-*-~-*-~-*-~-*-~-*-~-*-~-*-~-*-~-*-~-*-~-*-~+ 
+  |+-*-~-*-~-*-~-*-~-*-~-*-~-*-~-*-~-*-~-*-~-*-~-+|
+  |)|                                           |(|
+  |*|           ##### #####                     |*|
+  |(|        /#####  /##############,           |)|
+  |*|      //   //  /               ###         |*|
+  |)|     /    //  /      _.--,_     ###        |(|
+  |*|         //  /    .-'      "-.   ###       |*|
+  |(|         ## ##   /            \    ##      |)|
+  |*|         ## ##  '          _.  '   ##      |*|
+  |)|         ## ##  \      "" /  ~(    ##      |(|
+  |*|         ## ##   '=,,_ =\__ `  &   ##      |*|
+  |(|         #  ##         "  "'; \\\  ##      |)|
+  |*|            //                     //      |*|  
+  |)|       //###/                    //        |(|
+  |*|      //   #####################/          |*|
+  |(|     //       ############                 |)|
+  |*|                                           |*|
+  |+-*-~-*-~-*-~-*-~-*-~-*-~-*-~-*-~-*-~-*-~-*-~-+|
+  +-~-*-~-*-~-*-~-*-~-*-~-*-~-*-~-*-~-*-~-*-~-*-~-/ ictionary data-loading, semi-persistent user data storage, and right-click context menu configuration is done here. This file is the "service worker", defined as a "background script" in the manifest.json and is used to monitor and handle tab events, manage data, retrieve JSON files defined in manifest.json->"web accessible resources", and perform actions that don’t require direct user interaction. 
+
+  Background scripts are unable to directly interact with browser elements or the console, and triggering background-script-associated functions must be done by sending messages between background scripts and content scripts using event listeners. 
+  
+  Background Scripts: https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/Background_scripts
+  Local Storage:      https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/storage/local
+  Context Menus:      https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/menus.
 */
 
-/// STORAGE.LOCAL: https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/storage/local
-/// CONTEXT MENUS: https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/menus
-
-! async function setStateFirstTime(){  
+! async function writeInitialState(){  
   await browser.storage.local.set({ 
-    onOffState: 'on', 
-    userWordList: [], 
+    extensionOn: true, 
+    userWordList: [], // words a user wants to display in sidebar
+    userPagesList: {}, // pages on which user has logged words to their userWordList
     currentlySelectedText: '',
-    // wordListViewState: 'off' 
   });
 }();
 
@@ -19,11 +40,11 @@
  * Construct options for an in-browser right-click menu and build their text content based off the initial state set above.
  */
 ! async function buildContextMenu() {
-    const extensionState = await browser.storage.local.get(); /// gets all. not supported in safari
+    const extensionState = await browser.storage.local.get("extensionOn");
 
     browser.contextMenus.create({
       id: "functionalityToggler",
-      title: (extensionState.onOffState == 'on' ? 'turn off' : 'turn on'),
+      title: (extensionState.extensionOn == true ? 'turn off' : 'turn on'),
       contexts: ["all"],
     });
     browser.contextMenus.create({
@@ -49,12 +70,12 @@
 ! async function addContextMenuListener() {
   browser.contextMenus.onClicked.addListener(async (info, tab) => {
 
-    const currentState = await browser.storage.local.get();
+    const currentState = await browser.storage.local.get("extensionOn");
     if (info.menuItemId === "functionalityToggler") {
-      const newState = currentState.onOffState == 'on' ? 'off' : 'on';
-      await browser.storage.local.set({onOffState: newState});
+      const newState = currentState.extensionOn == true ? false : true;
+      await browser.storage.local.set({extensionOn: newState});
       browser.contextMenus.update("functionalityToggler", {
-        title: (newState == 'on' ? 'turn off' : 'turn on'),
+        title: (newState == true ? 'turn off' : 'turn on'),
       });
     } 
     else if (info.menuItemId === "wordListSidebarToggler") {
@@ -98,7 +119,7 @@ async function getResource(path) {
 
 
 async function openExternalDictionaryQuery() {
-  const res = await browser.storage.local.get();
+  const res = await browser.storage.local.get("currentlySelectedText");
   const query = res.currentlySelectedText;
   const MED_URL = 'https://quod.lib.umich.edu/m/middle-english-dictionary/dictionary?utf8=✓&search_field=anywhere&q=';  
   const completeURL = MED_URL + query;
