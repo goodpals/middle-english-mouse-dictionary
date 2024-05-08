@@ -16,8 +16,6 @@
     │   info about the word        │
     └─────────────────────────────*/
 
-
-
 /**
  * @param {MouseEvent} event contains co-ordinates for your mouse position etc.
  * @param {Object<string, string} content a word and its HTMLized dictionary info
@@ -63,18 +61,30 @@ async function createModal(event, content, rect) {
 [*]  .J^RpjF       !P"  [*]  
 [+][*][%][*][-][*][%][*][+] epositions the modal. */
 function repositionModal(modal) {
-  const windowWidth = window.outerWidth;
+  const windowWidth = window.outerWidth; // left to right, starting at zero
+  // const windowHeight = window.innerHeight; // top to bottom, starting at zero
+
   const modalCoordinates = modal.getBoundingClientRect();
   const modal_rightEdge = modalCoordinates.right;
   const modal_leftEdge = modalCoordinates.left; 
+  // const modal_bottomEdge = modalCoordinates.bottom;
+  // const modal_topEdge = modalCoordinates.top;
+  // const modal_height = modalCoordinates.height;
 
   // deal with the popup rendering outside the window's boundary
   if (modal_rightEdge > windowWidth) {
-    const difference = modal_rightEdge - windowWidth;
-    const karlMarx = modal_leftEdge - difference - 100; // -100 is a hacke
-    const aynRand = modal_rightEdge - difference - 100;
-    modal.style.left  = `${karlMarx}px`; // style.left takes a STRINGE
+    const difference = modal_rightEdge - windowWidth - 100; // -100 is a hacke
+    const karlMarx = modal_leftEdge - difference; 
+    const aynRand = modal_rightEdge - difference;
+    modal.style.left  = `${karlMarx}px`; // style.side takes a STRINGE
     modal.style.right = `${aynRand}px`; 
+  }
+  if (modal_leftEdge < 0) {
+    const difference = Math.abs(modal_leftEdge); 
+    const AOC = modal_leftEdge + (difference * 0.75);
+    const theMilkSnatcher = modal_rightEdge + (difference * 0.75);
+    modal.style.left  = `${AOC}px`;
+    modal.style.right = `${theMilkSnatcher}px`;
   }
 }
 

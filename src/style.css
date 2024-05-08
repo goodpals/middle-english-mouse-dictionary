@@ -1,12 +1,30 @@
+/* MODAL
+The modal is the little popup that appears near the mouse when the user selects text. 
+Its class is wordInfoModalPopup.
+  
+  ┌────────┬────────┬────────┬───┐
+  │ word 1 │ word 2 │ word 3 │ wo│ <--- The top scrollable array of buttons is the wordInfoTabButtonContainer
+  ├────────┴────────┴────────┴───┤      Each clickable "word" button itself is a wordInfoTabButton
+  │                              │
+  │  word: (wordtype) [+]        │ <--- this whole text-containing area is the wordInfoTab
+  │   info about the word        │
+  │   info about the word        │
+  │                              │
+  │  word: (wordtype) [+] <------------ the [+] button is the modalButton
+  │   info about the word        │
+  │   info about the word        │
+  └─────────────────────────────*/
+
 .wordInfoModalPopup {
   background-color: #dddddd;
   color: black;
   border: 1px solid #ccc;
   padding: 10px;
   margin: 0% 5% 0% 5%; /* top | right | bottom | left */
-  font-family: sans-serif;
+  font-family: Arial, Helvetica, sans-serif;
   box-shadow: 2px 2px 5px rgba(0,0,0,0.5);
   font-size: 14px;
+
   
   width: 25%;
   height: 250px;
@@ -17,6 +35,14 @@
   /* flex-direction: column;  */
 }
 
+    .wordInfoModalPopup p {
+      color: black;
+      font-family: Arial, Helvetica, sans-serif;
+    }
+    .wordInfoModalPopup a {
+      color:#0079C0;
+      font-family: Arial, Helvetica, sans-serif;
+    }
 
 .wordInfoTab {
   display: none; /* Initial invisibility */
@@ -31,27 +57,46 @@
   display: block;
   height: 25px;
   z-index: 5;
-  background-color: rgb(195, 203, 211);
+  background-color:lightgray;
   flex-shrink: 0;
+  -ms-overflow-style: none; /* For Internet Explorer and Edge */
+  scrollbar-width: none; /* For Firefox */
 }
 .wordInfoTabButtonContainer::-webkit-scrollbar {
   display: none; /* For Chrome, Safari, and Opera */ 
 } 
-.wordInfoTabButtonContainer {
-  -ms-overflow-style: none; /* For Internet Explorer and Edge */
-  scrollbar-width: none; /* For Firefox */
-}
 
 .wordInfoTabButton {
   display: inline-block; /* Buttons flow horizontally */
   align-items: center;
-  border: 1px solid #ccc;
+  border: 1px solid gray;
   border-radius: 5px;
   white-space: nowrap;
   flex-grow: 1;
+  color: black; /* font colour */
+  background-color: #ccc;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+/* TODO: implement a + in the button similar to the sidebar close button. */
+.modalButton {
+  height: 24px;
+  width: 24px;
+  border-radius: 37%;
+  /* background-color: #4cc9fa; */
+  background-color:deepskyblue;
+  font-family: 'Courier New', Courier, monospace;
+  color: black;
+  font-weight: bold;
 }
 
 
+
+
+/*
+    SIDEBAR
+
+*/
 .wordListSidebar {
   background-color: #dddddd;
   color: black;
@@ -69,13 +114,77 @@
   z-index: 69420;
 }
 
-.modalButton {
-  height: 24px;
-  width: 24px;
-  border-radius: 37%;
-  background-color: #4cc9fa;
-}
+    .wordListSidebar button {
+      color: black;
+      background-color: lightgrey;
+      height: 20px;
+      width: 20px;
+
+        position: fixed;
+        top: 10px; 
+        right: 10px; 
+        width: 30px;
+        height: 30px;
+    }
+        /* This code makes an X in the middle of the button! */
+        .wordListSidebar button::before,
+        .wordListSidebar button::after {
+          content: '';
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          width: 60%; /* Adjust the size of the X */
+          height: 2px; /* Adjust the thickness of the lines */
+          background-color: black;
+        }
+        .wordListSidebar button::before {
+          transform: translate(-50%, -50%) rotate(45deg); /* Top-right to bottom-left line */
+        }
+        .wordListSidebar button::after {
+          transform: translate(-50%, -50%) rotate(-45deg); /* Top-left to bottom-right line */
+        }
+
+    .wordListSidebar a {
+      color: #0079C0;
+      font-family: Arial, Helvetica, sans-serif;
+    }
+
 
 .textHeader {
   font-size: 20px;
+}
+
+
+
+/* 
+  MISC CLASSES
+*/
+
+.errorModal {
+  overflow-x: auto; /* Enable horizontal scrolling */
+  background-color: #dddddd;
+  color: black;
+  border: 1px solid #ccc;
+  padding: 40px;
+  font-family:'Courier New', Courier, monospace;
+  box-shadow: 2px 2px 5px rgba(0,0,0,0.5);
+  font-size: 18px;
+
+  width: 65%;
+  height: 87.5%;
+
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 69421;
+}
+
+.errorButton {
+  position: absolute;
+  top: 10px; 
+  right: 10px; 
+  width: 30px;
+  height: 30px;
+
 }

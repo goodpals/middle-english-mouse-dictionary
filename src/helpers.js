@@ -87,7 +87,8 @@ function htmlize(entry) {
   const replacedHashtags = entry.replace(boldRegex, (match, p1) => `<b>${p1}</b>`);  
   const italicRegex = /_([^_]+)_/g;
   const replacedUnderscores = replacedHashtags.replace(italicRegex, (match, p1) => `<i>${p1}</i>`);
-  return replacedUnderscores;
+  const replacedNumerals = findAndReplaceNumerals(replacedUnderscores);
+  return replacedNumerals;
 }
 
 
@@ -168,9 +169,3 @@ async function printState(state){
 const areSetsEqual = (a, b) =>
   a.size === b.size && [...a].every((value) => b.has(value));
 
-
-
-function logError(context, error) {
-  console.error("MEMD: " + context + ": " + error);
-}
-  

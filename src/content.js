@@ -127,7 +127,7 @@ function dictionaryEntriesToHTMLtext(entries, mode, pageData) {
   // build headers where appropriate
   if (entries.length > 1 && mode != "sidebar") text += `<p class="textHeader">` + plaintextToFraktur("Possible Matches")+"</p>";
   if (pageData != null   && mode == "sidebar") {
-    text += `<button id="${SIDEBAR_CLOSE_BUTTON_ID}" class="delButton">x</button><br>`;
+    text += `<button id="${SIDEBAR_CLOSE_BUTTON_ID}" class="delButton"></button><br>`;
     text += `<p class="textHeader">` + plaintextToFraktur(pageData.pageName) + "</p><br>";
   }
 
