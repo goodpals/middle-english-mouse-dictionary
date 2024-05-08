@@ -1,5 +1,5 @@
 /* 
-  USER WORDLIST SIDEBAR LISTENER: This listens for a message sent from the contex menu listener and toggles a sidebar HTML element held in global scope (see: globals.js). 
+  USER WORDLIST SIDEBAR LISTENER: This listens for a message sent from the contex menu listener (see background.js) and toggles a sidebar HTML element held in global scope (see: globals.js). 
   Because HTML content injection cannot be done from the background.js script, a message must be sent from the contextMenu action listener in background.js, using the browser.tabs.sendMessage functionality.
 */
 
@@ -12,9 +12,7 @@
   browser.runtime.onMessage.addListener(async function(request, sender, sendResponse) {
     const url = extractBaseURLOfPage();
     if (request.action === "showWordList") {
-      if (sidebarExists()) return; 
-      const currentState = await getStateFromStorage("extensionOn");
-      if (currentState.extensionOn != true) return;
+      if (sidebarExists()) return;
       await createSidebar(); 
     }
   });

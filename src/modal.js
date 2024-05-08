@@ -22,7 +22,7 @@
  * @param {DOMRect} rect position data for adjusting the popup modal location
  */
 async function createModal(event, content, rect) {
-
+  const context = "createModal";
   removeListenersForTabButtons();
 
   let modal = document.createElement('div');
@@ -38,8 +38,13 @@ async function createModal(event, content, rect) {
   
   // the element must be rendered in order to then get the boundingClientRect & to handle listeners for the tab buttons; without this, the tab sections create won't 'exist' to be activated by the buttons and nothing will show but dead buttons
   // for this reason the tab buttons are created AFTER the tab sections are made above, and as a result, the CSS class wordInfoModalPopup has the setting `column-reverse`
-  modal.appendChild(buttonContainer);
-  document.body.appendChild(modal); 
+  try {
+    modal.appendChild(buttonContainer);
+    document.body.appendChild(modal);   
+  } catch (error) {
+    logError(context, error);
+    return;
+  }
   await promiseNextFrame();
 
   createTabButtonsWithListeners(content, modal, buttonContainer);
@@ -61,31 +66,53 @@ async function createModal(event, content, rect) {
 [*]  .J^RpjF       !P"  [*]  
 [+][*][%][*][-][*][%][*][+] epositions the modal. */
 function repositionModal(modal) {
-  const windowWidth = window.outerWidth; // left to right, starting at zero
-  // const windowHeight = window.innerHeight; // top to bottom, starting at zero
+  const context = "repositionModal";
 
-  const modalCoordinates = modal.getBoundingClientRect();
-  const modal_rightEdge = modalCoordinates.right;
-  const modal_leftEdge = modalCoordinates.left; 
-  // const modal_bottomEdge = modalCoordinates.bottom;
-  // const modal_topEdge = modalCoordinates.top;
-  // const modal_height = modalCoordinates.height;
+  const windowWidth = window.outerWidth; // left to right, starting at zero
+  const windowHeight = window.innerHeight + scrollY; // top to bottom, starting at zero + scrolling
+  const pos = getModalViewportPosition(modal);
+  if (!pos) {
+    const error = new Error("Unable to get modal bounding rectangle");
+    logError(context, error);
+    return;
+  }
 
   // deal with the popup rendering outside the window's boundary
-  if (modal_rightEdge > windowWidth) {
-    const difference = modal_rightEdge - windowWidth - 100; // -100 is a hacke
-    const karlMarx = modal_leftEdge - difference; 
-    const aynRand = modal_rightEdge - difference;
+  if (pos.right > windowWidth) {
+    const bias = 100;
+    const difference = pos.right - windowWidth - bias; // -100 is a hacke
+    const karlMarx = pos.left - difference; 
+    const aynRand = pos.right - difference;
     modal.style.left  = `${karlMarx}px`; // style.side takes a STRINGE
     modal.style.right = `${aynRand}px`; 
   }
-  if (modal_leftEdge < 0) {
-    const difference = Math.abs(modal_leftEdge); 
-    const AOC = modal_leftEdge + (difference * 0.75);
-    const theMilkSnatcher = modal_rightEdge + (difference * 0.75);
+  if (pos.left < 0) {
+    const bias = 0.75;
+    const difference = Math.abs(pos.left); 
+    const AOC = pos.left + (difference * bias);
+    const theMilkSnatcher = pos.right + (difference * bias);
     modal.style.left  = `${AOC}px`;
     modal.style.right = `${theMilkSnatcher}px`;
   }
+  if (pos.bottom > windowHeight) {
+    const bias = 50;
+    const butBabyIfImTheBottom = pos.bottom - pos.height - bias;
+    const youreTheTop = pos.top - pos.height - bias;
+    modal.style.bottom = `${butBabyIfImTheBottom}px`;
+    modal.style.top = `${youreTheTop}px`;
+  }
+}
+
+
+function getModalViewportPosition(modal) {
+  const modalRect = modal.getBoundingClientRect();
+  return {
+      top: modalRect.top + window.scrollY,
+      left: modalRect.left + window.scrollX,
+      bottom: modalRect.bottom + window.scrollY,
+      right: modalRect.right + window.scrollX,
+      height: modalRect.height
+  };
 }
 
 
@@ -94,7 +121,8 @@ function repositionModal(modal) {
  * @param {Object<string, string} content a word and its HTMLized dictionary info
 */
 function createTabButtonsWithListeners(content, modal, buttonContainer) {
-  const buttons = modal.querySelectorAll('.wordInfoTabButton');
+  const context = "createTabButtonsWithListeners";
+  // const buttons = modal.querySelectorAll('.wordInfoTabButton');
 
   Object.keys(content).forEach((key) => {
     let button = document.createElement('button');
@@ -105,7 +133,12 @@ function createTabButtonsWithListeners(content, modal, buttonContainer) {
     button.textContent = key;
     button.addEventListener('click', (event) => showRequestedWordTab(targetId));
 
-    buttonContainer.appendChild(button);
+    try {
+      buttonContainer.appendChild(button);
+    } catch (error) {
+      logError(context, error);
+      return;
+    }
   });
 }
 
@@ -133,6 +166,7 @@ function removeListenersForTabButtons() {
  * @param {*} modal the modal to which such HTML text will be applied
  */
 function buildWordInfoTabSections(content, modal) {
+  const context = "buildWordInfoTabSections";
   Object.entries(content).forEach(([key, HTMLText]) => {
     let elem = document.createElement('div');
     const id = `${MODAL_WORDTAB_ID_PREFIX}${key}`;
@@ -142,7 +176,12 @@ function buildWordInfoTabSections(content, modal) {
     elem.className = 'wordInfoTab';
     elem.innerHTML = HTMLText;
     
-    modal.appendChild(elem);
+    try {
+      modal.appendChild(elem);
+    } catch (error) {
+      logError(context, error);
+      return;
+    }
   });
 }
 

@@ -20,19 +20,13 @@ Once HTML is injected into the browser window from a content domain script, it e
  * @summary When the user selects text in their browser, this will: 
  *  1. Check whether the extension is enabled (see: context menu features in background.js)
  *  2. Delete any 'click' listeners for buttons in the modal (the word definitions popup that appears on mouseclick)
- *  3. Set the selected text in local storage (see: openExternalDictionaryQuery() in background.js)
+ *  3. Set the selected text in local storage
  *  4. get the current selected text and check whether it is the same as before. 
  *  5. If it is, a new modal will be created with new listeners.
  */
 ! async function listenForTextSelection() {
-  document.addEventListener("selectionchange", async function(event) {
-    const context = "listenForTextSelection";
-
-    const currentState = await getStateFromStorage(context, "extensionOn");
-    if (stateError(context, currentState) || currentState.extensionOn != true) return;
-
+  document.addEventListener("selectionchange", async function(event) {    
     deleteListenersForModalButtons();    
-    setCurrentlySelectedTextInLocalStorage();
     
     const selection = document.getSelection();
     const hasChanged = processSelection(selection.toString().toLowerCase());

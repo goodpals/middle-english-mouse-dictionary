@@ -311,10 +311,7 @@ const blackletters = new Map([
 ]);
 
 function plaintextToFraktur(input) {
-  console.log(input)
-  const res =  input.split('').map((e) => blackletters.has(e) ? blackletters.get(e) : e).join('');
-  console.log(res)
-  return res
+  return input.split('').map((e) => blackletters.has(e) ? blackletters.get(e) : e).join('');
 }
 
 

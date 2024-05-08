@@ -28,10 +28,8 @@
 
 ! async function writeInitialState(){  
   await browser.storage.local.set({ 
-    extensionOn: true, 
     userWordList: [], // words a user wants to display in sidebar
     userPagesList: {}, // pages on which user has logged words to their userWordList
-    currentlySelectedText: '',
   });
 }();
 
@@ -40,22 +38,10 @@
  * Construct options for an in-browser right-click menu and build their text content based off the initial state set above.
  */
 ! async function buildContextMenu() {
-    const extensionState = await browser.storage.local.get("extensionOn");
-
-    browser.contextMenus.create({
-      id: "functionalityToggler",
-      title: (extensionState.extensionOn == true ? 'turn off' : 'turn on'),
-      contexts: ["all"],
-    });
     browser.contextMenus.create({
       id: "wordListSidebarToggler",
-      title: "open saved words sidebar",
+      title: "Open saved words sidebar",
       contexts: ["all"],
-    });
-    browser.contextMenus.create({
-      id: "externalWebDictionary",
-      title: "Query selected text on online dictionary",
-      contexts: ["selection"],
     });
 }();
 
@@ -69,20 +55,8 @@
  */
 ! async function addContextMenuListener() {
   browser.contextMenus.onClicked.addListener(async (info, tab) => {
-
-    const currentState = await browser.storage.local.get("extensionOn");
-    if (info.menuItemId === "functionalityToggler") {
-      const newState = currentState.extensionOn == true ? false : true;
-      await browser.storage.local.set({extensionOn: newState});
-      browser.contextMenus.update("functionalityToggler", {
-        title: (newState == true ? 'turn off' : 'turn on'),
-      });
-    } 
-    else if (info.menuItemId === "wordListSidebarToggler") {
+    if (info.menuItemId === "wordListSidebarToggler") {
       await browser.tabs.sendMessage(tab.id, {action: "showWordList"}); /// see: sidebar.js
-    }
-    else if (info.menuItemId === "externalWebDictionary") {
-      openExternalDictionaryQuery();
     }
   });
 }();
@@ -115,17 +89,4 @@ async function getResource(path) {
   const response = await fetch(URL);
   const result = await response.json();
   return result;
-}
-
-
-async function openExternalDictionaryQuery() {
-  const res = await browser.storage.local.get("currentlySelectedText");
-  const query = res.currentlySelectedText;
-  const MED_URL = 'https://quod.lib.umich.edu/m/middle-english-dictionary/dictionary?utf8=✓&search_field=anywhere&q=';  
-  const completeURL = MED_URL + query;
-
-  let createTab = browser.tabs.create({
-    url: completeURL,
-    active: true,
-  });
 }

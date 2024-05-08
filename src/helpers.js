@@ -11,17 +11,6 @@
 */
 
 
-
-async function setCurrentlySelectedTextInLocalStorage() {
-  const selection = document.getSelection().toString().toLowerCase();
-  try{
-    await browser.storage.local.set({currentlySelectedText: selection});
-  } catch (error) {
-    logError("setCurrentlySelectedTextInLocalStorage", error);
-  }
-}
-
-
 /**
  * @param {string} context user-defined string; the name of the function or scope of invocation
  * @param {string} param the key of the specific local storage object
@@ -40,19 +29,6 @@ async function getStateFromStorage(context, param) {
   }
 }
 
-
-/**
- * @param {string} context user-defined string; the name of the function or scope of invocation
- * @param {string} param the key of the specific local storage object
- * @returns {bool}
- */
-function stateError(context, state) {
-  if (state === undefined || state === null) {
-    logError(context, `state is: ${state}`);
-    return true;
-  }
-  return false;
-}
 
 
 /**
