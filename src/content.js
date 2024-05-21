@@ -40,7 +40,7 @@ Once HTML is injected into the browser window from a content domain script, it e
 
       const range = selection.getRangeAt(0);
       const rect = range.getBoundingClientRect(); 
-      createOrUpdateModal(event, printouts, rect);
+      createOrUpdateModal(event, printouts, Object.keys(activeWords)[0], rect);
 
       const allMatchedWordEntries = Object.values(activeWords).flatMap(entries => entries);
       createListenersForModalButtons(allMatchedWordEntries);

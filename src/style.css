@@ -78,6 +78,10 @@ Its class is wordInfoModalPopup.
   font-family: Arial, Helvetica, sans-serif;
 }
 
+.wordInfoTabButton.active {
+  background-color: deepskyblue;
+}
+
 /* TODO: implement a + in the button similar to the sidebar close button. */
 .modalButton {
   height: 24px;

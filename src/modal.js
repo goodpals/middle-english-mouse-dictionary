@@ -18,10 +18,11 @@
 
 /**
  * @param {MouseEvent} event contains co-ordinates for your mouse position etc.
- * @param {Object<string, string} content a word and its HTMLized dictionary info
+ * @param {Object<string, string>} content a word and its HTMLized dictionary info
+ * @param {string} firstWord the first word in the list
  * @param {DOMRect} rect position data for adjusting the popup modal location
  */
-async function createModal(event, content, rect) {
+async function createModal(event, content, firstWord, rect) {
   const context = "createModal";
   removeListenersForTabButtons();
 
@@ -48,7 +49,7 @@ async function createModal(event, content, rect) {
   await promiseNextFrame();
 
   createTabButtonsWithListeners(content, modal, buttonContainer);
-  showRequestedWordTab(presentTabButtonListeners[0]);
+  showRequestedWordTab(firstWord);
   repositionModal(modal);
 }
 
@@ -118,7 +119,7 @@ function getModalViewportPosition(modal) {
 
 
 /**
- * @param {Object<string, string} content a word and its HTMLized dictionary info
+ * @param {Object<string, string>} content a word and its HTMLized dictionary info
 */
 function createTabButtonsWithListeners(content, modal, buttonContainer) {
   const context = "createTabButtonsWithListeners";
@@ -126,12 +127,12 @@ function createTabButtonsWithListeners(content, modal, buttonContainer) {
 
   Object.keys(content).forEach((key) => {
     let button = document.createElement('button');
-    const targetId = `${MODAL_WORDTAB_ID_PREFIX}${key}`; // must be const'd
+    const targetId = `${MODAL_WORDTAB_CONTENT_PREFIX}${key}`; // must be const'd
 
-    button.id = targetId;
+    button.id = `${MODAL_WORDTAB_BUTTON_PREFIX}${key}`;
     button.className = 'wordInfoTabButton';
     button.textContent = key;
-    button.addEventListener('click', (event) => showRequestedWordTab(targetId));
+    button.addEventListener('click', (event) => showRequestedWordTab(key));
 
     try {
       buttonContainer.appendChild(button);
@@ -144,16 +145,20 @@ function createTabButtonsWithListeners(content, modal, buttonContainer) {
 
 
 function showRequestedWordTab(targetId) {
-  const targetElement = document.getElementById(targetId);
+  const targetElement = document.getElementById(`${MODAL_WORDTAB_CONTENT_PREFIX}${targetId}`);
   const otherElements = document.querySelectorAll('.wordInfoTab');
   otherElements.forEach(element => element.style.display = "none");
   targetElement.style.display = "block";
+  const buttons = document.querySelectorAll('.wordInfoTabButton');
+  buttons.forEach(button => button.className = 'wordInfoTabButton');
+  const button = document.getElementById(`${MODAL_WORDTAB_BUTTON_PREFIX}${targetId}`);
+  button.className = 'wordInfoTabButton active';
 }
 
 
 function removeListenersForTabButtons() {
   for (const id of presentTabButtonListeners) {
-    const button = document.querySelector(`#${MODAL_WORDTAB_ID_PREFIX}${id}`); // note the hash
+    const button = document.querySelector(`#${MODAL_WORDTAB_BUTTON_PREFIX}${id}`); // note the hash
     if (button) button.removeEventListener('click', (event) => showRequestedWordTab(targetId));
   }
   clearTabButtonListeners();
@@ -162,15 +167,15 @@ function removeListenersForTabButtons() {
 
 
 /**
- * @param {Object<string, string} content a word and its HTMLized dictionary info
+ * @param {Object<string, string>} content a word and its HTMLized dictionary info
  * @param {*} modal the modal to which such HTML text will be applied
  */
 function buildWordInfoTabSections(content, modal) {
   const context = "buildWordInfoTabSections";
   Object.entries(content).forEach(([key, HTMLText]) => {
     let elem = document.createElement('div');
-    const id = `${MODAL_WORDTAB_ID_PREFIX}${key}`;
-    presentTabButtonListeners.push(id);
+    const id = `${MODAL_WORDTAB_CONTENT_PREFIX}${key}`;
+    presentTabButtonListeners.push(`${MODAL_WORDTAB_BUTTON_PREFIX}${key}`);
 
     elem.id = id;
     elem.className = 'wordInfoTab';
@@ -226,14 +231,16 @@ function deleteListenersForModalButtons() {
 /**
  * @param {MouseEvent} event 
  * @param {string} content 
+ * @param {string} firstWord the first word in the list
+ * @param {DOMRect} rect position data for adjusting the popup modal location
  */
-function createOrUpdateModal(event, content, rect) {
+function createOrUpdateModal(event, content, firstWord, rect) {
   let modal = findModal();
   if (modal == null || modal == undefined) {
-    createModal(event, content, rect);
+    createModal(event, content, firstWord, rect);
   } else {
     modal.remove();
-    createModal(event, content, rect);
+    createModal(event, content, firstWord, rect);
   }
 }
 

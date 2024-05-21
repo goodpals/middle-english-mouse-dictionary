@@ -10,14 +10,14 @@
  * @global
  * @constant
  */
-const SIDEBAR_ID = '_MEMD_sidebar'; 
+const SIDEBAR_ID = '_MEMD_sidebar_'; 
 
 /**
  * @global
  * @constant
  * this is the X close button on the sidebar
 */
-const SIDEBAR_CLOSE_BUTTON_ID = '_MEMD_delSidebar';
+const SIDEBAR_CLOSE_BUTTON_ID = '_MEMD_delSidebar_';
 
 /**
  * @global
@@ -31,14 +31,21 @@ const MODAL_ID = '_MEMD_yeFloatingeWindowe';
  * @constant
  * Different words the user highlights, displayed in the modal
 */
-const MODAL_WORDTAB_ID_PREFIX = '_MEMD_TAB_BTN'; 
+const MODAL_WORDTAB_BUTTON_PREFIX = '_MEMD_TAB_BTN_';
+
+/**
+ * @global
+ * @constant
+ * Content of the word tabs
+*/
+const MODAL_WORDTAB_CONTENT_PREFIX = '_MEMD_TAB_CONTENT_';
 
 /**
  * @global
  * @constant
  * Button to add to the user list (displayed in the sidebar)
  */
-const MODAL_ADDWORD_BUTTON_ID_PREFIX = '_MEMD_ADD_BTN';
+const MODAL_ADDWORD_BUTTON_ID_PREFIX = '_MEMD_ADD_BTN_';
 
 
 
