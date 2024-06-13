@@ -37,11 +37,22 @@ Its class is wordInfoModalPopup.
 
     .wordInfoModalPopup p {
       color: black;
-      font-family: Arial, Helvetica, sans-serif;
+      font-family: inherit;
+      font-size: inherit;
     }
+    
+    .wordInfoModalPopup .wordData {
+      color: black;
+      font-family: inherit;
+      font-size: inherit;
+      padding-bottom: 10px;
+      margin: 0px !important;
+    }
+
     .wordInfoModalPopup a {
-      color:#0079C0;
-      font-family: Arial, Helvetica, sans-serif;
+      color:#0079C0 !important;
+      font-family: inherit;
+      font-size: inherit;
     }
 
 .wordInfoTab {
@@ -55,7 +66,7 @@ Its class is wordInfoModalPopup.
   overflow-x: auto; /* Enable horizontal scrolling */
   white-space: nowrap; 
   display: block;
-  height: 25px;
+  height: 27px;
   z-index: 5;
   background-color:lightgray;
   flex-shrink: 0;
@@ -69,12 +80,17 @@ Its class is wordInfoModalPopup.
 .wordInfoTabButton {
   display: inline-block; /* Buttons flow horizontally */
   align-items: center;
+  vertical-align: middle;
   border: 1px solid gray;
   border-radius: 5px;
+  padding: 0px 3px;
+  vertical-align: ;
   white-space: nowrap;
   flex-grow: 1;
   color: black; /* font colour */
   background-color: #ccc;
+  height: 100%; /* fit the container */
+  box-sizing: border-box; /* Include padding and border in height calculation */
   font-family: Arial, Helvetica, sans-serif;
 }
 
@@ -82,17 +98,41 @@ Its class is wordInfoModalPopup.
   background-color: deepskyblue;
 }
 
-/* TODO: implement a + in the button similar to the sidebar close button. */
-.modalButton {
-  height: 24px;
-  width: 24px;
-  border-radius: 37%;
-  /* background-color: #4cc9fa; */
-  background-color:deepskyblue;
-  font-family: 'Courier New', Courier, monospace;
-  color: black;
-  font-weight: bold;
-}
+/* Adds a word to the list for th sidebar */
+.wordInfoModalPopup .modalButton {
+  vertical-align: middle;
+  background-color: deepskyblue !important;
+  color: rgb(0, 0, 0);
+  height: 22px; 
+  width: 22px; 
+  border-radius: 40%; /* How much curve?*/
+  box-sizing: border-box;
+  position: relative; 
+  padding: 0px 0px 0px 5px;
+  margin: 0px !important;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  }
+    .wordInfoModalPopup .modalButton::before,
+    .wordInfoModalPopup .modalButton::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 50%; /* Adjust the size of the X */
+      height: 2px; /* Adjust the thickness of the lines */
+      background-color: black; /* Set the color of the lines */
+      margin: 0 !important;
+      padding: 0 !important;
+    }
+    .wordInfoModalPopup .modalButton::before {
+      transform: translate(-50%, -50%) rotate(0deg); /* Horizontal line */
+    }
+    .wordInfoModalPopup .modalButton::after {
+      transform: translate(-50%, -50%) rotate(90deg); /* Vertical line */
+    }
+
 
 
 
@@ -106,9 +146,10 @@ Its class is wordInfoModalPopup.
   color: black;
   border: 1px solid #ccc;
   padding: 15px; /* top | right | bottom | left */
-  font-family: sans-serif;
+  font-family: Arial, Helvetica, sans-serif !important;
   box-shadow: 2px 2px 5px rgba(0,0,0,0.5);
   font-size: 14px;
+  line-height: 1.5;
   position: fixed;
   right: 0;
   top: 0;
@@ -117,6 +158,26 @@ Its class is wordInfoModalPopup.
   overflow-y: auto;
   z-index: 69420;
 }
+
+  .wordListSidebar p {
+    color: black;
+    font-family: inherit;
+    font-size: inherit;
+  }
+
+  .wordListSidebar .wordData {
+    color: black;
+    font-family: inherit;
+    font-size: inherit;
+    padding-bottom: 10px;
+  margin: 0px !important;
+}
+
+  .wordListSidebar a {
+    color:#0079C0 !important;
+    font-family: inherit;
+    font-size: inherit;
+  }
 
     .wordListSidebar button {
       color: black;
@@ -155,7 +216,7 @@ Its class is wordInfoModalPopup.
 
 
 .textHeader {
-  font-size: 20px;
+  font-size: 20px !important;
 }
 
 

@@ -118,10 +118,11 @@ function dictionaryEntriesToHTMLtext(entries, mode, pageData) {
   let marginaliaShown = false;
   let text = "";
   
-  // build headers where appropriate
-  if (entries.length > 1 && mode != "sidebar") text += `<p class="textHeader">` + plaintextToFraktur("Possible Matches")+"</p>";
-  if (pageData != null   && mode == "sidebar") {
-    text += `<button id="${SIDEBAR_CLOSE_BUTTON_ID}" class="delButton"></button><br>`;
+  // header text for modal
+  if (entries.length > 1  &&  mode != "sidebar") text += `<p class="textHeader">` + plaintextToFraktur("Possible Matches")+"</p>"; 
+
+  if (pageData != null  &&  mode == "sidebar") { // header text for sidebar
+    text += `<button id="${SIDEBAR_CLOSE_BUTTON_ID}"></button><br>`;
     text += `<p class="textHeader">` + plaintextToFraktur(pageData.pageName) + "</p><br>";
   }
 
@@ -129,19 +130,24 @@ function dictionaryEntriesToHTMLtext(entries, mode, pageData) {
   for (const [index, entry] of entries.entries()) {
     const dictEntry = dictionary[entry.lookupIndex];
     
+    // const url = "https://quod.lib.umich.edu/m/middle-english-dictionary/dictionary?utf8=✓&search_field=anywhere&q=" + entry.usersSelectedWord;
+    // text += '<p class="wordData";><a style="font-weight:bold !important; href=\"' + url + "\"target=\"_blank\" rel=\"noopener\">" + entry.usersSelectedWord + "</a>";
+
+
     const url = "https://quod.lib.umich.edu/m/middle-english-dictionary/dictionary?utf8=✓&search_field=anywhere&q=" + entry.usersSelectedWord;
-    text += "<p><b><a href=\"" + url + "\"target=\"_blank\" rel=\"noopener\">" + entry.usersSelectedWord + "</a></b>";
+  text += '<p class="wordData"><a style="font-weight:bold !important;" href="' + url + '" target="_blank" rel="noopener">' + entry.usersSelectedWord + '</a>';
+
 
     if (dictEntry.partOfSpeech != null) text += ": " + dictEntry.partOfSpeech;
 
     if (mode != "sidebar") {
       const id = entry.lookupIndex; // must assign this to a const var first
-      text += ` <button id="${MODAL_ADDWORD_BUTTON_ID_PREFIX}${id}" class="modalButton">+</button> `;
+      text += ` <button id="${MODAL_ADDWORD_BUTTON_ID_PREFIX}${id}" class="modalButton"></button> `;
     }
     text += "</p>";
 
-    if (dictEntry.variants != null) text += "<p>Variants: " + dictEntry.variants.join(", ") + "</p>";
-    if (dictEntry.entry != null) text += "<p>" + htmlize(dictEntry.entry) + "</p>";
+    if (dictEntry.variants != null) text += "<p class='wordData'>Variants: " + dictEntry.variants.join(", ") + "</p>";
+    if (dictEntry.entry != null) text += "<p class='wordData'>" + htmlize(dictEntry.entry) + "</p>";
 
     // This will display a single, randomised marginalia in any modal with >3 entries, in the middle of the entries.
     // Around 20% of lookup words have > 1 indexes; ~5% have > 2. 
@@ -164,7 +170,7 @@ function dictionaryEntriesToHTMLtext(entries, mode, pageData) {
       text += `<img src="${persistentSideBarMarginaliaURL}" style="width:95%;display:block; margin: 0 auto;">`;
     }
     
-    text += "<p>_____</p>";
+    text += "<p class='wordData' style='padding-bottom:15px !important'>_____</p>";
   }
 
   return text;
