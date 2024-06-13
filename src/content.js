@@ -36,7 +36,7 @@ Once HTML is injected into the browser window from a content domain script, it e
       hideModal();
     } else {
       let printouts = {};
-      Object.entries(activeWords).forEach(([key, word]) => printouts[key] = dictionaryEntriesToHTMLtext(word, "modal", null));
+      Object.entries(activeWords).forEach(([key, word]) => printouts[key] = new_dictionaryEntriesToHTMLtext(word, "modal", null));
 
       const range = selection.getRangeAt(0);
       const rect = range.getBoundingClientRect(); 
@@ -107,6 +107,113 @@ function searchDictionary(selectedWord) {
 }
 
 
+function new_dictionaryEntriesToHTMLtext(entries, mode, pageData) {
+  if (entries == null || entries == undefined) return;
+
+  let marginaliaShown = false;
+  let textCont = document.createElement('div');
+
+  // set up header
+  const header = document.createElement('p');
+  header.className = 'textHeader';
+  
+  let headerText = document.createElement('p');
+
+  if (entries.length > 1  &&  mode != "sidebar") {
+    headerText.textContent = plaintextToFraktur("Possible Matches");
+  }
+  if (pageData != null && mode == "sidebar") {
+    const btn = document.createElement('button');
+    btn.className = 'wordListSidebarButton'; // you have to use a custom class because JS can smd
+    btn.id = SIDEBAR_CLOSE_BUTTON_ID;
+    textCont.appendChild(btn);
+    headerText.textContent = plaintextToFraktur(pageData.pageName);
+  }
+
+  header.appendChild(headerText);
+  textCont.appendChild(header);
+
+  // build word info content for each word, as an HTML element
+  for (const [index, entry] of entries.entries()) {
+    const dictEntry = dictionary[entry.lookupIndex];
+
+    const wordHeaderElem = document.createElement('p');
+    wordHeaderElem.className = "wordData";
+    
+    const urlElem = document.createElement('a');
+    urlElem.style.fontWeight = "bold";
+    urlElem.textContent = entry.usersSelectedWord;
+    urlElem.src = `https://quod.lib.umich.edu/m/middle-english-dictionary/dictionary?utf8=✓&search_field=anywhere&q=${entry.usersSelectedWord}`;
+    wordHeaderElem.appendChild(urlElem);
+
+    if (dictEntry.partOfSpeech != null) {
+      const speechPartElem = document.createElement('p');
+      speechPartElem.textContent = `${dictEntry.partOfSpeech}`;
+      wordHeaderElem.appendChild(speechPartElem);
+    }
+    
+    const addWordBtn = document.createElement('button');
+    const lookupID = entry.lookupIndex;
+    addWordBtn.class = 'modalButton';
+    addWordBtn.id = `${MODAL_ADDWORD_BUTTON_ID_PREFIX}${lookupID}`;
+    wordHeaderElem.appendChild(addWordBtn);
+
+    // New <p> -- add variant spellings
+    const variantsElem = document.createElement('p');
+    variantsElem.className = 'wordData';
+    let variantsText = "";
+    if (dictEntry.variants != null) {
+      variantsText = `Variants: ${dictEntry.variants.join(", ")}`;
+    }
+    variantsElem.textContent = variantsText;
+
+
+    const entryElem = document.createElement('p');
+    entryElem.className = 'wordData';
+    let entryText = "";
+    entryElem.innerHTML = `${dictEntry.entry == null ? "" : htmlize(dictEntry.entry)}`; // GOHEREBRO
+
+
+    const marginaliaElem = document.createElement('img');
+    marginaliaElem.className = "marginalia";
+    let src = "";
+    if ((mode == "modal") 
+    &&  (marginaliaShown == false)
+    &&  (entries.length > 2) 
+    &&  (index+1 == Math.round(entries.length / 2))) {
+      const fullURL = browser.runtime.getURL(getRandomImagePath());
+      if (fullURL) {
+        src = fullURL;
+        marginaliaShown = true;
+      }
+    } 
+    if ((mode == "sidebar") 
+    &&  (entries.length > 2) 
+    &&  (index+1 == Math.round(entries.length / 2)  )) {
+      if (persistentSideBarMarginaliaURL == null) {
+        persistentSideBarMarginaliaURL = browser.runtime.getURL(getRandomImagePath());
+      }
+      src = persistentSideBarMarginaliaURL;
+    }
+    marginaliaElem.src = src;
+
+
+    const dividerElem = document.createElement('p');
+    dividerElem.className = "wordData";
+    dividerElem.textContent = "_____";
+    dividerElem.style.paddingBottom = "10px";
+
+    // combine it all
+    textCont.appendChild(wordHeaderElem);
+    textCont.appendChild(variantsElem);
+    textCont.appendChild(entryElem);
+    textCont.appendChild(marginaliaElem);
+    textCont.appendChild(dividerElem);
+  }
+
+  return textCont;
+}
+
 
 /**
  * This franken-function receives a list of userWordListEntry class objects and uses their index value to get info from the dictionary, and returns it as formatted text.
@@ -133,10 +240,6 @@ function dictionaryEntriesToHTMLtext(entries, mode, pageData) {
   for (const [index, entry] of entries.entries()) {
     const dictEntry = dictionary[entry.lookupIndex];
     
-    // const url = "https://quod.lib.umich.edu/m/middle-english-dictionary/dictionary?utf8=✓&search_field=anywhere&q=" + entry.usersSelectedWord;
-    // text += '<p class="wordData";><a style="font-weight:bold !important; href=\"' + url + "\"target=\"_blank\" rel=\"noopener\">" + entry.usersSelectedWord + "</a>";
-
-
     const url = "https://quod.lib.umich.edu/m/middle-english-dictionary/dictionary?utf8=✓&search_field=anywhere&q=" + entry.usersSelectedWord;
   text += '<p class="wordData"><a style="font-weight:bold !important;" href="' + url + '" target="_blank" rel="noopener">' + entry.usersSelectedWord + '</a>';
 
