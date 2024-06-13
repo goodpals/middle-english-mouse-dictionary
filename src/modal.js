@@ -179,6 +179,7 @@ function buildWordInfoTabSections(content, modal) {
 
     elem.id = id;
     elem.className = 'wordInfoTab';
+
     elem.innerHTML = HTMLText;
     
     try {

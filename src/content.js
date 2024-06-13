@@ -58,6 +58,9 @@ Once HTML is injected into the browser window from a content domain script, it e
  * @returns {bool} hasChanged
  */
 function processSelection(selection) {
+
+  // logError('', ''); // for debug -- testing logError
+
   /** @type {Set<string>} */
   const prev = new Set(Object.keys(activeWords));
   const sel = new Set(selection.split(" "));
