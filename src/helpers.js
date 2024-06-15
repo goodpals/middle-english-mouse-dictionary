@@ -54,20 +54,6 @@ function extractBaseURLOfPage() {
 }
 
 
-/**
- * @param {string} an entry from the dictionary 
- * @returns that entry with replaced symbols 
- */
-function htmlize(entry) {
-  const boldRegex = /#([^#]+)#/g;
-  const replacedHashtags = entry.replace(boldRegex, (match, p1) => `<b>${p1}</b>`);  
-  const italicRegex = /_([^_]+)_/g;
-  const replacedUnderscores = replacedHashtags.replace(italicRegex, (match, p1) => `<i>${p1}</i>`);
-  const replacedNumerals = findAndReplaceNumerals(replacedUnderscores);
-  return replacedNumerals;
-}
-
-
 async function addWordToLocalUserList(word) {
   const context = "addWordToLocalUserList";
   const currentState = await getStateFromStorage(context, "userWordList");
