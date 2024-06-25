@@ -84,7 +84,7 @@ Its class is wordInfoModalPopup.
   border: 1px solid gray;
   border-radius: 5px;
   padding: 0px 3px;
-  vertical-align: ;
+  vertical-align: middle;
   white-space: nowrap;
   flex-grow: 1;
   color: black; /* font colour */
@@ -99,7 +99,7 @@ Its class is wordInfoModalPopup.
 }
 
 /* Adds a word to the list for th sidebar */
-.wordInfoModalPopup .modalButton {
+.modalButton {
   vertical-align: middle;
   background-color: deepskyblue !important;
   color: rgb(0, 0, 0);
@@ -114,8 +114,8 @@ Its class is wordInfoModalPopup.
   align-items: center;
   justify-content: center;
   }
-    .wordInfoModalPopup .modalButton::before,
-    .wordInfoModalPopup .modalButton::after {
+    .modalButton::before,
+    .modalButton::after {
       content: '';
       position: absolute;
       top: 50%;
@@ -126,10 +126,10 @@ Its class is wordInfoModalPopup.
       margin: 0 !important;
       padding: 0 !important;
     }
-    .wordInfoModalPopup .modalButton::before {
+    .modalButton::before {
       transform: translate(-50%, -50%) rotate(0deg); /* Horizontal line */
     }
-    .wordInfoModalPopup .modalButton::after {
+    .modalButton::after {
       transform: translate(-50%, -50%) rotate(90deg); /* Vertical line */
     }
 
@@ -179,7 +179,7 @@ Its class is wordInfoModalPopup.
     font-size: inherit;
   }
 
-    .wordListSidebar button {
+    .wordListSidebarButton {
       color: black;
       background-color: lightgrey;
       height: 20px;
@@ -192,8 +192,8 @@ Its class is wordInfoModalPopup.
         height: 30px;
     }
         /* This code makes an X in the middle of the button! */
-        .wordListSidebar button::before,
-        .wordListSidebar button::after {
+        .wordListSidebarButton::before,
+        .wordListSidebarButton::after {
           content: '';
           position: absolute;
           top: 50%;
@@ -202,10 +202,10 @@ Its class is wordInfoModalPopup.
           height: 2px; /* Adjust the thickness of the lines */
           background-color: black;
         }
-        .wordListSidebar button::before {
+        .wordListSidebarButton::before {
           transform: translate(-50%, -50%) rotate(45deg); /* Top-right to bottom-left line */
         }
-        .wordListSidebar button::after {
+        .wordListSidebarButton::after {
           transform: translate(-50%, -50%) rotate(-45deg); /* Top-left to bottom-right line */
         }
 
@@ -252,4 +252,11 @@ Its class is wordInfoModalPopup.
   width: 30px;
   height: 30px;
 
+}
+
+
+.marginalia {
+  width: 80%;
+  display:block;
+  margin: 0 auto;
 }

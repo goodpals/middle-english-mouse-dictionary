@@ -89,7 +89,8 @@ async function createSidebar() {
   sidebar.id = SIDEBAR_ID;
 
   const pageData = currentPagesList[url];
-  sidebar.innerHTML = dictionaryEntriesToHTMLtext(wordsToShow, "sidebar", pageData);
+  const htmlToPass =  new_dictionaryEntriesToHTMLtext(wordsToShow, "sidebar", pageData);
+  sidebar.appendChild(htmlToPass);
   
   document.body.appendChild(sidebar);
   
