@@ -172,16 +172,15 @@ function removeListenersForTabButtons() {
  */
 function buildWordInfoTabSections(content, modal) {
   const context = "buildWordInfoTabSections";
-  Object.entries(content).forEach(([key, HTMLText]) => {
+  Object.entries(content).forEach(([key, HTMLElement]) => {
     let elem = document.createElement('div');
     const id = `${MODAL_WORDTAB_CONTENT_PREFIX}${key}`;
     presentTabButtonListeners.push(`${MODAL_WORDTAB_BUTTON_PREFIX}${key}`);
 
     elem.id = id;
     elem.className = 'wordInfoTab';
+    elem.appendChild(HTMLElement);
 
-    elem.innerHTML = HTMLText;
-    
     try {
       modal.appendChild(elem);
     } catch (error) {
