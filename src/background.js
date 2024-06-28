@@ -30,8 +30,25 @@
   await browser.storage.local.set({ 
     userWordList: [], // words a user wants to display in sidebar
     userPagesList: {}, // pages on which user has logged words to their userWordList
+    onOffState: 'off', /// TODO: https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/user_interface/Toolbar_button    AND    https://github.com/cschiller/zhongwen
   });
 }();
+
+
+! async function initBrowserActionListener() {
+  browser.browserAction.onClicked.addListener( async () => {
+    const currentState = await browser.storage.local.get();
+    const newState = currentState.onOffState == 'on' ? 'off' : 'on';
+    await browser.storage.local.set({onOffState: newState});
+
+    browser.tabs.query({ currentWindow: true }, (tabs) => {
+      tabs.forEach((tab) => {
+        browser.tabs.sendMessage(tab.id, {state: newState, from: "MEMD"});
+      });
+    });
+  });
+}();
+
 
 
 /** RIGHT-CLICK CONTEXTMENU BUILDER

@@ -12,6 +12,8 @@
   browser.runtime.onMessage.addListener(async function(request, sender, sendResponse) {
     const url = extractBaseURLOfPage();
     if (request.action === "showWordList") {
+      const currentState = await browser.storage.local.get();
+      if (currentState.onOffState != 'on') return;
       if (sidebarExists()) return;
       await createSidebar(); 
     }
@@ -36,7 +38,6 @@ async function removeSidebar() {
       await removeSidebar();
     });
   }
-
   
   const memdSidebar = document.getElementById(SIDEBAR_ID);
   if (memdSidebar) memdSidebar.remove();
@@ -89,7 +90,7 @@ async function createSidebar() {
   sidebar.id = SIDEBAR_ID;
 
   const pageData = currentPagesList[url];
-  const htmlToPass =  new_dictionaryEntriesToHTMLtext(wordsToShow, "sidebar", pageData);
+  const htmlToPass =  dictionaryEntriesToHTMLtext(wordsToShow, "sidebar", pageData);
   sidebar.appendChild(htmlToPass);
   
   document.body.appendChild(sidebar);
