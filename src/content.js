@@ -127,6 +127,8 @@ function new_dictionaryEntriesToHTMLtext(entries, mode, pageData) {
   if (pageData != null && mode == "sidebar") {
     const btn = document.createElement('button');
     btn.className = 'wordListSidebarButton'; // you have to use a custom class because JS can smd
+    btn.innerHTML = 'X';
+    btn.title = 'Close Sidebar';
     btn.id = SIDEBAR_CLOSE_BUTTON_ID;
     textCont.appendChild(btn);
     headerText.textContent = plaintextToFraktur(pageData.pageName);

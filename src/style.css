@@ -16,45 +16,51 @@ Its class is wordInfoModalPopup.
   └─────────────────────────────*/
 
 .wordInfoModalPopup {
-  /* background-color: #ccc; */
   background-color: bisque;
   color: black;
   border: 1px solid #ccc;
   padding: 10px;
-  margin: 0% 5% 0% 5%; /* top | right | bottom | left */
+  margin: 0% 5% 0% 5%;
   font-family: Arial, Helvetica, sans-serif;
   box-shadow: 2px 2px 5px rgba(0,0,0,0.5);
   font-size: 14px;
 
   
-  width: 25%;
+  width: 35%;
+  /* 
+  * changing to max height fixes wordInfoTabButtonContainer
+  * jumping about if content of modal is small enough to not
+  * need a scroll bar (i.e. is less than 250px)
+  * but breaks the logic for positioning modal if words clicked
+  * near the bottom of the window
+  */
+  /* max-height: 50%; */
   height: 250px;
   position: absolute;
 
   display: flex;
-  flex-direction: column-reverse; 
-  /* flex-direction: column;  */
+  flex-direction: column-reverse;
 }
 
-    .wordInfoModalPopup p {
-      color: black;
-      font-family: inherit;
-      font-size: inherit;
-    }
-    
-    .wordInfoModalPopup .wordData {
-      color: black;
-      font-family: inherit;
-      font-size: inherit;
-      padding-bottom: 10px;
-      margin: 0px !important;
-    }
+  .wordInfoModalPopup p {
+    color: black;
+    font-family: inherit;
+    font-size: inherit;
+  }
+  
+  .wordInfoModalPopup .wordData {
+    color: black;
+    font-family: inherit;
+    font-size: inherit;
+    padding-bottom: 10px;
+    margin: 0px !important;
+  }
 
-    .wordInfoModalPopup a {
-      color:#0079C0 !important;
-      font-family: inherit;
-      font-size: inherit;
-    }
+  .wordInfoModalPopup a {
+    color:#0079C0 !important;
+    font-family: inherit;
+    font-size: inherit;
+  }
 
 .wordInfoTab {
   display: none; /* Initial invisibility */
@@ -64,13 +70,12 @@ Its class is wordInfoModalPopup.
 
 
 .wordInfoTabButtonContainer {
-  overflow-x: auto; /* Enable horizontal scrolling */
+  overflow-x: auto;
   overflow-y: hidden;
   white-space: nowrap; 
   display: block;
-  height: 23px;
+  height: 25.5px;
   z-index: 5;
-  /* background-color: #ccc; */
   background-color: bisque;
   flex-shrink: 0;
   -ms-overflow-style: none; /* For Internet Explorer and Edge */
@@ -81,36 +86,41 @@ Its class is wordInfoModalPopup.
 } 
 
 .wordInfoTabButton {
-  display: inline-block; /* Buttons flow horizontally */
+  display: inline-block;
   align-items: center;
   vertical-align: middle;
   height: 27px;
-  border: 1px solid gray;
-  border-radius: 5px;
+  border-left: 1px solid gray;
+  border-top: 1px solid gray;
+  border-right: 1px solid gray;
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
   padding: 0px 5px;
   vertical-align: middle;
   white-space: nowrap;
   flex-grow: 1;
   color: black; /* font colour */
-  /* background-color: #ccc; */
   background-color: burlywood;
   box-sizing: border-box; /* Include padding and border in height calculation */
   font-family: Arial, Helvetica, sans-serif;
 }
 
 .wordInfoTabButton.active {
-  /* background-color: deepskyblue; */
-  border: 1.5px solid black;
+  border-left: 1.5px solid black;
+  border-top: 1.5px solid black;
+  border-right: 1.5px solid black;
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
 }
 
-/* Adds a word to the list for th sidebar */
+/* Adds a word to the list for the sidebar */
 .modalButton {
   background-color: deepskyblue !important;
   color: rgb(0, 0, 0);
   height: 24px; 
   width: 24px; 
   border: 1px solid slategray;
-  border-radius: 7px; /* How much curve?*/
+  border-radius: 7px;
   box-sizing: border-box;
   padding: 0;
   margin: 0px !important;
@@ -128,13 +138,13 @@ Its class is wordInfoModalPopup.
   height: 24px; 
   width: 24px;
   border: 1px solid slategray;
-  border-radius: 7px; /* How much curve?*/
+  border-radius: 7px;
   box-sizing: border-box;
   padding: 0;
   margin: 0px !important;
   display: inline-flex;
   justify-content: center;
-  }
+}
 
 
 
@@ -144,7 +154,6 @@ Its class is wordInfoModalPopup.
 
 */
 .wordListSidebar {
-  /* background-color: #dddddd; */
   background-color: bisque;
   color: black;
   border: 1px solid #ccc;
@@ -182,7 +191,26 @@ Its class is wordInfoModalPopup.
     font-size: inherit;
   }
 
-    .wordListSidebarButton {
+  .wordListSidebarButton {
+    background-color: lightgray !important;
+  color: rgb(0, 0, 0);
+  height: 30px; 
+  width: 30px;
+  border: 1px solid slategray;
+  border-radius: 6px;
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0px !important;
+  display: inline-flex;
+  justify-content: center;
+  font-size: 20px;
+
+  position: fixed;
+  top: 10px;
+  right: 10px;
+  }
+
+    /* .wordListSidebarButton {
       color: black;
       background-color: lightgrey;
       height: 20px;
@@ -193,8 +221,8 @@ Its class is wordInfoModalPopup.
         right: 10px; 
         width: 30px;
         height: 30px;
-    }
-        /* This code makes an X in the middle of the button! */
+    } */
+        /* This code makes an X in the middle of the button!
         .wordListSidebarButton::before,
         .wordListSidebarButton::after {
           content: '';
@@ -202,15 +230,15 @@ Its class is wordInfoModalPopup.
           top: 50%;
           left: 50%;
           width: 60%; /* Adjust the size of the X */
-          height: 2px; /* Adjust the thickness of the lines */
-          background-color: black;
-        }
-        .wordListSidebarButton::before {
-          transform: translate(-50%, -50%) rotate(45deg); /* Top-right to bottom-left line */
-        }
-        .wordListSidebarButton::after {
-          transform: translate(-50%, -50%) rotate(-45deg); /* Top-left to bottom-right line */
-        }
+          /* height: 2px; Adjust the thickness of the lines */
+          /* background-color: black; */
+        /* } */
+        /* .wordListSidebarButton::before { */
+          /* transform: translate(-50%, -50%) rotate(45deg); Top-right to bottom-left line */
+        /* } */
+        /* .wordListSidebarButton::after { */
+          /* transform: translate(-50%, -50%) rotate(-45deg); Top-left to bottom-right line */
+        /* } */ 
 
     .wordListSidebar a {
       color: #0079C0;
