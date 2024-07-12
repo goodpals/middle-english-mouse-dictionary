@@ -54,8 +54,13 @@ function extractBaseURLOfPage() {
 }
 
 
-async function addWordToLocalUserList(word) {
-  const context = "addWordToLocalUserList";
+/**
+ * @summary Adds a dictionary entry for a word to a locally-stored array of the same type, as defined in the service worker background.js
+ * @param {MatchedWordEntry} word 
+ * @returns 
+ */
+async function addWordToUserList(word) {
+  const context = "addWordToUserList";
   const currentState = await getStateFromStorage(context, "userWordList");
   if (currentState == undefined) logError(context, "current state is undefined");
   const currentWordsList = currentState.userWordList;
@@ -70,14 +75,51 @@ async function addWordToLocalUserList(word) {
     logError(context, error);
     return;
   }
-
-  addPageToLocalUserPagesList();
-  updateSidebar();
+  
+  addPageToUserPagesList();
+  updateSidebar(); // TODO: presently must keep sidebar update inside here; if brought into the event listener callback, sidebar flashes on update
 }
 
 
-async function addPageToLocalUserPagesList() {
-  const context = "addPageToLocalUserPagesList";
+
+/**
+ * @param {MatchedWordEntry} word 
+ */
+async function removeWordFromLocalUserList(word) {
+  const context = "removeWordFromLocalUserList";
+  const currentState = await getStateFromStorage(context, "userWordList");
+  if (currentState == undefined) logError(context, "current state is undefined");
+  const currentWordsList = currentState.userWordList;
+  const hasCommonIndex = currentWordsList.some((e) => e.lookupIndex === word.lookupIndex && e.url === word.url);
+  if (!hasCommonIndex) return;
+
+  // console.log("____START____")
+  // console.log(word.lookupIndex);
+  // console.log(currentWordsList);
+
+  const newWordsList = currentWordsList.filter(e => e.lookupIndex !== word.lookupIndex);
+
+  // console.log("removed. new Arr:")
+  // console.log(newWordsList)
+
+  try {
+    await browser.storage.local.set({ "userWordList": newWordsList });
+  } catch (error) {
+    logError(context, error);
+    return;
+  }
+  
+  updateSidebar();
+  // console.log("____END____")
+
+}
+
+
+/**
+ * @summary Adds data about the current tab's webpage to a locally-stored Map structure, as defined in the service worker background.js
+ */
+async function addPageToUserPagesList() {
+  const context = "addPageToUserPagesList";
   const currentState = await getStateFromStorage(context, "userPagesList");
   if (currentState == undefined) logError(context, "current state is undefined");
   const currentPagesList = currentState.userPagesList;
@@ -115,6 +157,14 @@ async function printState(state){
 }
 
 
+/**
+ * @summary Ensure the DOM is ready before appending
+ */
+function promiseNextFrame() {
+  return new Promise(resolve => requestAnimationFrame(resolve)); 
+}
+
+
 /*
     ,-----------.
    (_\           \
@@ -130,4 +180,5 @@ async function printState(state){
 */
 const areSetsEqual = (a, b) =>
   a.size === b.size && [...a].every((value) => b.has(value));
+
 

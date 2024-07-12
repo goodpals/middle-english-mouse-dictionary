@@ -13,39 +13,47 @@
 const SIDEBAR_ID = '_MEMD_sidebar_'; 
 
 /**
+ * @summary this is the X close button on the sidebar
  * @global
  * @constant
- * this is the X close button on the sidebar
 */
 const SIDEBAR_CLOSE_BUTTON_ID = '_MEMD_delSidebar_';
 
 /**
+ * @summary this is the remove word from sidebar button (the [-] displayed next to each word to remove it from the user's word list)
  * @global
  * @constant
- * this is the popup of word definitions
+ */
+const SIDEBAR_REMOVE_WORD_ID_PREFIX = '_MEMD_SIDEBAR_REMOVE_BUTTON_';
+
+/**
+ * @summary this is the popup of word definitions
+ * @global
+ * @constant
 */
 const MODAL_ID = '_MEMD_yeFloatingeWindowe'; 
 
 /**
+ * @summary Different words the user highlights, displayed in the modal
  * @global
  * @constant
- * Different words the user highlights, displayed in the modal
 */
 const MODAL_WORDTAB_BUTTON_PREFIX = '_MEMD_TAB_BTN_';
 
 /**
+ * @summary Content of the word tabs
  * @global
  * @constant
- * Content of the word tabs
 */
 const MODAL_WORDTAB_CONTENT_PREFIX = '_MEMD_TAB_CONTENT_';
 
 /**
+ * @summary Button to add to the user list (displayed in the sidebar)
  * @global
  * @constant
- * Button to add to the user list (displayed in the sidebar)
  */
-const MODAL_ADDWORD_BUTTON_ID_PREFIX = '_MEMD_ADD_BTN_';
+const MODAL_ADDWORD_BUTTON_ID_PREFIX = '_MEMD_MODAL_ADD_BTN_';
+const MODAL_REMOVEWORD_BUTTON_ID_PREFIX = '_MEMD_MODAL_REMOVE_BTN_';
 
 
 
@@ -105,10 +113,10 @@ var userPages = {};
  * @summary the words currently selected by the user in the window, each of which being a key to a `MatchedWordEntry` containing further information.
  * @global
  * @type {Object<string, Array<MatchedWordEntry>>} */
-var activeWords = {};
+var selectedWordsInDOM = {};
 
-function clearActiveWords() {
-  activeWords = {};
+function clearA_ctiveWords() {
+  selectedWordsInDOM = {};
 }
 
 /**
@@ -122,13 +130,25 @@ function clearTabButtonListeners() {
 }
 
 /** 
- * @summary presentListeners is a list of indexes that correspond to the ids held in buttons appended with event listeners. These buttons appear in the modal (see: modal.js) popup that gives information about a given word the user selects in the browser. Each possible match for the selected word will have a little button next to it, the pressing of which will add the word to `userAddedWords` (see: globals.js). These listener addresses are disposed of when the user selects new text. 
+ * @summary presentModalButtonListeners is a list of indexes that correspond to the ids held in the ADD WORD buttons appended with event listeners. These [+] buttons appear in the modal (see: modal.js) popup that gives information about a given word the user selects in the browser. Each possible match for the selected word will have a little button next to it, the pressing of which will add the word to `userAddedWords` (see: globals.js). These listener addresses are disposed of when the user selects new text. 
  * @global 
  * @type {Array<int>} */
-var presentListeners = [];
+var presentModalButtonListeners = [];
 
-function clearPresentListeners() {
-  presentListeners = [];
+function clearModalButtonListeners() {
+  presentModalButtonListeners = [];
+}
+
+
+/// TODO: docs
+
+/**
+ * @global 
+ * @type {Array<int>} */
+var presentSidebarButtonListeners = [];
+
+function clearSidebarButtonListeners() {
+  presentSidebarButtonListeners = [];
 }
 
 
@@ -189,7 +209,7 @@ class PageInfo {
 
 /**
  * @type {string}
- * @summary this is altered in content.js -> dictionaryEntriesToHTMLtext() when creating the sidebar. It is instantiated when the user first opens a sidebar, after which it will not be changed
+ * @summary this is altered in sidebar.js -> dictionaryEntriesToHTML_sidebar() when creating the sidebar. It is instantiated when the user first opens a sidebar, after which it will not be changed
  */
 var persistentSideBarMarginaliaURL = null;
 
