@@ -32,17 +32,17 @@ Once HTML is injected into the browser window from a content domain script, it e
     const hasChanged = processSelection(selection.toString().toLowerCase());
     if (!hasChanged) return;
 
-    if (Object.keys(activeWords).length === 0) {
+    if (Object.keys(selectedWordsInDOM).length === 0) {
       hideModal();
     } else {
       let printouts = {};
-      Object.entries(activeWords).forEach(([key, word]) => printouts[key] = new_dictionaryEntriesToHTMLtext(word, "modal", null));
+      Object.entries(selectedWordsInDOM).forEach(([key, word]) => printouts[key] = dictionaryEntriesToHTML_modal(word));
 
       const range = selection.getRangeAt(0);
       const rect = range.getBoundingClientRect(); 
-      createOrUpdateModal(event, printouts, Object.keys(activeWords)[0], rect);
+      createOrUpdateModal(event, printouts, Object.keys(selectedWordsInDOM)[0], rect);
 
-      const allMatchedWordEntries = Object.values(activeWords).flatMap(entries => entries);
+      const allMatchedWordEntries = Object.values(selectedWordsInDOM).flatMap(entries => entries);
       createListenersForModalButtons(allMatchedWordEntries);
     }
   });
@@ -62,23 +62,23 @@ function processSelection(selection) {
   // logError('', ''); // for debug -- testing logError
 
   /** @type {Set<string>} */
-  const prev = new Set(Object.keys(activeWords));
+  const prev = new Set(Object.keys(selectedWordsInDOM));
   const sel = new Set(selection.split(" "));
   
   const newWords = new Set([...sel].filter(x => !prev.has(x)));
   const oldWords = new Set([...prev].filter(x => !sel.has(x)));
   
   for (const word of oldWords) {
-    delete activeWords[word];
+    delete selectedWordsInDOM[word];
   }
   for (const word of newWords) {
     const found = searchDictionary(word);
     if (found != null) {
-      activeWords[word] = found;
+      selectedWordsInDOM[word] = found;
     }
   }
-  const updated = new Set(Object.keys(activeWords));
-  // console.log("Active words: " + Object.keys(activeWords).join(', '));
+  const updated = new Set(Object.keys(selectedWordsInDOM));
+  // console.log("Active words: " + Object.keys(selectedWordsInDOM).join(', '));
   return !areSetsEqual(prev, updated);
 } 
 

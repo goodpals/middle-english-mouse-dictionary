@@ -76,11 +76,10 @@ async function addWordToLocalUserList(word) {
 }
 
 
-function removeItemByValue(arr, value) {
-  return arr.filter(item => item !== value);
-}
 
-
+/**
+ * @param {MatchedWordEntry} word 
+ */
 async function removeWordFromLocalUserList(word) {
   const context = "removeWordFromLocalUserList";
   const currentState = await getStateFromStorage(context, "userWordList");
@@ -89,17 +88,25 @@ async function removeWordFromLocalUserList(word) {
   const hasCommonIndex = currentWordsList.some((e) => e.lookupIndex === word.lookupIndex && e.url === word.url);
   if (!hasCommonIndex) return;
 
-  currentWordsList.splice(currentWordsList.indexOf(word), 1); // remove the word from the same array 
- console.log(currentWordsList.indexOf(word));
+  // console.log("____START____")
+  // console.log(word.lookupIndex);
+  // console.log(currentWordsList);
+
+  const newWordsList = currentWordsList.filter(e => e.lookupIndex !== word.lookupIndex);
+
+  // console.log("removed. new Arr:")
+  // console.log(newWordsList)
 
   try {
-    await browser.storage.local.set({ "userWordList": currentWordsList });
+    await browser.storage.local.set({ "userWordList": newWordsList });
   } catch (error) {
     logError(context, error);
     return;
   }
   
   updateSidebar();
+  // console.log("____END____")
+
 }
 
 
@@ -143,6 +150,14 @@ async function printState(state){
 }
 
 
+/**
+ * @summary Ensure the DOM is ready before appending
+ */
+function promiseNextFrame() {
+  return new Promise(resolve => requestAnimationFrame(resolve)); 
+}
+
+
 /*
     ,-----------.
    (_\           \
@@ -158,4 +173,5 @@ async function printState(state){
 */
 const areSetsEqual = (a, b) =>
   a.size === b.size && [...a].every((value) => b.has(value));
+
 

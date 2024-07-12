@@ -16,6 +16,109 @@
     │   info about the word        │
     └─────────────────────────────*/
 
+
+
+// "DRY" they said, yet making a FrankenFunction for both sidebar and modal is Cursed I say, Cursed!
+function dictionaryEntriesToHTML_modal(entries) {
+  if (entries == null || entries == undefined) return;
+
+  let marginaliaShown = false;
+  let textCont = document.createElement('div');
+
+  // set up header
+
+  if (entries.length > 1) {
+    const header = document.createElement('p');
+    header.className = 'textHeader';
+    let headerText = document.createElement('p');
+    headerText.textContent = plaintextToFraktur("Possible Matches");
+    header.appendChild(headerText);
+    textCont.appendChild(header);
+  }
+
+  // build word info content for each word, as an HTML element
+  for (const [index, entry] of entries.entries()) {
+    const dictEntry = dictionary[entry.lookupIndex];
+
+    const wordHeaderElem = document.createElement('div'); // Use a <div> instead of <p> for flexible layout
+    wordHeaderElem.className = "wordData";
+    wordHeaderElem.style.whiteSpace = "nowrap"; // Ensure elements stay in a single line if they exceed width
+    wordHeaderElem.style.display = "flex"; // Use flexbox for layout
+    wordHeaderElem.style.alignItems = "center"; // Center align items vertically
+
+    const urlElem = document.createElement('a'); // MAKE ENTRY WORD CLICKABLE URL 
+    urlElem.style.fontWeight = "bold";
+    urlElem.textContent = entry.usersSelectedWord;
+    urlElem.style.marginRight = "5px";
+    urlElem.href = `https://quod.lib.umich.edu/m/middle-english-dictionary/dictionary?utf8=✓&search_field=anywhere&q=${entry.usersSelectedWord}`;
+    wordHeaderElem.appendChild(urlElem);
+
+    if (dictEntry.partOfSpeech != null) {
+      const speechPartElem = document.createElement('span'); // <span> instead of <p> for inline elements
+      speechPartElem.textContent = `${dictEntry.partOfSpeech}`;
+      speechPartElem.style.marginRight = "5px";
+      speechPartElem.style.display = "inline-block"; // inline-block allows width and height settings
+      wordHeaderElem.appendChild(speechPartElem);
+    }
+
+    // const alreadyInUserList = currentWords.some((e) => e.lookupIndex === entry.lookupIndex && e.url === word.url);
+    
+    const addWordBtn = document.createElement('button'); // ADD WORDLIST ADDER BUTTON TO HEADER
+    const lookupID = entry.lookupIndex;
+    addWordBtn.className = 'modalButton';
+    addWordBtn.innerText = '+';
+    addWordBtn.title = 'Add word to sidebar list'; // Tooltip when hovering on button
+    addWordBtn.id = `${MODAL_ADDWORD_BUTTON_ID_PREFIX}${lookupID}`;
+    addWordBtn.style.display = "inline-block"; // Display as inline-block to allow width and height settings
+    wordHeaderElem.appendChild(addWordBtn);
+
+
+    // New <p> -- add variant spellings
+    const variantsElem = document.createElement('p');
+    variantsElem.className = 'wordData';
+    let variantsText = "";
+    if (dictEntry.variants != null) {
+      variantsText = `Variants: ${dictEntry.variants.join(", ")}`;
+    }
+    variantsElem.textContent = variantsText;
+
+    const entryElem = document.createElement('p');
+    entryElem.className = 'wordData';
+    if (dictEntry.entry != null) appendHtmlizedText(entryElem, dictEntry.entry);
+
+    const marginaliaElem = document.createElement('img');
+    marginaliaElem.className = "marginalia";
+    let src = "";
+    if ((marginaliaShown == false)
+    &&  (entries.length > 2) 
+    &&  (index+1 == Math.round(entries.length / 2))) {
+      const fullURL = browser.runtime.getURL(getRandomImagePath());
+      if (fullURL) {
+        src = fullURL;
+        marginaliaShown = true;
+      }
+    } 
+    
+    const dividerElem = document.createElement('p');
+    dividerElem.className = "wordData";
+    dividerElem.textContent = "_____";
+    dividerElem.style.paddingBottom = "10px";
+
+    // combine it all
+    textCont.appendChild(wordHeaderElem);
+    textCont.appendChild(variantsElem);
+    textCont.appendChild(entryElem);
+    textCont.appendChild(marginaliaElem);
+    textCont.appendChild(dividerElem);
+  }
+
+  return textCont;
+}
+
+
+
+
+
 /**
  * @param {MouseEvent} event contains co-ordinates for your mouse position etc.
  * @param {Object<string, string>} content a word and its HTMLized dictionary info
@@ -170,7 +273,7 @@ function removeListenersForTabButtons() {
  * @param {Object<string, string>} content a word and its HTMLized dictionary info
  * @param {*} modal the modal to which such HTML text will be applied
  */
-function buildWordInfoTabSections(content, modal) {
+async function buildWordInfoTabSections(content, modal) {
   const context = "buildWordInfoTabSections";
   Object.entries(content).forEach(([key, HTMLElement]) => {
     let elem = document.createElement('div');
@@ -202,6 +305,9 @@ function buildWordInfoTabSections(content, modal) {
 
 
 
+/**
+ * @param {Array<MatchedWordEntry>} entries 
+ */
 function createListenersForModalButtons(entries) {
   if (entries == null || entries == undefined) return;
   for (const entry of entries) {
@@ -262,9 +368,7 @@ function findModal() {
 }
 
 
-function promiseNextFrame(){
-  return new Promise(resolve => requestAnimationFrame(resolve)); 
-}
+
 
 
 

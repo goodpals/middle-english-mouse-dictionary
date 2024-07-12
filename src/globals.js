@@ -24,7 +24,7 @@ const SIDEBAR_CLOSE_BUTTON_ID = '_MEMD_delSidebar_';
  * @global
  * @constant
  */
-const SIDEBAR_REMOVE_WORD_ID_PREFIX = '_MEMD_REMOVE_BUTTON_';
+const SIDEBAR_REMOVE_WORD_ID_PREFIX = '_MEMD_SIDEBAR_REMOVE_BUTTON_';
 
 /**
  * @summary this is the popup of word definitions
@@ -52,7 +52,8 @@ const MODAL_WORDTAB_CONTENT_PREFIX = '_MEMD_TAB_CONTENT_';
  * @global
  * @constant
  */
-const MODAL_ADDWORD_BUTTON_ID_PREFIX = '_MEMD_ADD_BTN_';
+const MODAL_ADDWORD_BUTTON_ID_PREFIX = '_MEMD_MODAL_ADD_BTN_';
+const MODAL_REMOVEWORD_BUTTON_ID_PREFIX = '_MEMD_MODAL_REMOVE_BTN_';
 
 
 
@@ -112,10 +113,10 @@ var userPages = {};
  * @summary the words currently selected by the user in the window, each of which being a key to a `MatchedWordEntry` containing further information.
  * @global
  * @type {Object<string, Array<MatchedWordEntry>>} */
-var activeWords = {};
+var selectedWordsInDOM = {};
 
-function clearActiveWords() {
-  activeWords = {};
+function clearA_ctiveWords() {
+  selectedWordsInDOM = {};
 }
 
 /**
@@ -208,7 +209,7 @@ class PageInfo {
 
 /**
  * @type {string}
- * @summary this is altered in content.js -> dictionaryEntriesToHTMLtext() when creating the sidebar. It is instantiated when the user first opens a sidebar, after which it will not be changed
+ * @summary this is altered in sidebar.js -> dictionaryEntriesToHTML_sidebar() when creating the sidebar. It is instantiated when the user first opens a sidebar, after which it will not be changed
  */
 var persistentSideBarMarginaliaURL = null;
 

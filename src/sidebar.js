@@ -3,8 +3,6 @@
   Because HTML content injection cannot be done from the background.js script, a message must be sent from the contextMenu action listener in background.js, using the browser.tabs.sendMessage functionality.
 */
 
-
-
 /**
  * @summary This waits for the user to open the right-click contextMenu and open the sidebar open button
  */
@@ -17,6 +15,7 @@
     }
   });
 }();
+
 
 
 function sidebarExists() {
@@ -115,7 +114,7 @@ async function createSidebar() {
   sidebar.id = SIDEBAR_ID;
 
   const pageData = currentPagesList[url];
-  const htmlToPass =  new_dictionaryEntriesToHTMLtext(wordsToShow, "sidebar", pageData);
+  const htmlToPass =  dictionaryEntriesToHTML_sidebar(wordsToShow, pageData);
   sidebar.appendChild(htmlToPass);
   
   document.body.appendChild(sidebar);
@@ -126,4 +125,108 @@ async function createSidebar() {
   });
 
   createListenersForSidebarButtons(wordsToShow);
+}
+
+
+
+
+function dictionaryEntriesToHTML_sidebar(entries, pageData) {
+  if (entries == null || entries == undefined) return;
+
+  let marginaliaShown = false;
+  let textCont = document.createElement('div');
+
+  // set up header
+
+  const btn = document.createElement('button');
+  btn.className = 'wordListSidebarButton'; // you have to use a custom class because JS can smd
+  btn.textContent = 'X';
+  btn.title = 'Close Sidebar';
+  btn.id = SIDEBAR_CLOSE_BUTTON_ID;
+  textCont.appendChild(btn);
+
+  if (pageData != null) {
+    const header = document.createElement('p');
+    header.className = 'textHeader';
+    let headerText = document.createElement('p');
+    headerText.textContent = plaintextToFraktur(pageData.pageName);
+    header.appendChild(headerText);
+    textCont.appendChild(header);
+  }
+
+  // build word info content for each word, as an HTML element
+  for (const [index, entry] of entries.entries()) {
+    const dictEntry = dictionary[entry.lookupIndex];
+
+    const wordHeaderElem = document.createElement('div'); // Use a <div> instead of <p> for flexible layout
+    wordHeaderElem.className = "wordData";
+    wordHeaderElem.style.whiteSpace = "nowrap"; // Ensure elements stay in a single line if they exceed width
+    wordHeaderElem.style.display = "flex"; // Use flexbox for layout
+    wordHeaderElem.style.alignItems = "center"; // Center align items vertically
+
+    // make entry word a clickable url
+    const urlElem = document.createElement('a');
+    urlElem.style.fontWeight = "bold";
+    urlElem.textContent = entry.usersSelectedWord;
+    urlElem.style.marginRight = "5px";
+    urlElem.href = `https://quod.lib.umich.edu/m/middle-english-dictionary/dictionary?utf8=✓&search_field=anywhere&q=${entry.usersSelectedWord}`;
+    wordHeaderElem.appendChild(urlElem);
+
+    if (dictEntry.partOfSpeech != null) {
+      const speechPartElem = document.createElement('span'); // <span> instead of <p> for inline elements
+      speechPartElem.textContent = `${dictEntry.partOfSpeech}`;
+      speechPartElem.style.marginRight = "5px";
+      speechPartElem.style.display = "inline-block"; // inline-block allows width and height settings
+      wordHeaderElem.appendChild(speechPartElem);
+    }
+    
+    // add user word list removal button to each entry
+    const removeWordBtn = document.createElement('button');
+    const lookupID = entry.lookupIndex;
+    removeWordBtn.className = 'removeButton';
+    removeWordBtn.id = `${SIDEBAR_REMOVE_WORD_ID_PREFIX}${lookupID}`; 
+    removeWordBtn.innerText = '-';
+    removeWordBtn.title = 'Remove word from sidebar'; // Tooltip
+    removeWordBtn.style.display = "inline-block"; // Display as inline-block to allow width and height settings
+    wordHeaderElem.appendChild(removeWordBtn);
+  
+    // add variant spellings
+    const variantsElem = document.createElement('p');
+    variantsElem.className = 'wordData';
+    let variantsText = "";
+    if (dictEntry.variants != null) {
+      variantsText = `Variants: ${dictEntry.variants.join(", ")}`;
+    }
+    variantsElem.textContent = variantsText;
+
+    const entryElem = document.createElement('p');
+    entryElem.className = 'wordData';
+    if (dictEntry.entry != null) appendHtmlizedText(entryElem, dictEntry.entry);
+
+    const marginaliaElem = document.createElement('img');
+    marginaliaElem.className = "marginalia";
+    let src = "";
+    if ((entries.length > 2) 
+    &&  (index+1 == Math.round(entries.length / 2)  )) {
+      if (persistentSideBarMarginaliaURL == null) {
+        persistentSideBarMarginaliaURL = browser.runtime.getURL(getRandomImagePath());
+      }
+      src = persistentSideBarMarginaliaURL;
+    }
+    marginaliaElem.src = src;
+
+    const dividerElem = document.createElement('p');
+    dividerElem.className = "wordData";
+    dividerElem.textContent = "_____";
+    dividerElem.style.paddingBottom = "10px";
+
+    // combine it all
+    textCont.appendChild(wordHeaderElem);
+    textCont.appendChild(variantsElem);
+    textCont.appendChild(entryElem);
+    textCont.appendChild(marginaliaElem);
+    textCont.appendChild(dividerElem);
+  }
+
+  return textCont;
 }
