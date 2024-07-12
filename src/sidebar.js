@@ -10,6 +10,8 @@
   browser.runtime.onMessage.addListener(async function(request, sender, sendResponse) {
     const url = extractBaseURLOfPage();
     if (request.action === "showWordList") {
+      const currentState = await browser.storage.local.get();
+      if (currentState.onOffState != 'on') return;
       if (sidebarExists()) return;
       await createSidebar(); 
     }
@@ -113,6 +115,7 @@ async function createSidebar() {
   sidebar.id = SIDEBAR_ID;
 
   const htmlToPass =  dictionaryEntriesToHTML_sidebar(wordsToShow, pageData);
+
   sidebar.appendChild(htmlToPass);
   console.log("here")
 

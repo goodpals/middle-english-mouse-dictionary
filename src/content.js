@@ -11,8 +11,29 @@
 [>]                        [=]  
 [|][&][%][*][~][^][/][?][<][-] ontent domain scripts are responsible for injecting or modifying the content of web pages that users visit. The 'content domain' as defined in the manifest JSON consists of scripts sharing a single scope, with this `content.js` being the main script, and listenForTextSelection() being the main driver for this extension's functionality. Content domain scripts do not have permissions for e.g. tab creation, instantiation of local storage keys etc, and so sending messages from the content domain to the background domain is necessary. 
 
-Once HTML is injected into the browser window from a content domain script, it exists within a different scope. So, if you create an HTML button with a function `doThing()` assigned to it, and dothing() is defined in a content domain script, the button in the user's browser no longer has access to that function, and pressing it will produce a reference error.
+Once HTML is injected into the browser window from a content domain script, it exists within a different scope. So, if you create an HTML button with a function `doThing()` assigned to it, and doThing() is defined in a content domain script, the button in the user's browser no longer has access to that function, and pressing it will produce a reference error.
 */
+
+
+/**
+ * @summary The Action Button is the Extension button in the browser toolbar, stored within the Firefox "puzzle" icon menu if not pinned to the toolbar by the user. Clicking it, for this extension, soft-disables the functionality. This listener clears all elements and their listeners from the window. This is done for every window.
+ */
+! async function listenForUserPressingActionButton() {
+  browser.runtime.onMessage.addListener((message) => {
+    console.log("MEMD State", message);
+    if (message.from != "MEMD" || message.state === 'on') return;
+
+    let modal = findModal();
+    if (modal) {
+      deleteListenersForModalButtons();
+      removeListenersForTabButtons();
+      modal.remove();
+    }
+
+    if (sidebarExists()) removeSidebar();
+  });
+}();
+
 
 
 /** 
@@ -26,6 +47,9 @@ Once HTML is injected into the browser window from a content domain script, it e
  */
 ! async function listenForTextSelection() {
   document.addEventListener("selectionchange", async function(event) {    
+    const currentState = await browser.storage.local.get();
+    if (currentState.onOffState != 'on') return;
+
     deleteListenersForModalButtons();    
     
     const selection = document.getSelection();
@@ -111,8 +135,6 @@ function searchDictionary(selectedWord) {
   } 
   return null;
 }
-
-
 
 
 /**
