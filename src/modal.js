@@ -206,7 +206,7 @@ function createListenersForModalButtons(entries) {
   if (entries == null || entries == undefined) return;
   for (const entry of entries) {
     const id = entry.lookupIndex;
-    presentListeners.push(id);
+    presentModalButtonListeners.push(id);
     document.querySelector(`#${MODAL_ADDWORD_BUTTON_ID_PREFIX}${id}`).addEventListener('click', event => {
       addWordToLocalUserList(entry); 
     });
@@ -215,7 +215,7 @@ function createListenersForModalButtons(entries) {
 
 
 function deleteListenersForModalButtons() {
-  for (const id of presentListeners) {
+  for (const id of presentModalButtonListeners) {
     const button = document.querySelector(`#${MODAL_ADDWORD_BUTTON_ID_PREFIX}${id}`);
     if (button) {
       button.removeEventListener('click', event => {
@@ -223,7 +223,7 @@ function deleteListenersForModalButtons() {
       });
     }
   }
-  clearPresentListeners();
+  clearModalButtonListeners();
 }
 
 

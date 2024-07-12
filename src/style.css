@@ -16,7 +16,8 @@ Its class is wordInfoModalPopup.
   └─────────────────────────────*/
 
 .wordInfoModalPopup {
-  background-color: #dddddd;
+  /* background-color: #ccc; */
+  background-color: bisque;
   color: black;
   border: 1px solid #ccc;
   padding: 10px;
@@ -64,11 +65,13 @@ Its class is wordInfoModalPopup.
 
 .wordInfoTabButtonContainer {
   overflow-x: auto; /* Enable horizontal scrolling */
+  overflow-y: hidden;
   white-space: nowrap; 
   display: block;
-  height: 27px;
+  height: 23px;
   z-index: 5;
-  background-color:lightgray;
+  /* background-color: #ccc; */
+  background-color: bisque;
   flex-shrink: 0;
   -ms-overflow-style: none; /* For Internet Explorer and Edge */
   scrollbar-width: none; /* For Firefox */
@@ -81,58 +84,57 @@ Its class is wordInfoModalPopup.
   display: inline-block; /* Buttons flow horizontally */
   align-items: center;
   vertical-align: middle;
+  height: 27px;
   border: 1px solid gray;
   border-radius: 5px;
-  padding: 0px 3px;
+  padding: 0px 5px;
   vertical-align: middle;
   white-space: nowrap;
   flex-grow: 1;
   color: black; /* font colour */
-  background-color: #ccc;
-  height: 100%; /* fit the container */
+  /* background-color: #ccc; */
+  background-color: burlywood;
   box-sizing: border-box; /* Include padding and border in height calculation */
   font-family: Arial, Helvetica, sans-serif;
 }
 
 .wordInfoTabButton.active {
-  background-color: deepskyblue;
+  /* background-color: deepskyblue; */
+  border: 1.5px solid black;
 }
 
 /* Adds a word to the list for th sidebar */
 .modalButton {
-  vertical-align: middle;
   background-color: deepskyblue !important;
   color: rgb(0, 0, 0);
-  height: 22px; 
-  width: 22px; 
-  border-radius: 40%; /* How much curve?*/
+  height: 24px; 
+  width: 24px; 
+  border: 1px solid slategray;
+  border-radius: 7px; /* How much curve?*/
   box-sizing: border-box;
-  position: relative; 
-  padding: 0px 0px 0px 5px;
+  padding: 0;
   margin: 0px !important;
   display: inline-flex;
-  align-items: center;
+  justify-content: center;
+}
+  
+  
+  
+
+/* Removes a word from the sidebar, displayed in sid */
+.removeButton {
+  background-color: deepskyblue !important;
+  color: rgb(0, 0, 0);
+  height: 24px; 
+  width: 24px;
+  border: 1px solid slategray;
+  border-radius: 7px; /* How much curve?*/
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0px !important;
+  display: inline-flex;
   justify-content: center;
   }
-    .modalButton::before,
-    .modalButton::after {
-      content: '';
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      width: 50%; /* Adjust the size of the X */
-      height: 2px; /* Adjust the thickness of the lines */
-      background-color: black; /* Set the color of the lines */
-      margin: 0 !important;
-      padding: 0 !important;
-    }
-    .modalButton::before {
-      transform: translate(-50%, -50%) rotate(0deg); /* Horizontal line */
-    }
-    .modalButton::after {
-      transform: translate(-50%, -50%) rotate(90deg); /* Vertical line */
-    }
-
 
 
 
@@ -142,7 +144,8 @@ Its class is wordInfoModalPopup.
 
 */
 .wordListSidebar {
-  background-color: #dddddd;
+  /* background-color: #dddddd; */
+  background-color: bisque;
   color: black;
   border: 1px solid #ccc;
   padding: 15px; /* top | right | bottom | left */

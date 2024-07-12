@@ -76,6 +76,34 @@ async function addWordToLocalUserList(word) {
 }
 
 
+function removeItemByValue(arr, value) {
+  return arr.filter(item => item !== value);
+}
+
+
+async function removeWordFromLocalUserList(word) {
+  const context = "removeWordFromLocalUserList";
+  const currentState = await getStateFromStorage(context, "userWordList");
+  if (currentState == undefined) logError(context, "current state is undefined");
+  const currentWordsList = currentState.userWordList;
+  const hasCommonIndex = currentWordsList.some((e) => e.lookupIndex === word.lookupIndex && e.url === word.url);
+  if (!hasCommonIndex) return;
+
+  currentWordsList.splice(currentWordsList.indexOf(word), 1); // remove the word from the same array 
+ console.log(currentWordsList.indexOf(word));
+
+  try {
+    await browser.storage.local.set({ "userWordList": currentWordsList });
+  } catch (error) {
+    logError(context, error);
+    return;
+  }
+  
+  updateSidebar();
+}
+
+
+
 async function addPageToLocalUserPagesList() {
   const context = "addPageToLocalUserPagesList";
   const currentState = await getStateFromStorage(context, "userPagesList");

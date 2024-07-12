@@ -160,12 +160,26 @@ function new_dictionaryEntriesToHTMLtext(entries, mode, pageData) {
       wordHeaderElem.appendChild(speechPartElem);
     }
 
-    const addWordBtn = document.createElement('button'); // ADD WORDLIST ADDER BUTTON TO HEADER
-    const lookupID = entry.lookupIndex;
-    addWordBtn.className = 'modalButton';
-    addWordBtn.id = `${MODAL_ADDWORD_BUTTON_ID_PREFIX}${lookupID}`;
-    addWordBtn.style.display = "inline-block"; // Display as inline-block to allow width and height settings
-    wordHeaderElem.appendChild(addWordBtn);
+    if (mode != "sidebar") {
+      const addWordBtn = document.createElement('button'); // ADD WORDLIST ADDER BUTTON TO HEADER
+      const lookupID = entry.lookupIndex;
+      addWordBtn.className = 'modalButton';
+      addWordBtn.innerText = '+';
+      addWordBtn.title = 'Add word to sidebar list'; // Tooltip when hovering on button
+      addWordBtn.id = `${MODAL_ADDWORD_BUTTON_ID_PREFIX}${lookupID}`;
+      addWordBtn.style.display = "inline-block"; // Display as inline-block to allow width and height settings
+      wordHeaderElem.appendChild(addWordBtn);
+    } else {
+      const removeWordBtn = document.createElement('button'); // ADD WORDLIST REMOVAL BUTTON TO HEADER
+      const lookupID = entry.lookupIndex;
+      removeWordBtn.className = 'removeButton';
+      removeWordBtn.id = `${SIDEBAR_REMOVE_WORD_ID_PREFIX}${lookupID}`; 
+      removeWordBtn.innerText = '-';
+      removeWordBtn.title = 'Remove word from sidebar'; // Tooltip
+      removeWordBtn.style.display = "inline-block"; // Display as inline-block to allow width and height settings
+      wordHeaderElem.appendChild(removeWordBtn);
+    }
+    
 
     // New <p> -- add variant spellings
     const variantsElem = document.createElement('p');

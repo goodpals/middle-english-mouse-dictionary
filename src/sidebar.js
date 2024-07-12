@@ -30,6 +30,8 @@ async function removeSidebar() {
   // remove event listener for the Close Button in the sidebar
   // then remove the sidebar itself
 
+  deleteListenersForSidebarButtons();
+
   const button = document.querySelector(`${SIDEBAR_CLOSE_BUTTON_ID}`);
   if (button) {
     button.removeEventListener('click', async event => {
@@ -37,9 +39,33 @@ async function removeSidebar() {
     });
   }
 
-  
   const memdSidebar = document.getElementById(SIDEBAR_ID);
   if (memdSidebar) memdSidebar.remove();
+}
+
+
+function createListenersForSidebarButtons(entries) {
+  if (entries == null || entries == undefined) return;
+  for (const entry of entries) {
+    const id = entry.lookupIndex;
+    presentSidebarButtonListeners.push(id);
+    document.querySelector(`#${SIDEBAR_REMOVE_WORD_ID_PREFIX}${id}`).addEventListener('click', event => {
+      removeWordFromLocalUserList(entry); 
+    });
+  }
+}
+
+
+function deleteListenersForSidebarButtons() {
+  for (const id of presentSidebarButtonListeners) {
+    const button = document.querySelector(`#${SIDEBAR_REMOVE_WORD_ID_PREFIX}${id}`);
+    if (button) {
+      button.removeEventListener('click', event => {
+        removeWordFromLocalUserList(entry);
+      });
+    }
+  }
+  clearSidebarButtonListeners();
 }
 
 
@@ -98,4 +124,6 @@ async function createSidebar() {
   document.querySelector(`#${SIDEBAR_CLOSE_BUTTON_ID}`).addEventListener('click', async event => {
     await removeSidebar();
   });
+
+  createListenersForSidebarButtons(wordsToShow);
 }
