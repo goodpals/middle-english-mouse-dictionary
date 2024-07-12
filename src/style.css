@@ -26,7 +26,8 @@ Its class is wordInfoModalPopup.
   font-size: 14px;
 
   
-  width: 35%;
+  width: 32%;
+  /* width: 250px; */
   /* 
   * changing to max height fixes wordInfoTabButtonContainer
   * jumping about if content of modal is small enough to not
@@ -37,7 +38,6 @@ Its class is wordInfoModalPopup.
   /* max-height: 50%; */
   height: 250px;
   position: absolute;
-
   display: flex;
   flex-direction: column-reverse;
 }
@@ -114,7 +114,7 @@ Its class is wordInfoModalPopup.
 }
 
 /* Adds a word to the list for the sidebar */
-.modalButton {
+.addButton {
   background-color: deepskyblue !important;
   color: rgb(0, 0, 0);
   height: 24px; 
@@ -123,10 +123,32 @@ Its class is wordInfoModalPopup.
   border-radius: 7px;
   box-sizing: border-box;
   padding: 0;
+  position: relative; 
   margin: 0px !important;
   display: inline-flex;
   justify-content: center;
 }
+
+.addButton.off {
+  display: none !important;
+  background-color: grey; /* Note that removing this line prevents the display attribute above from working */
+}
+
+    /* This code makes an X in the middle of the button! */
+    .addButton::before,
+    .addButton::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 50%; /* Adjust the size of the X */
+      height: 1.5px; /* Adjust the thickness of the lines */
+      background-color: black; /* Set the color of the lines */
+      margin: 0 !important;
+      padding: 0 !important;
+    }
+    .addButton::before { transform: translate(-50%, -50%) rotate(0deg); /* Horizontal line */ } 
+    .addButton::after { transform: translate(-50%, -50%) rotate(90deg); /* Vertical line */ }
   
   
   
@@ -140,12 +162,26 @@ Its class is wordInfoModalPopup.
   border: 1px solid slategray;
   border-radius: 7px;
   box-sizing: border-box;
+  position: relative; 
   padding: 0;
   margin: 0px !important;
   display: inline-flex;
+  align-items: center;
   justify-content: center;
 }
-
+    /* This code makes an X in the middle of the button! */
+    .removeButton::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 45%; /* Adjust the size of the X */
+      height: 1.5px; /* Adjust the thickness of the lines */
+      background-color: black; /* Set the color of the lines */
+      margin: 0 !important;
+      padding: 0 !important;
+    }
+    .removeButton::before { transform: translate(-50%, -50%) rotate(0deg); /* Horizontal line */ }
 
 
 
@@ -209,36 +245,23 @@ Its class is wordInfoModalPopup.
   top: 10px;
   right: 10px;
   }
-
-    /* .wordListSidebarButton {
-      color: black;
-      background-color: lightgrey;
-      height: 20px;
-      width: 20px;
-
-        position: fixed;
-        top: 10px; 
-        right: 10px; 
-        width: 30px;
-        height: 30px;
-    } */
-        /* This code makes an X in the middle of the button!
-        .wordListSidebarButton::before,
-        .wordListSidebarButton::after {
-          content: '';
-          position: absolute;
-          top: 50%;
-          left: 50%;
-          width: 60%; /* Adjust the size of the X */
-          /* height: 2px; Adjust the thickness of the lines */
-          /* background-color: black; */
-        /* } */
-        /* .wordListSidebarButton::before { */
-          /* transform: translate(-50%, -50%) rotate(45deg); Top-right to bottom-left line */
-        /* } */
-        /* .wordListSidebarButton::after { */
-          /* transform: translate(-50%, -50%) rotate(-45deg); Top-left to bottom-right line */
-        /* } */ 
+    /* This code makes an X in the middle of the button! */
+    .wordListSidebarButton::before,
+    .wordListSidebarButton::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 60%; /* Adjust the size of the X */
+        height: 2px; /* Adjust the thickness of the lines */
+        background-color: black; 
+      } 
+      .wordListSidebarButton::before { 
+        transform: translate(-50%, -50%) rotate(45deg); /* Top-right to bottom-left line */
+      } 
+      .wordListSidebarButton::after { 
+        transform: translate(-50%, -50%) rotate(-45deg); /* Top-left to bottom-right line */
+      }  
 
     .wordListSidebar a {
       color: #0079C0;

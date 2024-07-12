@@ -19,7 +19,7 @@
 
 
 // "DRY" they said, yet making a FrankenFunction for both sidebar and modal is Cursed I say, Cursed!
-function dictionaryEntriesToHTML_modal(entries) {
+function dictionaryEntriesToHTML_modal(entries, currentWords) {
   if (entries == null || entries == undefined) return;
 
   let marginaliaShown = false;
@@ -61,12 +61,14 @@ function dictionaryEntriesToHTML_modal(entries) {
       wordHeaderElem.appendChild(speechPartElem);
     }
 
-    // const alreadyInUserList = currentWords.some((e) => e.lookupIndex === entry.lookupIndex && e.url === word.url);
+    const alreadyInUserList = currentWords.some((e) => e.lookupIndex === entry.lookupIndex && e.url === entry.url);
     
     const addWordBtn = document.createElement('button'); // ADD WORDLIST ADDER BUTTON TO HEADER
     const lookupID = entry.lookupIndex;
-    addWordBtn.className = 'modalButton';
-    addWordBtn.innerText = '+';
+    addWordBtn.className = 'addButton';
+    if (alreadyInUserList) {
+      addWordBtn.classList.add('off');
+    }
     addWordBtn.title = 'Add word to sidebar list'; // Tooltip when hovering on button
     addWordBtn.id = `${MODAL_ADDWORD_BUTTON_ID_PREFIX}${lookupID}`;
     addWordBtn.style.display = "inline-block"; // Display as inline-block to allow width and height settings
@@ -184,7 +186,7 @@ function repositionModal(modal) {
   // deal with the popup rendering outside the window's boundary
   if (pos.right > windowWidth) {
     const bias = 100;
-    const difference = pos.right - windowWidth - bias; // -100 is a hacke
+    const difference = pos.right - windowWidth + bias; // bias is a hacke
     const karlMarx = pos.left - difference; 
     const aynRand = pos.right - difference;
     modal.style.left  = `${karlMarx}px`; // style.side takes a STRINGE
@@ -313,11 +315,13 @@ function createListenersForModalButtons(entries) {
   for (const entry of entries) {
     const id = entry.lookupIndex;
     presentModalButtonListeners.push(id);
-    document.querySelector(`#${MODAL_ADDWORD_BUTTON_ID_PREFIX}${id}`).addEventListener('click', event => {
-      addWordToLocalUserList(entry); 
+    const elemId = `#${MODAL_ADDWORD_BUTTON_ID_PREFIX}${id}`;
+    document.querySelector(elemId).addEventListener('click', event => {
+      addWordToUserList(entry); 
     });
   }
 }
+
 
 
 function deleteListenersForModalButtons() {
@@ -325,7 +329,7 @@ function deleteListenersForModalButtons() {
     const button = document.querySelector(`#${MODAL_ADDWORD_BUTTON_ID_PREFIX}${id}`);
     if (button) {
       button.removeEventListener('click', event => {
-        addWordToLocalUserList(entry);
+        addWordToUserList(entry);
       });
     }
   }

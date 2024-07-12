@@ -54,8 +54,13 @@ function extractBaseURLOfPage() {
 }
 
 
-async function addWordToLocalUserList(word) {
-  const context = "addWordToLocalUserList";
+/**
+ * @summary Adds a dictionary entry for a word to a locally-stored array of the same type, as defined in the service worker background.js
+ * @param {MatchedWordEntry} word 
+ * @returns 
+ */
+async function addWordToUserList(word) {
+  const context = "addWordToUserList";
   const currentState = await getStateFromStorage(context, "userWordList");
   if (currentState == undefined) logError(context, "current state is undefined");
   const currentWordsList = currentState.userWordList;
@@ -70,9 +75,9 @@ async function addWordToLocalUserList(word) {
     logError(context, error);
     return;
   }
-
-  addPageToLocalUserPagesList();
-  updateSidebar();
+  
+  addPageToUserPagesList();
+  updateSidebar(); // TODO: presently must keep sidebar update inside here; if brought into the event listener callback, sidebar flashes on update
 }
 
 
@@ -110,9 +115,11 @@ async function removeWordFromLocalUserList(word) {
 }
 
 
-
-async function addPageToLocalUserPagesList() {
-  const context = "addPageToLocalUserPagesList";
+/**
+ * @summary Adds data about the current tab's webpage to a locally-stored Map structure, as defined in the service worker background.js
+ */
+async function addPageToUserPagesList() {
+  const context = "addPageToUserPagesList";
   const currentState = await getStateFromStorage(context, "userPagesList");
   if (currentState == undefined) logError(context, "current state is undefined");
   const currentPagesList = currentState.userPagesList;

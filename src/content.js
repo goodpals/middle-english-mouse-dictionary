@@ -35,14 +35,20 @@ Once HTML is injected into the browser window from a content domain script, it e
     if (Object.keys(selectedWordsInDOM).length === 0) {
       hideModal();
     } else {
+      const context = "listenForTextSelection";
+      const currentState = await getStateFromStorage(context, "userWordList");
+      if (currentState == undefined) logError(context, "current state is undefined");
+      const currentWordsList = currentState.userWordList;
+
       let printouts = {};
-      Object.entries(selectedWordsInDOM).forEach(([key, word]) => printouts[key] = dictionaryEntriesToHTML_modal(word));
+      const allMatchedWordEntries = Object.values(selectedWordsInDOM).flatMap(entries => entries);
+      Object.entries(selectedWordsInDOM).forEach(([key, word]) => printouts[key] = dictionaryEntriesToHTML_modal(word, currentWordsList));
 
       const range = selection.getRangeAt(0);
       const rect = range.getBoundingClientRect(); 
       createOrUpdateModal(event, printouts, Object.keys(selectedWordsInDOM)[0], rect);
 
-      const allMatchedWordEntries = Object.values(selectedWordsInDOM).flatMap(entries => entries);
+      // const allMatchedWordEntries = Object.values(selectedWordsInDOM).flatMap(entries => entries);
       createListenersForModalButtons(allMatchedWordEntries);
     }
   });
@@ -104,135 +110,6 @@ function searchDictionary(selectedWord) {
     return extractedEntries;
   } 
   return null;
-}
-
-
-
-function new_dictionaryEntriesToHTMLtext(entries, mode, pageData) {
-  if (entries == null || entries == undefined) return;
-  if (['sidebar', 'modal'].includes(mode) == false) return;
-
-  let marginaliaShown = false;
-  let textCont = document.createElement('div');
-
-  // set up header
-  const header = document.createElement('p');
-  header.className = 'textHeader';
-  
-  let headerText = document.createElement('p');
-
-  if (entries.length > 1  &&  mode != "sidebar") {
-    headerText.textContent = plaintextToFraktur("Possible Matches");
-  }
-  if (pageData != null && mode == "sidebar") {
-    const btn = document.createElement('button');
-    btn.className = 'wordListSidebarButton'; // you have to use a custom class because JS can smd
-    btn.innerHTML = 'X';
-    btn.title = 'Close Sidebar';
-    btn.id = SIDEBAR_CLOSE_BUTTON_ID;
-    textCont.appendChild(btn);
-    headerText.textContent = plaintextToFraktur(pageData.pageName);
-  }
-
-  header.appendChild(headerText);
-  textCont.appendChild(header);
-
-  // build word info content for each word, as an HTML element
-  for (const [index, entry] of entries.entries()) {
-    const dictEntry = dictionary[entry.lookupIndex];
-
-    const wordHeaderElem = document.createElement('div'); // Use a <div> instead of <p> for flexible layout
-    wordHeaderElem.className = "wordData";
-    wordHeaderElem.style.whiteSpace = "nowrap"; // Ensure elements stay in a single line if they exceed width
-    wordHeaderElem.style.display = "flex"; // Use flexbox for layout
-    wordHeaderElem.style.alignItems = "center"; // Center align items vertically
-
-    const urlElem = document.createElement('a'); // MAKE ENTRY WORD CLICKABLE URL 
-    urlElem.style.fontWeight = "bold";
-    urlElem.textContent = entry.usersSelectedWord;
-    urlElem.style.marginRight = "5px";
-    urlElem.href = `https://quod.lib.umich.edu/m/middle-english-dictionary/dictionary?utf8=✓&search_field=anywhere&q=${entry.usersSelectedWord}`;
-    wordHeaderElem.appendChild(urlElem);
-
-    if (dictEntry.partOfSpeech != null) {
-      const speechPartElem = document.createElement('span'); // <span> instead of <p> for inline elements
-      speechPartElem.textContent = `${dictEntry.partOfSpeech}`;
-      speechPartElem.style.marginRight = "5px";
-      speechPartElem.style.display = "inline-block"; // inline-block allows width and height settings
-      wordHeaderElem.appendChild(speechPartElem);
-    }
-
-    if (mode != "sidebar") {
-      const addWordBtn = document.createElement('button'); // ADD WORDLIST ADDER BUTTON TO HEADER
-      const lookupID = entry.lookupIndex;
-      addWordBtn.className = 'modalButton';
-      addWordBtn.innerText = '+';
-      addWordBtn.title = 'Add word to sidebar list'; // Tooltip when hovering on button
-      addWordBtn.id = `${MODAL_ADDWORD_BUTTON_ID_PREFIX}${lookupID}`;
-      addWordBtn.style.display = "inline-block"; // Display as inline-block to allow width and height settings
-      wordHeaderElem.appendChild(addWordBtn);
-    } else {
-      const removeWordBtn = document.createElement('button'); // ADD WORDLIST REMOVAL BUTTON TO HEADER
-      const lookupID = entry.lookupIndex;
-      removeWordBtn.className = 'removeButton';
-      removeWordBtn.id = `${SIDEBAR_REMOVE_WORD_ID_PREFIX}${lookupID}`; 
-      removeWordBtn.innerText = '-';
-      removeWordBtn.title = 'Remove word from sidebar'; // Tooltip
-      removeWordBtn.style.display = "inline-block"; // Display as inline-block to allow width and height settings
-      wordHeaderElem.appendChild(removeWordBtn);
-    }
-    
-
-    // New <p> -- add variant spellings
-    const variantsElem = document.createElement('p');
-    variantsElem.className = 'wordData';
-    let variantsText = "";
-    if (dictEntry.variants != null) {
-      variantsText = `Variants: ${dictEntry.variants.join(", ")}`;
-    }
-    variantsElem.textContent = variantsText;
-
-    const entryElem = document.createElement('p');
-    entryElem.className = 'wordData';
-    if (dictEntry.entry != null) appendHtmlizedText(entryElem, dictEntry.entry);
-
-    const marginaliaElem = document.createElement('img');
-    marginaliaElem.className = "marginalia";
-    let src = "";
-    if ((mode == "modal") 
-    &&  (marginaliaShown == false)
-    &&  (entries.length > 2) 
-    &&  (index+1 == Math.round(entries.length / 2))) {
-      const fullURL = browser.runtime.getURL(getRandomImagePath());
-      if (fullURL) {
-        src = fullURL;
-        marginaliaShown = true;
-      }
-    } 
-    if ((mode == "sidebar") 
-    &&  (entries.length > 2) 
-    &&  (index+1 == Math.round(entries.length / 2)  )) {
-      if (persistentSideBarMarginaliaURL == null) {
-        persistentSideBarMarginaliaURL = browser.runtime.getURL(getRandomImagePath());
-      }
-      src = persistentSideBarMarginaliaURL;
-    }
-    marginaliaElem.src = src;
-
-    const dividerElem = document.createElement('p');
-    dividerElem.className = "wordData";
-    dividerElem.textContent = "_____";
-    dividerElem.style.paddingBottom = "10px";
-
-    // combine it all
-    textCont.appendChild(wordHeaderElem);
-    textCont.appendChild(variantsElem);
-    textCont.appendChild(entryElem);
-    textCont.appendChild(marginaliaElem);
-    textCont.appendChild(dividerElem);
-  }
-
-  return textCont;
 }
 
 

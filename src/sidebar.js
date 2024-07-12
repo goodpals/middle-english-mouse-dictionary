@@ -91,6 +91,7 @@ async function updateSidebar() {
 
 async function createSidebar() {
   const context = "createSidebar";
+  await addPageToUserPagesList();
 
   const currentState = await getStateFromStorage(context, ["userWordList", "userPagesList",]);
   const currentPagesList = currentState.userPagesList;
@@ -98,14 +99,12 @@ async function createSidebar() {
   if (stateError(`${context}: pagesList`, currentPagesList)) return;
   if (stateError(`${context}: currentWordsList`, currentWordsList)) return;
 
-  // Has the user added a word from this page to their list? 
-  // If not, then the page's URL won't have been registered in the pagesList
-  // ...and therefore there is nothing to show in the sidebar.
   const url = extractBaseURLOfPage();
   const urlExists = currentPagesList.hasOwnProperty(url);
   if (!urlExists) return;
-
-  // get words from the current webpage, and present them newest-first.
+  const pageData = currentPagesList[url];
+  
+  // get stored words from the current webpage, and present them newest-first.
   const wordsToShow = currentWordsList.filter((e) => e.url === url).reverse();
 
   // prepare the sidebar and inject it into the browser DOM
@@ -113,10 +112,10 @@ async function createSidebar() {
   sidebar.className = 'wordListSidebar';
   sidebar.id = SIDEBAR_ID;
 
-  const pageData = currentPagesList[url];
   const htmlToPass =  dictionaryEntriesToHTML_sidebar(wordsToShow, pageData);
   sidebar.appendChild(htmlToPass);
-  
+  console.log("here")
+
   document.body.appendChild(sidebar);
   
   // you must do this *after* the sidebar element has been injected into the browser
@@ -136,11 +135,8 @@ function dictionaryEntriesToHTML_sidebar(entries, pageData) {
   let marginaliaShown = false;
   let textCont = document.createElement('div');
 
-  // set up header
-
   const btn = document.createElement('button');
   btn.className = 'wordListSidebarButton'; // you have to use a custom class because JS can smd
-  btn.textContent = 'X';
   btn.title = 'Close Sidebar';
   btn.id = SIDEBAR_CLOSE_BUTTON_ID;
   textCont.appendChild(btn);
@@ -148,10 +144,16 @@ function dictionaryEntriesToHTML_sidebar(entries, pageData) {
   if (pageData != null) {
     const header = document.createElement('p');
     header.className = 'textHeader';
-    let headerText = document.createElement('p');
-    headerText.textContent = plaintextToFraktur(pageData.pageName);
-    header.appendChild(headerText);
+    header.textContent = plaintextToFraktur(pageData.pageName);
     textCont.appendChild(header);
+  }
+
+  // account for the user opening the sidebar with an empty word list
+  if (entries.length === 0) {
+    const message = document.createElement('div');
+    message.textContent = `Click the + button in the popup to add words to the sidebar!`;
+    textCont.appendChild(message);
+    return textCont;
   }
 
   // build word info content for each word, as an HTML element
@@ -185,7 +187,6 @@ function dictionaryEntriesToHTML_sidebar(entries, pageData) {
     const lookupID = entry.lookupIndex;
     removeWordBtn.className = 'removeButton';
     removeWordBtn.id = `${SIDEBAR_REMOVE_WORD_ID_PREFIX}${lookupID}`; 
-    removeWordBtn.innerText = '-';
     removeWordBtn.title = 'Remove word from sidebar'; // Tooltip
     removeWordBtn.style.display = "inline-block"; // Display as inline-block to allow width and height settings
     wordHeaderElem.appendChild(removeWordBtn);

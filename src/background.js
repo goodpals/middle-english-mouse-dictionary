@@ -28,7 +28,9 @@
 
 ! async function writeInitialState(){  
   await browser.storage.local.set({ 
+    /** @type {Array<MatchedWordEntry>} */
     userWordList: [], // words a user wants to display in sidebar
+    /** @type {Object<string, PageInfo>} */
     userPagesList: {}, // pages on which user has logged words to their userWordList
   });
 }();
