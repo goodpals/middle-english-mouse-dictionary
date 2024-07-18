@@ -1,7 +1,7 @@
 {
   "manifest_version": 2,
   "name": "Middle English Mouse Dictionary",
-  "version": "1.0",
+  "version": "1.1",
   "description": "A mouse hover Middle English dictionary",
   "permissions": [
     "activeTab",
