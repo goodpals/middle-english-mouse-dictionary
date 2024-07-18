@@ -2,12 +2,19 @@
   
 # Middle English Mouse Dictionary  
 
-The Middle English Mouse Dictionary is a browser extension (Firefox, Chrome) that helps you to read middle english web pages by showing information about a word when you double click it.
+The Middle English Mouse Dictionary is a prototype browser extension for Firefox that assists in reading middle english web pages by showing dictionary information about middle english words when they are highlighted or double-clicked. It tracks which words you add to your personal word list for each tab, and displays them in a sidebar.
 
-## How it works  
-When you double-click/tap a word in a webpage, your browser highlights that word and temporarily saves it in your browser's local data storage. When this happens our script extracts that word and checks a dictionary file that comes with this extension.  
-  
-If the word you doubleclicked is in the dictionary, a small popup will appear next to your mouse with information about the word.  
+At present this is a prototype, written in pure JS to be as simple as possible. 
+In time we intend to: 
+- Add additional dictionaries.
+- Implement fuzzy matching to combat orthographic complexity
+- Improve the UI and UX
+- Adapt for Chrome/Safari and Manifest V3
+- Move over to a framework if we deem it suitable
+- Get funding and/or support from institutions
+
+<img src="./miscDocs/preview.png" style="width: auto" alt="Extension preview">
+
 
 ## Places you can test this
 
@@ -16,12 +23,6 @@ If the word you doubleclicked is in the dictionary, a small popup will appear ne
 - Harvard's [Geoffery Chaucer Website](https://chaucer.fas.harvard.edu/pages/john-gower-1325-1403).
 - The International John Gower Society's [Original Language Editions](https://johngower.org/online-editions/).
 - You might check an old cookbook like [The Forme of Cury](https://www.gutenberg.org/cache/epub/8102/pg8102.txt), as edited by Samuel Pegge.
-
-
-## Motivation & Ethos
-We wish to facilitate the enjoyment and study of historical texts, for enthusiasts and professionals alike. We sought to make a lookup tool that would only require access to a digitized text from an original manuscript.  
-   
-We have coded this extension to be as simple as possible, avoiding using unnecessary frameworks and dependencies. This software is fully open-source and will continue as such in perpetuum. 
 
   
 ## Acknowledgements
