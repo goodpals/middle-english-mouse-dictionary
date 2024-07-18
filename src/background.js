@@ -34,6 +34,7 @@
     userPagesList: {}, // pages on which user has logged words to their userWordList
     onOffState: 'off', /// TODO: https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/user_interface/Toolbar_button    AND    https://github.com/cschiller/zhongwen
   });
+  browser.browserAction.setBadgeText({text: "off"});
 }();
 
 
@@ -48,6 +49,9 @@
         browser.tabs.sendMessage(tab.id, {state: newState, from: "MEMD"});
       });
     });
+    
+    browser.browserAction.setBadgeText({text: newState == 'on' ? "on" : "off"});
+
   });
 }();
 

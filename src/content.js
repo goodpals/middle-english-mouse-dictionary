@@ -20,7 +20,7 @@ Once HTML is injected into the browser window from a content domain script, it e
  */
 ! async function listenForUserPressingActionButton() {
   browser.runtime.onMessage.addListener((message) => {
-    console.log("MEMD State", message);
+    // console.log("MEMD State", message);
     if (message.from != "MEMD" || message.state === 'on') return;
 
     let modal = findModal();
@@ -72,7 +72,6 @@ Once HTML is injected into the browser window from a content domain script, it e
       const rect = range.getBoundingClientRect(); 
       createOrUpdateModal(event, printouts, Object.keys(selectedWordsInDOM)[0], rect);
 
-      // const allMatchedWordEntries = Object.values(selectedWordsInDOM).flatMap(entries => entries);
       createListenersForModalButtons(allMatchedWordEntries);
     }
   });

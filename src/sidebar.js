@@ -117,7 +117,6 @@ async function createSidebar() {
   const htmlToPass =  dictionaryEntriesToHTML_sidebar(wordsToShow, pageData);
 
   sidebar.appendChild(htmlToPass);
-  console.log("here")
 
   document.body.appendChild(sidebar);
   
@@ -164,17 +163,14 @@ function dictionaryEntriesToHTML_sidebar(entries, pageData) {
     const dictEntry = dictionary[entry.lookupIndex];
 
     const wordHeaderElem = document.createElement('div'); // Use a <div> instead of <p> for flexible layout
-    wordHeaderElem.className = "wordData";
-    wordHeaderElem.style.whiteSpace = "nowrap"; // Ensure elements stay in a single line if they exceed width
-    wordHeaderElem.style.display = "flex"; // Use flexbox for layout
-    wordHeaderElem.style.alignItems = "center"; // Center align items vertically
+    wordHeaderElem.classList.add("wordData", "nowrap");
 
     // make entry word a clickable url
     const urlElem = document.createElement('a');
-    urlElem.style.fontWeight = "bold";
     urlElem.textContent = entry.usersSelectedWord;
-    urlElem.style.marginRight = "5px";
     urlElem.href = `https://quod.lib.umich.edu/m/middle-english-dictionary/dictionary?utf8=✓&search_field=anywhere&q=${entry.usersSelectedWord}`;
+    urlElem.style.fontWeight = "bold";
+    urlElem.style.marginRight = "5px";
     wordHeaderElem.appendChild(urlElem);
 
     if (dictEntry.partOfSpeech != null) {

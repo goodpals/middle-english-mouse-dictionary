@@ -56,6 +56,13 @@ Its class is wordInfoModalPopup.
     margin: 0px !important;
   }
 
+
+  .wordInfoModalPopup .wordData.nowrap {
+    white-space: nowrap; /* Ensure elements stay in a single line if they exceed width */
+    display: flex;
+    align-items: center;
+  }
+
   .wordInfoModalPopup a {
     color:#0079C0 !important;
     font-family: inherit;
@@ -80,6 +87,8 @@ Its class is wordInfoModalPopup.
   flex-shrink: 0;
   -ms-overflow-style: none; /* For Internet Explorer and Edge */
   scrollbar-width: none; /* For Firefox */
+  border-bottom: rgb(213, 191, 163) 1px solid;
+
 }
 .wordInfoTabButtonContainer::-webkit-scrollbar {
   display: none; /* For Chrome, Safari, and Opera */ 
@@ -202,7 +211,7 @@ Its class is wordInfoModalPopup.
   right: 0;
   top: 0;
   height: 99%;
-  width: 23%;
+  width: 25%;
   overflow-y: auto;
   z-index: 69420;
 }
@@ -218,8 +227,14 @@ Its class is wordInfoModalPopup.
     font-family: inherit;
     font-size: inherit;
     padding-bottom: 10px;
-  margin: 0px !important;
-}
+    margin: 0px !important;
+  }
+  
+  .wordData.nowrap {
+    white-space: nowrap; /* Ensure elements stay in a single line if they exceed width */
+    display: flex;
+    align-items: center;
+  }
 
   .wordListSidebar a {
     color:#0079C0 !important;

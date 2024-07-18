@@ -1,3 +1,7 @@
+/*
+    All error-handling functionality is kept here.
+*/
+
 const ERROR_MODAL_BUTTON_ID = "MEMD_ERR_MODAL_BTN";
 const ERROR_MODAL_ID = "MEMD_ERR_MODAL";
 let ERR_MODAL_ACTIVE = false;

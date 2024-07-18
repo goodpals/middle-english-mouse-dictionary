@@ -36,6 +36,7 @@
       "16": "img/icon.png",
       "32": "img/icon@2x.png"
     },
+    "badge": "ON",
     "default_title": "Run on this page"
   }
 }
