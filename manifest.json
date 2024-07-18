@@ -33,8 +33,8 @@
   },
   "browser_action": {
     "default_icon": {
-      "16": "img/icon.png",
-      "32": "img/icon@2x.png"
+      "48": "img/icon.png",
+      "96": "img/icon@2x.png"
     },
     "badge": "ON",
     "default_title": "Run on this page"
