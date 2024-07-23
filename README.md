@@ -2,7 +2,12 @@
   
 # Middle English Mouse Dictionary  
 
-The Middle English Mouse Dictionary is a prototype browser extension for Firefox that assists in reading middle english web pages by showing dictionary information about middle english words when they are highlighted or double-clicked. It tracks which words you add to your personal word list for each tab, and displays them in a sidebar.
+The Middle English Mouse Dictionary is a prototype browser extension for [Firefox](https://www.mozilla.org/firefox/) that assists in reading middle english web pages by showing dictionary information about middle english words when they are highlighted or double-clicked. It tracks which words you add to your personal word list for each tab, and displays them in a sidebar.
+
+Install the extension [here](https://addons.mozilla.org/en-GB/firefox/addon/memd/).  
+
+
+## Roadmap
 
 At present this is a prototype, written in pure JS to be as simple as possible. 
 In time we intend to: 
@@ -18,11 +23,11 @@ In time we intend to:
 
 ## Places you can test this
 
-- The largest unannotated text resource, and one for which this extension is most suited, is the University of Michigan's [Corpus of Middle English Prose and Verse](https://quod.lib.umich.edu/c/cme/).
-- Centre for Medieval and Early Modern Studies, University of Kent's [MEMSlib](https://www.memslib.co.uk/middle-english-texts) contains many digitizations.
+- Try reading [Gawain and the Green Knight](https://rpo.library.utoronto.ca/content/sir-gawain-and-green-knight).
+- The University of Michigan's [Corpus of Middle English Prose and Verse](https://quod.lib.umich.edu/c/cme/).
+- Centre for Medieval and Early Modern Studies, University of Kent's [MEMSlib](https://www.memslib.co.uk/middle-english-texts).
 - Harvard's [Geoffery Chaucer Website](https://chaucer.fas.harvard.edu/pages/john-gower-1325-1403).
 - The International John Gower Society's [Original Language Editions](https://johngower.org/online-editions/).
-- You might check an old cookbook like [The Forme of Cury](https://www.gutenberg.org/cache/epub/8102/pg8102.txt), as edited by Samuel Pegge.
 
   
 ## Acknowledgements
