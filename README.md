@@ -2,7 +2,7 @@
   
 # Middle English Mouse Dictionary  
 
-The Middle English Mouse Dictionary is a prototype browser extension for [Firefox](https://www.mozilla.org/firefox/) that assists in reading middle english web pages by showing dictionary information about middle english words when they are highlighted or double-clicked. It tracks which words you add to your personal word list for each tab, and displays them in a sidebar.
+The Middle English Mouse Dictionary is a prototype browser extension for [Firefox](https://www.mozilla.org/firefox/) that assists in reading middle english web pages by showing dictionary information about middle english words when they are highlighted or double-clicked. It tracks which words you add to your personal word list for each tab, and displays them in a sidebar, which can be opened from the right-click context menu.
 
 Install the extension [here](https://addons.mozilla.org/en-GB/firefox/addon/memd/).  
 
